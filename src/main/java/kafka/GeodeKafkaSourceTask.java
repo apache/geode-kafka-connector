@@ -49,7 +49,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     offset = new HashMap<>();
     offset.put("OFFSET", 0L);
 
-    installOnGeode("localHost", 18888, "someRegion");
+    installOnGeode("localHost", 10334, "someRegion");
   }
 
   @Override

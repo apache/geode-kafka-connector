@@ -16,8 +16,10 @@ public class LocatorLauncherWrapper {
 //        String statsFile = new File(context.getOutputDir(), "stats.gfs").getAbsolutePath();
 //        properties.setProperty(ConfigurationPropert/**/ies.STATISTIC_ARCHIVE_FILE, statsFile);
         properties.setProperty(ConfigurationProperties.NAME, "locator1");
-        Locator.startLocatorAndDS(10334, null, properties);
+        Locator.startLocatorAndDS(10334, new File("/Users/jhuynh/Pivotal/geode-kafka-connector/"), properties);
+        while (true) {
 
+        }
 //
 //        LocatorLauncher locatorLauncher  = new LocatorLauncher.Builder()
 //                .setMemberName("locator1")

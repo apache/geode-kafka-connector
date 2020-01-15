@@ -2,6 +2,7 @@ package kafka;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;
+import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.server.CacheServer;
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.ServerLauncher;
@@ -36,13 +37,20 @@ public class ServerLauncherWrapper {
                 .set(ConfigurationProperties.LOCATORS, locatorString)
                 .set(ConfigurationProperties.NAME,
                         "server-1")
-                .set(ConfigurationProperties.LOG_FILE, "/Users/jhuynh/Pivotal/geode-kafka-connector/server1.log")
+                .set(ConfigurationProperties.LOG_FILE, "/Users/jhuynh/Pivotal/geode-kafka-connector/")
                 .set(ConfigurationProperties.LOG_LEVEL, "info")
 //               .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
                 .create();
         CacheServer cacheServer = cache.addCacheServer();
         cacheServer.setPort(0);
-        cacheServer.setMaxConnections(Integer.MAX_VALUE);
+//        cacheServer.setMaxConnections(Integer.MAX_VALUE);
         cacheServer.start();
+
+        //create the region
+        cache.createRegionFactory(RegionShortcut.PARTITION).create("someRegion");
+        System.out.println("starting cacheserver");
+        while (true) {
+
+        }
     }
 }

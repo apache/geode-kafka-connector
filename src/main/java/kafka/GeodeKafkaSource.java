@@ -27,6 +27,7 @@ public class GeodeKafkaSource extends SourceConnector {
 
   @Override
   public List<Map<String, String>> taskConfigs(int maxTasks) {
+    System.out.println("GKSource: taskConfigs");
     List<Map<String, String>> taskConfigs = new ArrayList<>();
     Map<String, String> taskProps = new HashMap<>();
 

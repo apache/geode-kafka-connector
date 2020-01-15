@@ -39,7 +39,7 @@ public class GeodeKafkaTestCluster {
   }
 
   private ClientCache createGeodeClient() {
-    return new ClientCacheFactory().addPoolLocator("127.0.0.1", 10334).create();
+    return new ClientCacheFactory().addPoolLocator("localhost", 10334).create();
   }
 
   private static void startZooKeeper() throws IOException, QuorumPeerConfig.ConfigException {
