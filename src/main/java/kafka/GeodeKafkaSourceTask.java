@@ -42,7 +42,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     queueSize = 100000;
     String regionName = "someRegion";
     eventBuffer = new LinkedBlockingQueue<>(queueSize);
-    topics = new String[] {"default"};
+    topics = new String[] {"myTopic"};
     sourcePartition = new HashMap<>();
     sourcePartition.put(REGION_NAME, regionName);
 
