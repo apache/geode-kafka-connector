@@ -8,6 +8,7 @@ import org.apache.geode.cache.query.CqEvent;
 import org.apache.geode.cache.query.CqException;
 import org.apache.geode.cache.query.CqExistsException;
 import org.apache.geode.cache.query.CqListener;
+import org.apache.geode.cache.query.RegionNotFoundException;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 
@@ -38,11 +39,12 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public void start(Map<String, String> props) {
+    System.out.println("JASON task start");
     batchSize = 100;
     queueSize = 100000;
     String regionName = "someRegion";
     eventBuffer = new LinkedBlockingQueue<>(queueSize);
-    topics = new String[] {"myTopic"};
+    topics = new String[] {"someTopic"};
     sourcePartition = new HashMap<>();
     sourcePartition.put(REGION_NAME, regionName);
 
@@ -50,10 +52,12 @@ public class GeodeKafkaSourceTask extends SourceTask {
     offset.put("OFFSET", 0L);
 
     installOnGeode("localHost", 10334, "someRegion");
+    System.out.println("JASON task start end");
   }
 
   @Override
   public List<SourceRecord> poll() throws InterruptedException {
+//    System.out.println("JASON polling");
     ArrayList<SourceRecord> records = new ArrayList<>(batchSize);
     ArrayList<CqEvent> events = new ArrayList<>(batchSize);
     if (eventBuffer.drainTo(events, batchSize) > 0) {
@@ -63,9 +67,11 @@ public class GeodeKafkaSourceTask extends SourceTask {
           records.add(new SourceRecord(sourcePartition, offset, topic, null, event));
       }
 
+      System.out.println("JASON we polled and returning records" + records.size());
       return records;
     }
 
+//    System.out.println("JASON we didn't poll any records");
     return null;
   }
 
@@ -80,16 +86,26 @@ public class GeodeKafkaSourceTask extends SourceTask {
         .setPoolSubscriptionEnabled(true).addPoolLocator(locatorHost, locatorPort).create();
     CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
     cqAttributesFactory.addCqListener(new GeodeKafkaSourceListener());
+    System.out.println("JASON installing on Geode");
     CqAttributes cqAttributes = cqAttributesFactory.create();
     try {
+      System.out.println("JASON installing new cq");
       clientCache.getQueryService().newCq("kafkaCQFor" + regionName, "select * from /" + regionName, cqAttributes,
-          true);
+          true).execute();
+      System.out.println("JASON finished installing cq");
     } catch (CqExistsException e) {
+      System.out.println("UHH");
       e.printStackTrace();
-    } catch (CqException e) {
+    } catch (CqException | RegionNotFoundException e) {
+      System.out.println("UHH e");
       e.printStackTrace();
     }
+    catch (Exception e) {
+      System.out.println("UHHHHHH " + e);
+    }
+    System.out.println("JASON task calling ready for events");
     clientCache.readyForEvents();
+    System.out.println("JASON task ready for events");
   }
 
   private static class GeodeKafkaSourceListener implements CqListener {
@@ -97,6 +113,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     @Override
     public void onEvent(CqEvent aCqEvent) {
       try {
+        System.out.println("JASON cqEvent and putting into eventBuffer");
         eventBuffer.offer(aCqEvent, 2, TimeUnit.SECONDS);
       } catch (InterruptedException e) {
 

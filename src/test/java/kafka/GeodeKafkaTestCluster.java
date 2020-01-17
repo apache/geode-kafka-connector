@@ -10,6 +10,12 @@ import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.client.ClientRegionShortcut;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.connector.policy.AllConnectorClientConfigOverridePolicy;
@@ -32,7 +38,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,6 +54,8 @@ public class GeodeKafkaTestCluster {
   private static ZooKeeperLocalCluster zooKeeperLocalCluster;
   private static KafkaLocalCluster kafkaLocalCluster;
   private static GeodeLocalCluster geodeLocalCluster;
+  private static WorkerAndHerderCluster workerAndHerderCluster;
+  private static Consumer<String, String> consumer;
 
   @BeforeClass
   public static void setup() throws IOException, QuorumPeerConfig.ConfigException, InterruptedException {
@@ -52,63 +63,30 @@ public class GeodeKafkaTestCluster {
     startKafka();
     startGeode();
     createTopic();
+    Thread.sleep(5000);
     startWorker();
+    consumer = createConsumer();
+    Thread.sleep(5000);
   }
 
   @AfterClass
   public static void shutdown() {
+    workerAndHerderCluster.stop();
     KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
             15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
+
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
     adminZkClient.deleteTopic("someTopic");
+
     kafkaLocalCluster.stop();
     geodeLocalCluster.stop();
   }
 
 
-  private static void startWorker() {
-    Map props = new HashMap();
-    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:8888");
-    props.put("offset.storage.file.filename", "/tmp/connect.offsets");
-    // fast flushing for testing.
-    props.put(WorkerConfig.OFFSET_COMMIT_INTERVAL_MS_CONFIG, "10");
-
-
-    props.put(WorkerConfig.INTERNAL_KEY_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
-    props.put(WorkerConfig.INTERNAL_VALUE_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
-    props.put("internal.key.converter.schemas.enable", "false");
-    props.put("internal.value.converter.schemas.enable", "false");
-    props.put(WorkerConfig.KEY_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
-    props.put(WorkerConfig.VALUE_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
-    props.put("key.converter.schemas.enable", "false");
-    props.put("value.converter.schemas.enable", "false");
-
-
-    WorkerConfig workerCfg = new StandaloneConfig(props);
-
-    MemoryOffsetBackingStore offBackingStore = new MemoryOffsetBackingStore();
-    offBackingStore.configure(workerCfg);
-
-    Worker worker = new Worker("WORKER_ID", new SystemTime(), new Plugins(props), workerCfg, offBackingStore, new AllConnectorClientConfigOverridePolicy());
-    worker.start();
-
-    Herder herder = new StandaloneHerder(worker, ConnectUtils.lookupKafkaClusterId(workerCfg), new AllConnectorClientConfigOverridePolicy());
-    herder.start();
-
-
-
-
-    Map<String, String> sourceProps = new HashMap<>();
-    sourceProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSource.class.getName());
-    sourceProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-source-connector");
-    sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
-//
-    herder.putConnectorConfig(
-            sourceProps.get(ConnectorConfig.NAME_CONFIG),
-            sourceProps, true, (error, result)->{
-              System.out.println("CALLBACK: " + result);
-            });
-    System.out.println("Worker and herder started");
+  private static void startWorker() throws IOException, InterruptedException {
+    workerAndHerderCluster = new WorkerAndHerderCluster();
+    workerAndHerderCluster.start();
+    Thread.sleep(20000);
   }
 
   private static void createTopic() {
@@ -186,13 +164,40 @@ topic=connect-test
   }
 
 
+  //consumer props, less important, just for testing?
+  public static Consumer<String,String> createConsumer() {
+      final Properties props = new Properties();
+    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:8888");
+    props.put(ConsumerConfig.GROUP_ID_CONFIG,
+              "myGroup");
+      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+              StringDeserializer.class.getName());
+      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+              StringDeserializer.class.getName());
+      // Create the consumer using props.
+      final Consumer<String, String> consumer =
+              new KafkaConsumer<>(props);
+      // Subscribe to the topic.
+      consumer.subscribe(Collections.singletonList("someTopic"));
+      return consumer;
+  }
 
   @Test
   public void testX() throws InterruptedException {
     ClientCache client = createGeodeClient();
     Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create("someRegion");
     region.put("JASON KEY", "JASON VALUE");
+    System.out.println("PUT COMPLETE!");
+    region.get("JASON KEY");
+//    client.close();
+
+
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(2));
+    for (ConsumerRecord<String, String> record: records) {
+      System.out.println("JASON we consumed a record:" + record);
+    }
     System.out.println("TEST COMPLETE!");
+
   }
 
 }
