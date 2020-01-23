@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka.source;
 
 import org.junit.Test;
 

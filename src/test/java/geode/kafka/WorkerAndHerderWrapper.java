@@ -1,7 +1,6 @@
-package kafka;
+package geode.kafka;
 
-import org.apache.geode.distributed.ConfigurationProperties;
-import org.apache.geode.distributed.Locator;
+import geode.kafka.source.GeodeKafkaSource;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.connect.connector.policy.AllConnectorClientConfigOverridePolicy;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
@@ -14,16 +13,14 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.MemoryOffsetBackingStore;
 import org.apache.kafka.connect.util.ConnectUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import static kafka.GeodeConnectorConfig.REGIONS;
-import static kafka.GeodeConnectorConfig.TOPICS;
-import static kafka.GeodeKafkaTestCluster.TEST_REGIONS;
-import static kafka.GeodeKafkaTestCluster.TEST_TOPICS;
+import static geode.kafka.GeodeConnectorConfig.REGIONS;
+import static geode.kafka.GeodeConnectorConfig.TOPICS;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGIONS;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPICS;
 
 public class WorkerAndHerderWrapper {
 

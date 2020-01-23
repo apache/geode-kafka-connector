@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka;
 
 import org.apache.geode.distributed.ConfigurationProperties;
 import org.apache.geode.distributed.Locator;

@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka.sink;
 
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.utils.AppInfoParser;

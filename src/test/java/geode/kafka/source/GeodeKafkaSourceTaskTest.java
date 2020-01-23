@@ -1,5 +1,6 @@
-package kafka;
+package geode.kafka.source;
 
+import geode.kafka.GeodeConnectorConfig;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -7,10 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static kafka.GeodeConnectorConfig.REGION_NAME;
-import static org.hamcrest.CoreMatchers.allOf;
+import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class GeodeKafkaSourceTaskTest {
@@ -37,28 +36,7 @@ public class GeodeKafkaSourceTaskTest {
 
 
 
-    @Test
-    public void parseRegionNamesShouldSplitOnComma() {
-        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        List<String> regionNames = task.parseNames("region1,region2,region3,region4");
-        assertEquals(4, regionNames.size());
-        assertThat(true, allOf(is(regionNames.contains("region1"))
-                , is(regionNames.contains("region2"))
-                , is(regionNames.contains("region3"))
-                , is(regionNames.contains("region4"))));
-    }
 
-    @Test
-    public void parseRegionNamesShouldChomp() {
-        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        List<String> regionNames = task.parseNames("region1, region2, region3,region4");
-        assertEquals(4, regionNames.size());
-        assertThat(true, allOf(is(regionNames instanceof List)
-                , is(regionNames.contains("region1"))
-                , is(regionNames.contains("region2"))
-                , is(regionNames.contains("region3"))
-                , is(regionNames.contains("region4"))));
-    }
 
     @Test
     public void createSourcePartitionsShouldReturnAMapOfSourcePartitions() {
@@ -71,13 +49,7 @@ public class GeodeKafkaSourceTaskTest {
         assertThat(true, is(sourcePartitions.get("region3").get(REGION_NAME).equals("region3")));
     }
 
-    @Test
-    public void shouldBeAbleToParseGeodeLocatorStrings() {
-        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        String locatorString="localhost[8888], localhost[8881]";
-        List<LocatorHostPort> locators = task.parseLocators(locatorString);
-        assertThat(2, is(locators.size()));
-    }
+
 
     @Test
     public void listOfLocatorsShouldBeConfiguredIntoClientCache() {
@@ -100,7 +72,6 @@ public class GeodeKafkaSourceTaskTest {
         Map<String, String> props = new HashMap<>();
         props.put(GeodeConnectorConfig.QUEUE_SIZE, GeodeConnectorConfig.DEFAULT_QUEUE_SIZE);
         props.put(GeodeConnectorConfig.BATCH_SIZE, GeodeConnectorConfig.DEFAULT_BATCH_SIZE);
-
 
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
         task.start(props);

@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka.source;
 
 import org.apache.geode.cache.query.CqEvent;
 

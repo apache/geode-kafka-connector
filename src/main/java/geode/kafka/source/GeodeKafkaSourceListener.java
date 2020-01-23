@@ -1,7 +1,6 @@
-package kafka;
+package geode.kafka.source;
 
 import org.apache.geode.cache.query.CqEvent;
-import org.apache.geode.cache.query.CqListener;
 import org.apache.geode.cache.query.CqStatusListener;
 
 import java.util.concurrent.BlockingQueue;

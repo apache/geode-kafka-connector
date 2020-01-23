@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka;
 
 import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheFactory;

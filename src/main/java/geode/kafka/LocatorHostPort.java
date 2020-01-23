@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka;
 
 public class LocatorHostPort {
 

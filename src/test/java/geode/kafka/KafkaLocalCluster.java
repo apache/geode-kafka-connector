@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka;
 
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServerStartable;

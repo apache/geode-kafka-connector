@@ -1,4 +1,4 @@
-package kafka;
+package geode.kafka;
 
 import java.io.IOException;
 

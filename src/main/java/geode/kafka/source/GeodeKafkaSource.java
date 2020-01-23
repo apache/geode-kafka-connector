@@ -1,5 +1,6 @@
-package kafka;
+package geode.kafka.source;
 
+import geode.kafka.GeodeConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
@@ -10,21 +11,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static kafka.GeodeConnectorConfig.BATCH_SIZE;
-import static kafka.GeodeConnectorConfig.CQ_PREFIX;
-import static kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
-import static kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
-import static kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
-import static kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
-import static kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
-import static kafka.GeodeConnectorConfig.DEFAULT_QUEUE_SIZE;
-import static kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
-import static kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
-import static kafka.GeodeConnectorConfig.LOCATORS;
-import static kafka.GeodeConnectorConfig.QUEUE_SIZE;
-import static kafka.GeodeConnectorConfig.REGIONS;
-import static kafka.GeodeConnectorConfig.TOPICS;
-import static kafka.GeodeKafkaSourceTask.TASK_ID;
+import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
+import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_QUEUE_SIZE;
+import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
+import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
+import static geode.kafka.GeodeConnectorConfig.LOCATORS;
+import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
+
 
 public class GeodeKafkaSource extends SourceConnector {
 
@@ -39,16 +38,14 @@ public class GeodeKafkaSource extends SourceConnector {
 
   @Override
   public List<Map<String, String>> taskConfigs(int maxTasks) {
-    System.out.println("GKSource: taskConfigs");
     List<Map<String, String>> taskConfigs = new ArrayList<>();
     Map<String, String> taskProps = new HashMap<>();
 
     taskProps.putAll(sharedProps);
 
-    // use the same props for all tasks at the moment
     for (int i = 0; i < maxTasks; i++) {
     //TODO partition regions and topics
-      taskProps.put(TASK_ID, "" + i);
+      taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
       taskConfigs.add(taskProps);
     }
     return taskConfigs;
@@ -82,6 +79,7 @@ public class GeodeKafkaSource extends SourceConnector {
 
   @Override
   public String version() {
+    //TODO
     return AppInfoParser.getVersion();
   }
 

@@ -1,6 +1,7 @@
-package kafka;
+package geode.kafka;
 
 import kafka.admin.RackAwareMode;
+import geode.kafka.source.GeodeKafkaSource;
 import kafka.zk.AdminZkClient;
 import kafka.zk.KafkaZkClient;
 import org.apache.geode.cache.Region;
