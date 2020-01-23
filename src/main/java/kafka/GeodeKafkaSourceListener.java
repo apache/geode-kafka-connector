@@ -2,11 +2,12 @@ package kafka;
 
 import org.apache.geode.cache.query.CqEvent;
 import org.apache.geode.cache.query.CqListener;
+import org.apache.geode.cache.query.CqStatusListener;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-class GeodeKafkaSourceListener implements CqListener {
+class GeodeKafkaSourceListener implements CqStatusListener {
 
     public String regionName;
     private BlockingQueue<GeodeEvent> eventBuffer;
@@ -37,6 +38,16 @@ class GeodeKafkaSourceListener implements CqListener {
 
     @Override
     public void onError(CqEvent aCqEvent) {
+
+    }
+
+    @Override
+    public void onCqDisconnected() {
+        //we should probably redistribute or reconnect
+    }
+
+    @Override
+    public void onCqConnected() {
 
     }
 }

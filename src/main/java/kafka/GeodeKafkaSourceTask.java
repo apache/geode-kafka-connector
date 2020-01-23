@@ -138,13 +138,10 @@ public class GeodeKafkaSourceTask extends SourceTask {
     void installListenersToRegion(int taskId, BlockingQueue<GeodeEvent> eventBuffer, String regionName, String cqPrefix, boolean isDurable) {
         CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
         cqAttributesFactory.addCqListener(new GeodeKafkaSourceListener(eventBuffer, regionName));
-        System.out.println("JASON installing on Geode");
         CqAttributes cqAttributes = cqAttributesFactory.create();
         try {
-            System.out.println("JASON installing new cq");
             clientCache.getQueryService().newCq(generateCqName(taskId, cqPrefix, regionName), "select * from /" + regionName, cqAttributes,
                     isDurable).execute();
-            System.out.println("JASON finished installing cq");
         } catch (CqExistsException e) {
             System.out.println("UHH");
             e.printStackTrace();
