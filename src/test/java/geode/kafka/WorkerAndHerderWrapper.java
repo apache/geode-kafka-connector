@@ -1,5 +1,6 @@
 package geode.kafka;
 
+import geode.kafka.sink.GeodeKafkaSink;
 import geode.kafka.source.GeodeKafkaSource;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.connect.connector.policy.AllConnectorClientConfigOverridePolicy;
@@ -62,8 +63,20 @@ public class WorkerAndHerderWrapper {
         herder.putConnectorConfig(
                 sourceProps.get(ConnectorConfig.NAME_CONFIG),
                 sourceProps, true, (error, result)->{
-                    System.out.println("CALLBACK: " + result + "::: error?" + error);
                 });
+
+        Map<String, String> sinkProps = new HashMap<>();
+        sinkProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSink.class.getName());
+        sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
+        sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
+        sinkProps.put(REGIONS, TEST_REGIONS);
+        sinkProps.put(TOPICS, TEST_TOPICS);
+
+        herder.putConnectorConfig(
+                sinkProps.get(ConnectorConfig.NAME_CONFIG),
+                sinkProps, true, (error, result)->{
+                });
+
 
     }
 }

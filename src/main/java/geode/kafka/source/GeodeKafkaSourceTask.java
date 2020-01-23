@@ -69,7 +69,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix);
         }
         catch (Exception e) {
-            logger.error("Unable to start task", e);
+            logger.error("Unable to start source task", e);
             throw e;
         }
     }
@@ -81,7 +81,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
         if (eventBuffer.drainTo(events, batchSize) > 0) {
             for (GeodeEvent event : events) {
                 for (String topic : topics) {
-                    records.add(new SourceRecord(sourcePartitions.get(event.getRegionName()), OFFSET_DEFAULT, topic, null, event.getEvent()));
+                    records.add(new SourceRecord(sourcePartitions.get(event.getRegionName()), OFFSET_DEFAULT, topic, null, event.getEvent().getNewValue()));
                 }
             }
             return records;

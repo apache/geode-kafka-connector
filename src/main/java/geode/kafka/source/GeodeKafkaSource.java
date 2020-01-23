@@ -28,6 +28,7 @@ import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
 public class GeodeKafkaSource extends SourceConnector {
 
   private Map<String, String> sharedProps;
+  //TODO maybe club this into GeodeConnnectorConfig
   private static final ConfigDef CONFIG_DEF = new ConfigDef();
 
 
@@ -40,7 +41,6 @@ public class GeodeKafkaSource extends SourceConnector {
   public List<Map<String, String>> taskConfigs(int maxTasks) {
     List<Map<String, String>> taskConfigs = new ArrayList<>();
     Map<String, String> taskProps = new HashMap<>();
-
     taskProps.putAll(sharedProps);
 
     for (int i = 0; i < maxTasks; i++) {

@@ -13,12 +13,19 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.WorkerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -26,12 +33,15 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertNotNull;
 
 public class GeodeKafkaTestCluster {
 
@@ -54,10 +64,17 @@ public class GeodeKafkaTestCluster {
     startKafka();
     startGeode();
     createTopic();
-
     startWorker();
     consumer = createConsumer();
-    Thread.sleep(5000);
+  }
+
+  @Before
+  public void beforeTests() {
+  }
+
+  @After
+  public void afterTests() {
+
   }
 
   @AfterClass
@@ -86,7 +103,7 @@ public class GeodeKafkaTestCluster {
     Properties topicProperties = new Properties();
     topicProperties.put("flush.messages", "1");
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.createTopic(TEST_TOPICS,3
+    adminZkClient.createTopic(TEST_TOPICS,1
             ,1, topicProperties, RackAwareMode.Disabled$.MODULE$);
   }
 
@@ -161,6 +178,21 @@ public class GeodeKafkaTestCluster {
       return consumer;
   }
 
+  //consumer props, less important, just for testing?
+  public static Producer<String,String> createProducer() {
+    final Properties props = new Properties();
+    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class.getName());
+
+    // Create the producer using props.
+    final Producer<String, String> producer =
+            new KafkaProducer<>(props);
+    return producer;
+  }
+
   @Test
   public void endToEndSourceTest() {
     ClientCache client = createGeodeClient();
@@ -177,6 +209,20 @@ public class GeodeKafkaTestCluster {
       }
       return valueReceived.get() > 0;
     });
+  }
+
+  @Test
+  public void endToEndSinkTest() {
+    ClientCache client = createGeodeClient();
+    Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGIONS);
+
+    Producer<String, String> producer = createProducer();
+    for (int i = 0; i < 10; i++) {
+      producer.send(new ProducerRecord(TEST_TOPICS, "KEY" + i, "VALUE" + i));
+    }
+
+    int i = 0;
+    await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertNotNull(region.get("KEY" + i)));
   }
 
 }
