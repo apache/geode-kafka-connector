@@ -1,11 +1,8 @@
 package kafka;
 
-import kafka.admin.AdminUtils;
 import kafka.admin.RackAwareMode;
 import kafka.zk.AdminZkClient;
 import kafka.zk.KafkaZkClient;
-import kafka.zookeeper.ZooKeeperClient;
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -16,20 +13,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.common.utils.Time;
-import org.apache.kafka.connect.connector.policy.AllConnectorClientConfigOverridePolicy;
-import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
-import org.apache.kafka.connect.runtime.Herder;
-import org.apache.kafka.connect.runtime.Worker;
 import org.apache.kafka.connect.runtime.WorkerConfig;
-import org.apache.kafka.connect.runtime.isolation.Plugins;
-import org.apache.kafka.connect.runtime.standalone.StandaloneConfig;
-import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
-import org.apache.kafka.connect.storage.MemoryOffsetBackingStore;
-import org.apache.kafka.connect.storage.StringConverter;
-import org.apache.kafka.connect.util.ConnectUtils;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,16 +26,20 @@ import org.junit.rules.TemporaryFolder;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.awaitility.Awaitility.await;
 
 public class GeodeKafkaTestCluster {
 
   @ClassRule
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
   private static boolean debug = true;
+
+  public static String TEST_TOPICS = "someTopic";
+  public static String TEST_REGIONS = "someRegion";
 
   private static ZooKeeperLocalCluster zooKeeperLocalCluster;
   private static KafkaLocalCluster kafkaLocalCluster;
@@ -63,7 +53,7 @@ public class GeodeKafkaTestCluster {
     startKafka();
     startGeode();
     createTopic();
-    Thread.sleep(5000);
+
     startWorker();
     consumer = createConsumer();
     Thread.sleep(5000);
@@ -74,9 +64,8 @@ public class GeodeKafkaTestCluster {
     workerAndHerderCluster.stop();
     KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
             15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
-
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.deleteTopic("someTopic");
+    adminZkClient.deleteTopic(TEST_TOPICS);
 
     kafkaLocalCluster.stop();
     geodeLocalCluster.stop();
@@ -92,8 +81,12 @@ public class GeodeKafkaTestCluster {
   private static void createTopic() {
     KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
             15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
+
+    Properties topicProperties = new Properties();
+    topicProperties.put("flush.messages", "1");
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.createTopic("someTopic",3,1, new Properties(), RackAwareMode.Disabled$.MODULE$);
+    adminZkClient.createTopic(TEST_TOPICS,3
+            ,1, topicProperties, RackAwareMode.Disabled$.MODULE$);
   }
 
   private ClientCache createGeodeClient() {
@@ -125,15 +118,15 @@ public class GeodeKafkaTestCluster {
 
 
   private static Properties getKafkaConfig() throws IOException {
-    int BROKER_PORT = 8888;
+    int BROKER_PORT = 9092;
     Properties props = new Properties();
 
     props.put("broker.id", "0");
+    props.put("log4j.configuration", "/Users/jhuynh/Pivotal/kafka/config/connect-log4j.properties");
     props.put("zookeeper.connect", "localhost:2181");
     props.put("host.name", "localHost");
     props.put("port", BROKER_PORT);
     props.put("offsets.topic.replication.factor", "1");
-    props.put("log.dir", (debug)? "/tmp/kafka" : temporaryFolder.newFolder("kafka").getAbsolutePath());
     props.put("log.flush.interval.messages", "1");
     props.put("log.flush.interval.ms", "10");
 
@@ -144,22 +137,6 @@ public class GeodeKafkaTestCluster {
     props.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
 
     //Specifically GeodeKafka connector configs
-
-
-
-/*
-name=file-source
-# The class implementing the connector
-connector.class=FileStreamSource
-# Maximum number of tasks to run for this connector instance
-tasks.max=1
-# The input file (path relative to worker's working directory)
-# This is the only setting specific to the FileStreamSource
-file=test.txt
-# The output topic in Kafka
-topic=connect-test
- */
-
     return props;
   }
 
@@ -167,37 +144,38 @@ topic=connect-test
   //consumer props, less important, just for testing?
   public static Consumer<String,String> createConsumer() {
       final Properties props = new Properties();
-    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:8888");
+    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put(ConsumerConfig.GROUP_ID_CONFIG,
               "myGroup");
       props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
               StringDeserializer.class.getName());
       props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
               StringDeserializer.class.getName());
-      // Create the consumer using props.
+
+    // Create the consumer using props.
       final Consumer<String, String> consumer =
               new KafkaConsumer<>(props);
       // Subscribe to the topic.
-      consumer.subscribe(Collections.singletonList("someTopic"));
+      consumer.subscribe(Collections.singletonList(TEST_TOPICS));
       return consumer;
   }
 
   @Test
-  public void testX() throws InterruptedException {
+  public void endToEndSourceTest() {
     ClientCache client = createGeodeClient();
-    Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create("someRegion");
-    region.put("JASON KEY", "JASON VALUE");
-    System.out.println("PUT COMPLETE!");
-    region.get("JASON KEY");
-//    client.close();
+    Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGIONS);
 
-
-    ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(2));
-    for (ConsumerRecord<String, String> record: records) {
-      System.out.println("JASON we consumed a record:" + record);
-    }
-    System.out.println("TEST COMPLETE!");
-
+    //right now just verify something makes it end to end
+    AtomicInteger valueReceived = new AtomicInteger(0);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> {
+      region.put("KEY", "VALUE" + System.currentTimeMillis());
+      ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(4));
+      for (ConsumerRecord<String, String> record: records) {
+//        System.out.println("WE consumed a record:" + record);
+        valueReceived.incrementAndGet();
+      }
+      return valueReceived.get() > 0;
+    });
   }
 
 }

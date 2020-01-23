@@ -37,7 +37,7 @@ public class ServerLauncherWrapper {
                 .set(ConfigurationProperties.LOCATORS, locatorString)
                 .set(ConfigurationProperties.NAME,
                         "server-1")
-                .set(ConfigurationProperties.LOG_FILE, "/Users/jhuynh/Pivotal/geode-kafka-connector/")
+                .set(ConfigurationProperties.LOG_FILE, "/Users/jhuynh/Pivotal/geode-kafka-connector/server.log")
                 .set(ConfigurationProperties.LOG_LEVEL, "info")
 //               .set(ConfigurationProperties.STATISTIC_ARCHIVE_FILE, statsFile)
                 .create();
