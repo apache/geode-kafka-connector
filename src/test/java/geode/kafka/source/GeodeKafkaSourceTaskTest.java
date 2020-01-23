@@ -74,7 +74,7 @@ public class GeodeKafkaSourceTaskTest {
         props.put(GeodeConnectorConfig.BATCH_SIZE, GeodeConnectorConfig.DEFAULT_BATCH_SIZE);
 
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        task.start(props);
+//        task.start(props);
 
 //        assertThat(task.getQueueSize(GeodeConnectorConfig.QUEUE_SIZE));
 

@@ -110,6 +110,10 @@ public class GeodeConnectorConfig {
     }
 
 
+    public int getTaskId() {
+        return taskId;
+    }
+
     public String getDurableClientId() {
         return durableClientId;
     }

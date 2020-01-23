@@ -2,11 +2,15 @@ package geode.kafka.source;
 
 import org.apache.geode.cache.query.CqEvent;
 import org.apache.geode.cache.query.CqStatusListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 class GeodeKafkaSourceListener implements CqStatusListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSourceListener.class);
 
     public String regionName;
     private BlockingQueue<GeodeEvent> eventBuffer;
@@ -19,7 +23,6 @@ class GeodeKafkaSourceListener implements CqStatusListener {
     @Override
     public void onEvent(CqEvent aCqEvent) {
         try {
-            System.out.println("JASON cqEvent and putting into eventBuffer");
             eventBuffer.offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
 
@@ -30,7 +33,7 @@ class GeodeKafkaSourceListener implements CqStatusListener {
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
-                System.out.println("GeodeKafkaSource Queue is full");
+                logger.info("GeodeKafkaSource Queue is full");
             }
         }
     }

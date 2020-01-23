@@ -6,6 +6,8 @@ import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,16 +24,16 @@ import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
 
 public class GeodeKafkaSourceTask extends SourceTask {
 
+    private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSourceTask.class);
+
     private static final String TASK_PREFIX = "TASK";
     private static final String DOT = ".";
 
     //property string to pass in to identify task
     private static final Map<String, Long> OFFSET_DEFAULT = createOffset();
 
-    private int taskId;
     private GeodeContext geodeContext;
     private List<String> topics;
-
     private Map<String, Map<String, String>> sourcePartitions;
     private static BlockingQueue<GeodeEvent> eventBuffer;
     private int batchSize;
@@ -52,6 +54,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     public void start(Map<String, String> props) {
         try {
             GeodeConnectorConfig geodeConnectorConfig = new GeodeConnectorConfig(props);
+            logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
             geodeContext = new GeodeContext(geodeConnectorConfig);
 
             batchSize = Integer.parseInt(props.get(BATCH_SIZE));
@@ -66,8 +69,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix);
         }
         catch (Exception e) {
-            System.out.println("Exception:" + e);
-            e.printStackTrace();
+            logger.error("Unable to start task", e);
             throw e;
         }
     }
@@ -82,7 +84,6 @@ public class GeodeKafkaSourceTask extends SourceTask {
                     records.add(new SourceRecord(sourcePartitions.get(event.getRegionName()), OFFSET_DEFAULT, topic, null, event.getEvent()));
                 }
             }
-
             return records;
         }
 
@@ -96,6 +97,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
     void installOnGeode(GeodeConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix) {
       boolean isDurable = geodeConnectorConfig.isDurable();
+      int taskId = geodeConnectorConfig.getTaskId();
         for (String region : geodeConnectorConfig.getRegionNames()) {
             installListenersToRegion(geodeContext, taskId, eventBuffer, region, cqPrefix, isDurable);
         }

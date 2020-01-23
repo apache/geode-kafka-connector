@@ -11,7 +11,6 @@ public class WorkerAndHerderCluster {
     }
 
     public void start() throws IOException, InterruptedException {
-        System.out.println("JASON starting worker");
         workerAndHerder.exec();
 
     }
