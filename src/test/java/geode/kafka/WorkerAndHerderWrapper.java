@@ -20,8 +20,10 @@ import java.util.Map;
 
 import static geode.kafka.GeodeConnectorConfig.REGIONS;
 import static geode.kafka.GeodeConnectorConfig.TOPICS;
-import static geode.kafka.GeodeKafkaTestCluster.TEST_REGIONS;
-import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPICS;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_FOR_SINK;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC_FOR_SINK;
 
 public class WorkerAndHerderWrapper {
 
@@ -57,8 +59,8 @@ public class WorkerAndHerderWrapper {
         sourceProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSource.class.getName());
         sourceProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-source-connector");
         sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
-        sourceProps.put(REGIONS, TEST_REGIONS);
-        sourceProps.put(TOPICS, TEST_TOPICS);
+        sourceProps.put(REGIONS, TEST_REGION);
+        sourceProps.put(TOPICS, TEST_TOPIC);
 
         herder.putConnectorConfig(
                 sourceProps.get(ConnectorConfig.NAME_CONFIG),
@@ -69,8 +71,8 @@ public class WorkerAndHerderWrapper {
         sinkProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSink.class.getName());
         sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
         sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
-        sinkProps.put(REGIONS, TEST_REGIONS);
-        sinkProps.put(TOPICS, TEST_TOPICS);
+        sinkProps.put(REGIONS, TEST_REGION_FOR_SINK);
+        sinkProps.put(TOPICS, TEST_TOPIC_FOR_SINK);
 
         herder.putConnectorConfig(
                 sinkProps.get(ConnectorConfig.NAME_CONFIG),
