@@ -1,23 +1,68 @@
 package geode.kafka.source;
 
 import geode.kafka.GeodeConnectorConfig;
+import geode.kafka.GeodeContext;
+import org.apache.geode.cache.query.CqEvent;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
 import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GeodeKafkaSourceTaskTest {
 
-    @Test
-    public void cqListenerOnEventPopulatesEventsBuffer() {
 
+    @Test
+    public void whenLoadingEntireRegionAbleToPutInitialResultsIntoEventBuffer() {
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
+        boolean loadEntireRegion = true;
+        boolean isDurable = false;
+        List<CqEvent> fakeInitialResults = new LinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            fakeInitialResults.add(mock(CqEvent.class));
+        }
+
+        when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean())).thenReturn(fakeInitialResults);
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installListenersToRegion(geodeContext, 1, eventBuffer, "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        assertEquals(10, eventBuffer.size());
     }
+
+    @Test
+    public void whenNotLoadingEntireRegionShouldNotPutInitialResultsIntoEventBuffer() {
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
+        boolean loadEntireRegion = false;
+        boolean isDurable = false;
+        List<CqEvent> fakeInitialResults = new LinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            fakeInitialResults.add(mock(CqEvent.class));
+        }
+
+        when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean())).thenReturn(fakeInitialResults);
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installListenersToRegion(geodeContext, 1, eventBuffer, "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        assertEquals(0, eventBuffer.size());
+    }
+
+    @Test
+    public void cqListenerOnEventPopulatesEventsBuffer() {}
 
     @Test
     public void pollReturnsEventsWhenEventBufferHasValues() {

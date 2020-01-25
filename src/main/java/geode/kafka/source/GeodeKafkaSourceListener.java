@@ -14,14 +14,19 @@ class GeodeKafkaSourceListener implements CqStatusListener {
 
     public String regionName;
     private BlockingQueue<GeodeEvent> eventBuffer;
+    private boolean initialResultsLoaded;
 
     public GeodeKafkaSourceListener(BlockingQueue<GeodeEvent> eventBuffer, String regionName) {
         this.eventBuffer = eventBuffer;
         this.regionName = regionName;
+        initialResultsLoaded = false;
     }
 
     @Override
     public void onEvent(CqEvent aCqEvent) {
+        while (!initialResultsLoaded) {
+            Thread.yield();
+        }
         try {
             eventBuffer.offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -51,5 +56,9 @@ class GeodeKafkaSourceListener implements CqStatusListener {
     @Override
     public void onCqConnected() {
 
+    }
+
+    public void signalInitialResultsLoaded() {
+        initialResultsLoaded = true;
     }
 }

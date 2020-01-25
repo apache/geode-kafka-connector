@@ -2,7 +2,9 @@ package geode.kafka;
 
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -40,5 +42,17 @@ public class GeodeConnectorConfigTest {
         String locatorString="localhost[8888], localhost[8881]";
         List<LocatorHostPort> locators = config.parseLocators(locatorString);
         assertThat(2, is(locators.size()));
+    }
+
+    @Test
+    public void durableClientIdShouldNotBeSetIfPropertyIsNotSet() {
+        Map<String, String> props = new HashMap<>();
+        GeodeConnectorConfig config = new GeodeConnectorConfig(props);
+        assertEquals("", config.getDurableClientId());
+    }
+
+    @Test
+    public void cqPrefixShouldBeProperlyCalculatedFromProps() {
+
     }
 }

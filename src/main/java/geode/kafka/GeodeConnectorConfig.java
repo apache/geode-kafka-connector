@@ -13,7 +13,6 @@ public class GeodeConnectorConfig {
     public static final String DURABLE_CLIENT_TIME_OUT = "durableClientTimeout";
     public static final String DEFAULT_DURABLE_CLIENT_TIMEOUT = "60000";
 
-
     //GeodeKafka Specific Configuration
     public static final String TASK_ID = "GEODE_TASK_ID"; //One config per task
 
@@ -46,6 +45,8 @@ public class GeodeConnectorConfig {
     public static final String QUEUE_SIZE = "geodeConnectorQueueSize";
     public static final String DEFAULT_QUEUE_SIZE = "100000";
 
+    public static final String LOAD_ENTIRE_REGION = "loadEntireRegion";
+    public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
 
 
     private final int taskId;

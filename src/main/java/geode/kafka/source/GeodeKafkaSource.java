@@ -17,10 +17,12 @@ import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_QUEUE_SIZE;
 import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
 import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
+import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
 import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
 
@@ -69,6 +71,7 @@ public class GeodeKafkaSource extends SourceConnector {
     props.computeIfAbsent(BATCH_SIZE, (key) -> DEFAULT_BATCH_SIZE);
     props.computeIfAbsent(QUEUE_SIZE, (key) -> DEFAULT_QUEUE_SIZE);
     props.computeIfAbsent(CQ_PREFIX, (key) -> DEFAULT_CQ_PREFIX);
+    props.computeIfAbsent(LOAD_ENTIRE_REGION, (key) -> DEFAULT_LOAD_ENTIRE_REGION);
     return props;
   }
 

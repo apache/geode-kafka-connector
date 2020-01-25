@@ -1,15 +1,17 @@
 package geode.kafka.source;
 
-import geode.kafka.GeodeContext;
 import geode.kafka.GeodeConnectorConfig;
+import geode.kafka.GeodeContext;
 import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
+import org.apache.geode.cache.query.CqEvent;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
 import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
+import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
 import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
 
@@ -33,6 +36,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     private static final Map<String, Long> OFFSET_DEFAULT = createOffset();
 
     private GeodeContext geodeContext;
+    private GeodeConnectorConfig geodeConnectorConfig;
     private List<String> topics;
     private Map<String, Map<String, String>> sourcePartitions;
     private static BlockingQueue<GeodeEvent> eventBuffer;
@@ -53,7 +57,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     @Override
     public void start(Map<String, String> props) {
         try {
-            GeodeConnectorConfig geodeConnectorConfig = new GeodeConnectorConfig(props);
+            geodeConnectorConfig = new GeodeConnectorConfig(props);
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
             geodeContext = new GeodeContext(geodeConnectorConfig);
 
@@ -65,8 +69,9 @@ public class GeodeKafkaSourceTask extends SourceTask {
             topics = geodeConnectorConfig.getTopics();
 
             String cqPrefix = props.get(CQ_PREFIX);
+            boolean loadEntireRegion = Boolean.parseBoolean(props.get(LOAD_ENTIRE_REGION));
 
-            installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix);
+            installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix, loadEntireRegion);
         }
         catch (Exception e) {
             logger.error("Unable to start source task", e);
@@ -95,23 +100,35 @@ public class GeodeKafkaSourceTask extends SourceTask {
         geodeContext.getClientCache().close(true);
     }
 
-    void installOnGeode(GeodeConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix) {
+    void installOnGeode(GeodeConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix, boolean loadEntireRegion) {
       boolean isDurable = geodeConnectorConfig.isDurable();
       int taskId = geodeConnectorConfig.getTaskId();
         for (String region : geodeConnectorConfig.getRegionNames()) {
-            installListenersToRegion(geodeContext, taskId, eventBuffer, region, cqPrefix, isDurable);
+            installListenersToRegion(geodeContext, taskId, eventBuffer, region, cqPrefix, loadEntireRegion, isDurable);
         }
         if (isDurable) {
             geodeContext.getClientCache().readyForEvents();
         }
     }
 
-    void installListenersToRegion(GeodeContext geodeContext, int taskId, BlockingQueue<GeodeEvent> eventBuffer, String regionName, String cqPrefix, boolean isDurable) {
+    void installListenersToRegion(GeodeContext geodeContext, int taskId, BlockingQueue<GeodeEvent> eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion, boolean isDurable) {
         CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
-        cqAttributesFactory.addCqListener(new GeodeKafkaSourceListener(eventBuffer, regionName));
+        GeodeKafkaSourceListener listener = new GeodeKafkaSourceListener(eventBuffer, regionName);
+        cqAttributesFactory.addCqListener(listener);
         CqAttributes cqAttributes = cqAttributesFactory.create();
-        geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName), "select * from /" + regionName, cqAttributes,
-                isDurable);
+        try {
+            if (loadEntireRegion) {
+                Collection<CqEvent> events = geodeContext.newCqWithInitialResults(generateCqName(taskId, cqPrefix, regionName), "select * from /" + regionName, cqAttributes,
+                        isDurable);
+                eventBuffer.addAll(events.stream().map(e -> new GeodeEvent(regionName, e)).collect(Collectors.toList()));
+            } else {
+                geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName), "select * from /" + regionName, cqAttributes,
+                        isDurable);
+            }
+        }
+        finally {
+            listener.signalInitialResultsLoaded();
+        }
     }
 
     /**

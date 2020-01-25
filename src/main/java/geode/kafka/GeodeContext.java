@@ -9,6 +9,7 @@ import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.RegionNotFoundException;
 import org.apache.kafka.connect.errors.ConnectException;
 
+import java.util.Collection;
 import java.util.List;
 
 public class GeodeContext {
@@ -40,7 +41,15 @@ public class GeodeContext {
             cq.execute();
             return cq;
         } catch (RegionNotFoundException | CqException | CqExistsException e) {
-            e.printStackTrace();
+            throw new ConnectException(e);
+        }
+    }
+
+    public Collection newCqWithInitialResults(String name, String query, CqAttributes cqAttributes, boolean isDurable) throws ConnectException {
+        try {
+            CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
+            return cq.executeWithInitialResults();
+        } catch (RegionNotFoundException | CqException | CqExistsException e) {
             throw new ConnectException(e);
         }
     }
