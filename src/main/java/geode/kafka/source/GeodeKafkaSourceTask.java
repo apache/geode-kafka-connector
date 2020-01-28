@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
 import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
+import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
 import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
 import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
@@ -39,7 +40,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     private GeodeConnectorConfig geodeConnectorConfig;
     private List<String> topics;
     private Map<String, Map<String, String>> sourcePartitions;
-    private static BlockingQueue<GeodeEvent> eventBuffer;
+    private BlockingQueue<GeodeEvent> eventBuffer;
     private int batchSize;
 
 
@@ -52,6 +53,12 @@ public class GeodeKafkaSourceTask extends SourceTask {
     @Override
     public String version() {
         return null;
+    }
+
+    void startForTesting(BlockingQueue eventBuffer, List<String> topics, int batchSize) {
+        this.eventBuffer = eventBuffer;
+        this.topics = topics;
+        this.batchSize = batchSize;
     }
 
     @Override
@@ -111,7 +118,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
         }
     }
 
-    void installListenersToRegion(GeodeContext geodeContext, int taskId, BlockingQueue<GeodeEvent> eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion, boolean isDurable) {
+    GeodeKafkaSourceListener installListenersToRegion(GeodeContext geodeContext, int taskId, BlockingQueue<GeodeEvent> eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion, boolean isDurable) {
         CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
         GeodeKafkaSourceListener listener = new GeodeKafkaSourceListener(eventBuffer, regionName);
         cqAttributesFactory.addCqListener(listener);
@@ -129,6 +136,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
         finally {
             listener.signalInitialResultsLoaded();
         }
+        return listener;
     }
 
     /**
@@ -148,5 +156,4 @@ public class GeodeKafkaSourceTask extends SourceTask {
     String generateCqName(int taskId, String cqPrefix, String regionName) {
         return cqPrefix + DOT + TASK_PREFIX + taskId + DOT + regionName;
     }
-
 }

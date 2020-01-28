@@ -4,6 +4,7 @@ import geode.kafka.GeodeConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
+import org.apache.kafka.connect.util.ConnectorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,8 @@ import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
 import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
 import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
+import static geode.kafka.GeodeConnectorConfig.REGIONS;
+import static geode.kafka.GeodeConnectorConfig.TOPICS;
 
 public class GeodeKafkaSink extends SinkConnector  {
     private static final ConfigDef CONFIG_DEF = new ConfigDef();
@@ -41,11 +44,18 @@ public class GeodeKafkaSink extends SinkConnector  {
     public List<Map<String, String>> taskConfigs(int maxTasks) {
         List<Map<String, String>> taskConfigs = new ArrayList<>();
         Map<String, String> taskProps = new HashMap<>();
-
         taskProps.putAll(sharedProps);
+
+        List<String> topics = GeodeConnectorConfig.parseNames(taskProps.get(TOPICS));
+        List<List<String>> topicsPerTask = ConnectorUtils.groupPartitions(topics, maxTasks);
+
+        List<String> regions = GeodeConnectorConfig.parseNames(taskProps.get(REGIONS));
+        List<List<String>> regionsPerTask = ConnectorUtils.groupPartitions(regions, maxTasks);
 
         for (int i = 0; i < maxTasks; i++) {
             taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
+            taskProps.put(TOPICS, GeodeConnectorConfig.reconstructString(topicsPerTask.get(i)));
+            taskProps.put(REGIONS, GeodeConnectorConfig.reconstructString(regionsPerTask.get(i)));
             taskConfigs.add(taskProps);
         }
 

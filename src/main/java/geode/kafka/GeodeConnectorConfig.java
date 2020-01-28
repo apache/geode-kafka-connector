@@ -1,6 +1,7 @@
 package geode.kafka;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,8 +81,12 @@ public class GeodeConnectorConfig {
         locatorHostPorts = parseLocators(connectorProperties.get(GeodeConnectorConfig.LOCATORS));
     }
 
-    List<String> parseNames(String names) {
+    public static List<String> parseNames(String names) {
         return Arrays.stream(names.split(",")).map((s) -> s.trim()).collect(Collectors.toList());
+    }
+
+    public static String reconstructString(Collection<String> strings) {
+        return strings.stream().collect(Collectors.joining(","));
     }
 
     List<LocatorHostPort> parseLocators(String locators) {
