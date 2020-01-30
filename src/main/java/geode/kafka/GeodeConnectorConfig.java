@@ -8,79 +8,26 @@ import java.util.stream.Collectors;
 
 public class GeodeConnectorConfig {
 
-    //Geode Configuration
-    public static final String DURABLE_CLIENT_ID_PREFIX = "durableClientId";
-    public static final String DEFAULT_DURABLE_CLIENT_ID = "";
-    public static final String DURABLE_CLIENT_TIME_OUT = "durableClientTimeout";
-    public static final String DEFAULT_DURABLE_CLIENT_TIMEOUT = "60000";
-
     //GeodeKafka Specific Configuration
+    /**
+     * Identifier for each task
+     */
     public static final String TASK_ID = "GEODE_TASK_ID"; //One config per task
-
-    public static final String CQ_PREFIX = "cqPrefix";
-    public static final String DEFAULT_CQ_PREFIX = "cqForGeodeKafka";
     /**
      * Specifies which Locators to connect to Apache Geode
      */
     public static final String LOCATORS = "locators";
     public static final String DEFAULT_LOCATOR = "localhost[10334]";
 
+    protected final int taskId;
+    protected List<LocatorHostPort> locatorHostPorts;
 
-    /**
-     * Specifies which Topics to connect in Kafka, uses the variable name with Kafka Sink Configuration
-     * Only used in sink configuration
-     */
-    public static final String TOPICS = "topics";
-
-    //Used by sink
-    public static final String TOPIC_TO_REGION_BINDINGS = "topicToRegion";
-
-    //Used by source
-    public static final String REGION_TO_TOPIC_BINDINGS = "regionToTopic";
-
-    /**
-     * Property to describe the Source Partition in a record
-     */
-    public static final String REGION_NAME = "regionName";  //used for Source Partition Events
-
-    public static final String BATCH_SIZE = "geodeConnectorBatchSize";
-    public static final String DEFAULT_BATCH_SIZE = "100";
-
-    public static final String QUEUE_SIZE = "geodeConnectorQueueSize";
-    public static final String DEFAULT_QUEUE_SIZE = "100000";
-
-    public static final String LOAD_ENTIRE_REGION = "loadEntireRegion";
-    public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
-
-
-    private final int taskId;
-    private final String durableClientId;
-    private final String durableClientIdPrefix;
-    private final String durableClientTimeout;
-
-    private Map<String, List<String>> regionToTopics;
-    private Map<String, List<String>> topicToRegions;
-    private List<LocatorHostPort> locatorHostPorts;
-
-    //just for tests
-    GeodeConnectorConfig() {
+    protected GeodeConnectorConfig() {
         taskId = 0;
-        durableClientId = "";
-        durableClientIdPrefix = "";
-        durableClientTimeout = "0";
     }
 
     public GeodeConnectorConfig(Map<String, String> connectorProperties) {
         taskId = Integer.parseInt(connectorProperties.get(TASK_ID));
-        durableClientIdPrefix = connectorProperties.get(DURABLE_CLIENT_ID_PREFIX);
-        if (isDurable(durableClientIdPrefix)) {
-            durableClientId = durableClientIdPrefix + taskId;
-        } else {
-            durableClientId = "";
-        }
-        durableClientTimeout = connectorProperties.get(DURABLE_CLIENT_TIME_OUT);
-        regionToTopics = parseRegionToTopics(connectorProperties.get(GeodeConnectorConfig.REGION_TO_TOPIC_BINDINGS));
-        topicToRegions = parseTopicToRegions(connectorProperties.get(GeodeConnectorConfig.TOPIC_TO_REGION_BINDINGS));
         locatorHostPorts = parseLocators(connectorProperties.get(GeodeConnectorConfig.LOCATORS));
     }
 
@@ -105,7 +52,7 @@ public class GeodeConnectorConfig {
         return bindings.stream().map(binding -> {
             String[] regionToTopicsArray = parseBinding(binding);
             return regionToTopicsArray;
-        }).collect(Collectors.toMap(regionToTopicsArray -> regionToTopicsArray[0], regionToTopicsArray -> parseNames(regionToTopicsArray[1])));
+        }).collect(Collectors.toMap(regionToTopicsArray -> regionToTopicsArray[0], regionToTopicsArray -> parseStringByComma(regionToTopicsArray[1])));
     }
 
     public static List<String> parseBindings(String bindings) {
@@ -122,8 +69,12 @@ public class GeodeConnectorConfig {
     }
 
     //Used to parse a string of topics or regions
-    public static List<String> parseNames(String names) {
-        return Arrays.stream(names.split(",")).map((s) -> s.trim()).collect(Collectors.toList());
+    public static List<String> parseStringByComma(String string) {
+        return parseStringBy(string, ",");
+    }
+
+    public static List<String> parseStringBy(String string, String regex) {
+        return Arrays.stream(string.split(regex)).map((s) -> s.trim()).collect(Collectors.toList());
     }
 
     public static String reconstructString(Collection<String> strings) {
@@ -144,40 +95,11 @@ public class GeodeConnectorConfig {
         return new LocatorHostPort(locator, port);
     }
 
-    public boolean isDurable() {
-        return isDurable(durableClientId);
-    }
-
-    /**
-     * @param durableClientId or prefix can be passed in.  Either both will be "" or both will have a value
-     * @return
-     */
-    boolean isDurable(String durableClientId) {
-        return !durableClientId.equals("");
-    }
-
     public int getTaskId() {
         return taskId;
-    }
-
-    public String getDurableClientId() {
-        return durableClientId;
-    }
-
-    public String getDurableClientTimeout() {
-        return durableClientTimeout;
     }
 
     public List<LocatorHostPort> getLocatorHostPorts() {
         return locatorHostPorts;
     }
-
-    public Map<String, List<String>> getRegionToTopics() {
-        return regionToTopics;
-    }
-
-    public Map<String, List<String>> getTopicToRegions() {
-        return topicToRegions;
-    }
-
 }

@@ -12,21 +12,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
-import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
-import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.REGION_TO_TOPIC_BINDINGS;
+import static geode.kafka.source.GeodeSourceConnectorConfig.BATCH_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.CQ_PREFIX;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_BATCH_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_CQ_PREFIX;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_LOAD_ENTIRE_REGION;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_QUEUE_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
+import static geode.kafka.source.GeodeSourceConnectorConfig.DURABLE_CLIENT_TIME_OUT;
+import static geode.kafka.source.GeodeSourceConnectorConfig.LOAD_ENTIRE_REGION;
+import static geode.kafka.source.GeodeSourceConnectorConfig.QUEUE_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
 
 public class GeodeKafkaSource extends SourceConnector {
@@ -47,7 +47,7 @@ public class GeodeKafkaSource extends SourceConnector {
     Map<String, String> taskProps = new HashMap<>();
     taskProps.putAll(sharedProps);
 
-    List<String> bindings = GeodeConnectorConfig.parseNames(taskProps.get(REGION_TO_TOPIC_BINDINGS));
+    List<String> bindings = GeodeConnectorConfig.parseStringByComma(taskProps.get(REGION_TO_TOPIC_BINDINGS));
     List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {

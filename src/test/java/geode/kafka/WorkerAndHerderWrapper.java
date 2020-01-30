@@ -18,12 +18,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.REGION_TO_TOPIC_BINDINGS;
-import static geode.kafka.GeodeConnectorConfig.TOPICS;
-import static geode.kafka.GeodeConnectorConfig.TOPIC_TO_REGION_BINDINGS;
 import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_TO_TOPIC_BINDINGS;
 import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC_FOR_SINK;
 import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC_TO_REGION_BINDINGS;
+import static geode.kafka.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
 public class WorkerAndHerderWrapper {
 
@@ -34,9 +33,6 @@ public class WorkerAndHerderWrapper {
         // fast flushing for testing.
         props.put(WorkerConfig.OFFSET_COMMIT_INTERVAL_MS_CONFIG, "10");
 
-
-        props.put(WorkerConfig.INTERNAL_KEY_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
-        props.put(WorkerConfig.INTERNAL_VALUE_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
         props.put("internal.key.converter.schemas.enable", "false");
         props.put("internal.value.converter.schemas.enable", "false");
         props.put(WorkerConfig.KEY_CONVERTER_CLASS_CONFIG, "org.apache.kafka.connect.storage.StringConverter");
@@ -71,7 +67,7 @@ public class WorkerAndHerderWrapper {
         sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
         sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
         sinkProps.put(TOPIC_TO_REGION_BINDINGS, TEST_TOPIC_TO_REGION_BINDINGS);
-        sinkProps.put(TOPICS, TEST_TOPIC_FOR_SINK);
+        sinkProps.put("topics", TEST_TOPIC_FOR_SINK);
 
         herder.putConnectorConfig(
                 sinkProps.get(ConnectorConfig.NAME_CONFIG),

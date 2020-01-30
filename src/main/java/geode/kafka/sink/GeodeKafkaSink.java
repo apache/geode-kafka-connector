@@ -11,19 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_ID;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
-import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static geode.kafka.GeodeSinkConnectorConfig.DEFAULT_NULL_VALUES_MEAN_REMOVE;
+import static geode.kafka.GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE;
+import static geode.kafka.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
 
 public class GeodeKafkaSink extends SinkConnector  {
     private static final ConfigDef CONFIG_DEF = new ConfigDef();
@@ -44,7 +36,7 @@ public class GeodeKafkaSink extends SinkConnector  {
         List<Map<String, String>> taskConfigs = new ArrayList<>();
         Map<String, String> taskProps = new HashMap<>();
         taskProps.putAll(sharedProps);
-        List<String> bindings = GeodeConnectorConfig.parseNames(taskProps.get(TOPIC_TO_REGION_BINDINGS));
+        List<String> bindings = GeodeConnectorConfig.parseStringByComma(taskProps.get(TOPIC_TO_REGION_BINDINGS));
         List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
         for (int i = 0; i < maxTasks; i++) {
@@ -75,11 +67,7 @@ public class GeodeKafkaSink extends SinkConnector  {
 
     private Map<String, String> computeMissingConfigurations(Map<String, String> props) {
         props.computeIfAbsent(LOCATORS, (key)-> DEFAULT_LOCATOR);
-        props.computeIfAbsent(DURABLE_CLIENT_TIME_OUT, (key) -> DEFAULT_DURABLE_CLIENT_TIMEOUT);
-        props.computeIfAbsent(DURABLE_CLIENT_ID_PREFIX, (key) -> DEFAULT_DURABLE_CLIENT_ID);
-        props.computeIfAbsent(BATCH_SIZE, (key) -> DEFAULT_BATCH_SIZE);
-        props.computeIfAbsent(QUEUE_SIZE, (key) -> DEFAULT_QUEUE_SIZE);
-        props.computeIfAbsent(CQ_PREFIX, (key) -> DEFAULT_CQ_PREFIX);
+        props.computeIfAbsent(NULL_VALUES_MEAN_REMOVE, (key) -> DEFAULT_NULL_VALUES_MEAN_REMOVE);
         return props;
     }
 }

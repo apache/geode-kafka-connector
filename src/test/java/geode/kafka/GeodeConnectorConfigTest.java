@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
 import static geode.kafka.GeodeConnectorConfig.TASK_ID;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -26,7 +24,7 @@ public class GeodeConnectorConfigTest {
     @Test
     public void parseRegionNamesShouldSplitOnComma() {
         GeodeConnectorConfig config = new GeodeConnectorConfig();
-        List<String> regionNames = config.parseNames("region1,region2,region3,region4");
+        List<String> regionNames = config.parseStringByComma("region1,region2,region3,region4");
         assertEquals(4, regionNames.size());
         assertThat(true, allOf(is(regionNames.contains("region1"))
                 , is(regionNames.contains("region2"))
@@ -37,7 +35,7 @@ public class GeodeConnectorConfigTest {
     @Test
     public void parseRegionNamesShouldChomp() {
         GeodeConnectorConfig config = new GeodeConnectorConfig();
-        List<String> regionNames = config.parseNames("region1, region2, region3,region4");
+        List<String> regionNames = config.parseStringByComma("region1, region2, region3,region4");
         assertEquals(4, regionNames.size());
         assertThat(true, allOf(is(regionNames instanceof List)
                 , is(regionNames.contains("region1"))
@@ -135,14 +133,5 @@ public class GeodeConnectorConfigTest {
      */
 
 
-    @Test
-    public void durableClientIdShouldNotBeSetIfPrefixIsEmpty() {
-        Map<String, String> props = new HashMap<>();
-        props.put(TASK_ID, "0");
-        props.put(DURABLE_CLIENT_ID_PREFIX, "");
-        props.put(LOCATORS, "localhost[10334]");
-        GeodeConnectorConfig config = new GeodeConnectorConfig(props);
-        assertEquals("", config.getDurableClientId());
-    }
 
 }

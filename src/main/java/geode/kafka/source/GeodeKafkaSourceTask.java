@@ -19,12 +19,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_BATCH_SIZE;
-import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
-import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
+import static geode.kafka.source.GeodeSourceConnectorConfig.BATCH_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.QUEUE_SIZE;
+import static org.apache.geode.pdx.internal.PeerTypeRegistration.REGION_NAME;
 
 public class GeodeKafkaSourceTask extends SourceTask {
 
@@ -37,7 +34,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     private static final Map<String, Long> OFFSET_DEFAULT = createOffset();
 
     private GeodeContext geodeContext;
-    private GeodeConnectorConfig geodeConnectorConfig;
+    private GeodeSourceConnectorConfig geodeConnectorConfig;
     private Map<String, List<String>> regionToTopics;
     private Map<String, Map<String, String>> sourcePartitions;
     private BlockingQueue<GeodeEvent> eventBuffer;
@@ -58,9 +55,11 @@ public class GeodeKafkaSourceTask extends SourceTask {
     @Override
     public void start(Map<String, String> props) {
         try {
-            geodeConnectorConfig = new GeodeConnectorConfig(props);
+            System.out.println("JASON start task");
+            geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
-            geodeContext = new GeodeContext(geodeConnectorConfig);
+            geodeContext = new GeodeContext();
+            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout());
 
             batchSize = Integer.parseInt(props.get(BATCH_SIZE));
             int queueSize = Integer.parseInt(props.get(QUEUE_SIZE));
@@ -69,14 +68,18 @@ public class GeodeKafkaSourceTask extends SourceTask {
             regionToTopics = geodeConnectorConfig.getRegionToTopics();
             sourcePartitions = createSourcePartitionsMap(regionToTopics.keySet());
 
-            String cqPrefix = props.get(CQ_PREFIX);
-            boolean loadEntireRegion = Boolean.parseBoolean(props.get(LOAD_ENTIRE_REGION));
+            String cqPrefix = geodeConnectorConfig.getCqPrefix();
 
+            boolean loadEntireRegion = geodeConnectorConfig.getLoadEntireRegion();
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix, loadEntireRegion);
         } catch (Exception e) {
+            System.out.println("JASON start task failed" + e);
+            e.printStackTrace();
             logger.error("Unable to start source task", e);
             throw e;
         }
+        System.out.println("JASON end task");
+
     }
 
     @Override
@@ -102,7 +105,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
         geodeContext.getClientCache().close(true);
     }
 
-    void installOnGeode(GeodeConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix, boolean loadEntireRegion) {
+    void installOnGeode(GeodeSourceConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix, boolean loadEntireRegion) {
         boolean isDurable = geodeConnectorConfig.isDurable();
         int taskId = geodeConnectorConfig.getTaskId();
         for (String region : geodeConnectorConfig.getRegionToTopics().keySet()) {

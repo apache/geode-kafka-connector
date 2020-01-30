@@ -1,7 +1,7 @@
 package geode.kafka.sink;
 
-import geode.kafka.GeodeConnectorConfig;
 import geode.kafka.GeodeContext;
+import geode.kafka.GeodeSinkConnectorConfig;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -9,12 +9,12 @@ import org.apache.kafka.connect.sink.SinkTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 
 /**
  * TODO javaDoc
@@ -24,10 +24,10 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
     private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSinkTask.class);
 
-    GeodeContext geodeContext;
-    Map<String, List<String>> topicToRegions;
-    Map<String, Region> regionNameToRegion;
-    boolean nullValuesMeansRemove = true;
+    private GeodeContext geodeContext;
+    private Map<String, List<String>> topicToRegions;
+    private Map<String, Region> regionNameToRegion;
+    private boolean nullValuesMeansRemove = true;
 
     /**
      * {@inheritDoc}
@@ -41,11 +41,13 @@ public class GeodeKafkaSinkTask extends SinkTask {
     @Override
     public void start(Map<String, String> props) {
         try {
-            GeodeConnectorConfig geodeConnectorConfig = new GeodeConnectorConfig(props);
+            GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
-            geodeContext = new GeodeContext(geodeConnectorConfig);
+            geodeContext = new GeodeContext();
+            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts());
             topicToRegions = geodeConnectorConfig.getTopicToRegions();
             regionNameToRegion = createProxyRegions(topicToRegions.values());
+            nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Unable to start sink task", e);
