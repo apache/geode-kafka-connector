@@ -16,7 +16,6 @@ public class GeodeLocalCluster {
         System.out.println("starting locator");
         locatorProcess.exec("10334");
         Thread.sleep(15000);
-        System.out.println("is alive?" + locatorProcess.process.isAlive());
         serverProcess.exec("40404");
         Thread.sleep(30000);
     }

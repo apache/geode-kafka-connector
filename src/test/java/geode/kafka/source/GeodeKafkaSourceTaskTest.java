@@ -2,8 +2,8 @@ package geode.kafka.source;
 
 import geode.kafka.GeodeConnectorConfig;
 import geode.kafka.GeodeContext;
+import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.query.CqEvent;
-import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,15 +15,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static geode.kafka.GeodeConnectorConfig.BATCH_SIZE;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_CQ_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
-import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
-import static geode.kafka.GeodeConnectorConfig.LOCATORS;
-import static geode.kafka.GeodeConnectorConfig.REGIONS;
 import static geode.kafka.GeodeConnectorConfig.REGION_NAME;
-import static geode.kafka.GeodeConnectorConfig.TASK_ID;
-import static geode.kafka.GeodeConnectorConfig.TOPICS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -31,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
@@ -87,6 +82,70 @@ public class GeodeKafkaSourceTaskTest {
     }
 
     @Test
+    public void readyForEventsIsCalledIfDurable() {
+        ClientCache clientCache = mock(ClientCache.class);
+
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        when(geodeContext.getClientCache()).thenReturn(clientCache);
+
+        GeodeConnectorConfig config = mock(GeodeConnectorConfig.class);
+        when (config.isDurable()).thenReturn(true);
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installOnGeode(config, geodeContext, null, "", false);
+        verify(clientCache, times(1)).readyForEvents();
+    }
+
+    @Test
+    public void cqIsInvokedForEveryRegionWithATopic() {
+        ClientCache clientCache = mock(ClientCache.class);
+
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        when(geodeContext.getClientCache()).thenReturn(clientCache);
+
+        Map<String, List<String>> regionToTopicsMap = new HashMap<>();
+        regionToTopicsMap.put("region1", new ArrayList());
+
+        GeodeConnectorConfig config = mock(GeodeConnectorConfig.class);
+        when (config.getRegionToTopics()).thenReturn(regionToTopicsMap);
+
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installOnGeode(config, geodeContext, null, "someCqPrefix", false);
+        verify(geodeContext, times(1)).newCq(anyString(), anyString(), any(), anyBoolean());
+    }
+
+    @Test
+    public void cqWithInitialResultsIsInvokedForEveryRegionWithATopicIfLoadEntireIsSet() {
+        ClientCache clientCache = mock(ClientCache.class);
+
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        when(geodeContext.getClientCache()).thenReturn(clientCache);
+
+        Map<String, List<String>> regionToTopicsMap = new HashMap<>();
+        regionToTopicsMap.put("region1", new ArrayList());
+
+        GeodeConnectorConfig config = mock(GeodeConnectorConfig.class);
+        when (config.getRegionToTopics()).thenReturn(regionToTopicsMap);
+
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installOnGeode(config, geodeContext, new LinkedBlockingQueue(), "someCqPrefix", true);
+        verify(geodeContext, times(1)).newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean());
+    }
+
+    @Test
+    public void readyForEventsIsNotCalledIfNotDurable() {
+        ClientCache clientCache = mock(ClientCache.class);
+
+        GeodeContext geodeContext = mock(GeodeContext.class);
+        when(geodeContext.getClientCache()).thenReturn(clientCache);
+
+        GeodeConnectorConfig config = mock(GeodeConnectorConfig.class);
+        when (config.isDurable()).thenReturn(false);
+        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
+        task.installOnGeode(config, geodeContext, null, "", false);
+        verify(clientCache, times(0)).readyForEvents();
+    }
+
+    @Test
     public void pollReturnsEventsWhenEventBufferHasValues() throws Exception {
 //        BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
 //        CqEvent cqEvent = mock(CqEvent.class);
@@ -139,20 +198,11 @@ public class GeodeKafkaSourceTaskTest {
 
     }
 
-    //Source properties tests
+
     @Test
-    public void propertiesShouldBeCorrectlyTranslatedToConfiguration() {
-        Map<String, String> props = new HashMap<>();
-        props.put(GeodeConnectorConfig.QUEUE_SIZE, GeodeConnectorConfig.DEFAULT_QUEUE_SIZE);
-        props.put(GeodeConnectorConfig.BATCH_SIZE, GeodeConnectorConfig.DEFAULT_BATCH_SIZE);
-
-        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-//        task.start(props);
-
-//        assertThat(task.getQueueSize(GeodeConnectorConfig.QUEUE_SIZE));
-
-
+    public void cqPrefixShouldBeProperlyCalculatedFromProps() {
+//        GeodeContext geodeContext = mock(GeodeContext.class);
+//        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     }
-
 
 }

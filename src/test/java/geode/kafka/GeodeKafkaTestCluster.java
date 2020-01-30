@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class GeodeKafkaTestCluster {
 
@@ -48,11 +47,13 @@ public class GeodeKafkaTestCluster {
   public static TemporaryFolder temporaryFolder = new TemporaryFolder();
   private static boolean debug = true;
 
-  public static String TEST_TOPIC = "someTopic";
-  public static String TEST_REGION = "someRegion";
+  public static String TEST_REGION_TO_TOPIC_BINDINGS = "[someRegionForSource:someTopicForSource]";
+  public static String TEST_TOPIC_TO_REGION_BINDINGS = "[someTopicForSink:someRegionForSink]";
 
+  public static String TEST_TOPIC_FOR_SOURCE = "someTopicForSource";
+  public static String TEST_REGION_FOR_SOURCE = "someRegionForSource";
   public static String TEST_TOPIC_FOR_SINK = "someTopicForSink";
-  public static String TEST_REGION_FOR_SINK = "someTopicForSink";
+  public static String TEST_REGION_FOR_SINK = "someRegionForSink";
 
   private static ZooKeeperLocalCluster zooKeeperLocalCluster;
   private static KafkaLocalCluster kafkaLocalCluster;
@@ -85,7 +86,7 @@ public class GeodeKafkaTestCluster {
     KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
             15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.deleteTopic(TEST_TOPIC);
+    adminZkClient.deleteTopic(TEST_TOPIC_FOR_SOURCE);
     adminZkClient.deleteTopic(TEST_TOPIC_FOR_SINK);
 
     kafkaLocalCluster.stop();
@@ -106,7 +107,7 @@ public class GeodeKafkaTestCluster {
     Properties topicProperties = new Properties();
     topicProperties.put("flush.messages", "1");
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.createTopic(TEST_TOPIC,1
+    adminZkClient.createTopic(TEST_TOPIC_FOR_SOURCE,1
             ,1, topicProperties, RackAwareMode.Disabled$.MODULE$);
     adminZkClient.createTopic(TEST_TOPIC_FOR_SINK,1
             ,1, topicProperties, RackAwareMode.Disabled$.MODULE$);
@@ -179,7 +180,7 @@ public class GeodeKafkaTestCluster {
       final Consumer<String, String> consumer =
               new KafkaConsumer<>(props);
       // Subscribe to the topic.
-      consumer.subscribe(Collections.singletonList(TEST_TOPIC));
+      consumer.subscribe(Collections.singletonList(TEST_TOPIC_FOR_SOURCE));
       return consumer;
   }
 
@@ -201,7 +202,7 @@ public class GeodeKafkaTestCluster {
   @Test
   public void endToEndSourceTest() {
     ClientCache client = createGeodeClient();
-    Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION);
+    Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SOURCE);
 
     //right now just verify something makes it end to end
     AtomicInteger valueReceived = new AtomicInteger(0);

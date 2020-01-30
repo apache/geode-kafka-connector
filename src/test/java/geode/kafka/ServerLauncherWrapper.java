@@ -11,6 +11,9 @@ import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
 import java.io.IOException;
 import java.util.Properties;
 
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_FOR_SINK;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_FOR_SOURCE;
+
 public class ServerLauncherWrapper {
 
     public static void main(String... args) throws IOException {
@@ -43,11 +46,11 @@ public class ServerLauncherWrapper {
                 .create();
         CacheServer cacheServer = cache.addCacheServer();
         cacheServer.setPort(0);
-//        cacheServer.setMaxConnections(Integer.MAX_VALUE);
         cacheServer.start();
 
         //create the region
-        cache.createRegionFactory(RegionShortcut.PARTITION).create("someRegion");
+        cache.createRegionFactory(RegionShortcut.PARTITION).create(TEST_REGION_FOR_SINK);
+        cache.createRegionFactory(RegionShortcut.PARTITION).create(TEST_REGION_FOR_SOURCE);
         System.out.println("starting cacheserver");
         while (true) {
 

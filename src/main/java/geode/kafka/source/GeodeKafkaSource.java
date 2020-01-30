@@ -26,8 +26,7 @@ import static geode.kafka.GeodeConnectorConfig.DURABLE_CLIENT_TIME_OUT;
 import static geode.kafka.GeodeConnectorConfig.LOAD_ENTIRE_REGION;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
 import static geode.kafka.GeodeConnectorConfig.QUEUE_SIZE;
-import static geode.kafka.GeodeConnectorConfig.REGIONS;
-import static geode.kafka.GeodeConnectorConfig.TOPICS;
+import static geode.kafka.GeodeConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
 
 public class GeodeKafkaSource extends SourceConnector {
@@ -48,16 +47,12 @@ public class GeodeKafkaSource extends SourceConnector {
     Map<String, String> taskProps = new HashMap<>();
     taskProps.putAll(sharedProps);
 
-    List<String> topics = GeodeConnectorConfig.parseNames(taskProps.get(TOPICS));
-    List<List<String>> topicsPerTask = ConnectorUtils.groupPartitions(topics, maxTasks);
-
-    List<String> regions = GeodeConnectorConfig.parseNames(taskProps.get(REGIONS));
-    List<List<String>> regionsPerTask = ConnectorUtils.groupPartitions(regions, maxTasks);
+    List<String> bindings = GeodeConnectorConfig.parseNames(taskProps.get(REGION_TO_TOPIC_BINDINGS));
+    List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {
       taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
-      taskProps.put(TOPICS, GeodeConnectorConfig.reconstructString(topicsPerTask.get(i)));
-      taskProps.put(REGIONS, GeodeConnectorConfig.reconstructString(regionsPerTask.get(i)));
+      taskProps.put(REGION_TO_TOPIC_BINDINGS, GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
       taskConfigs.add(taskProps);
     }
     return taskConfigs;

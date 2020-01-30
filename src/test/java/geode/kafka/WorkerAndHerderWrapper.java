@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.REGIONS;
+import static geode.kafka.GeodeConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 import static geode.kafka.GeodeConnectorConfig.TOPICS;
-import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION;
-import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_FOR_SINK;
-import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC;
+import static geode.kafka.GeodeConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_REGION_TO_TOPIC_BINDINGS;
 import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC_FOR_SINK;
+import static geode.kafka.GeodeKafkaTestCluster.TEST_TOPIC_TO_REGION_BINDINGS;
 
 public class WorkerAndHerderWrapper {
 
@@ -59,8 +59,7 @@ public class WorkerAndHerderWrapper {
         sourceProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSource.class.getName());
         sourceProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-source-connector");
         sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
-        sourceProps.put(REGIONS, TEST_REGION);
-        sourceProps.put(TOPICS, TEST_TOPIC);
+        sourceProps.put(REGION_TO_TOPIC_BINDINGS, TEST_REGION_TO_TOPIC_BINDINGS);
 
         herder.putConnectorConfig(
                 sourceProps.get(ConnectorConfig.NAME_CONFIG),
@@ -71,7 +70,7 @@ public class WorkerAndHerderWrapper {
         sinkProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSink.class.getName());
         sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
         sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
-        sinkProps.put(REGIONS, TEST_REGION_FOR_SINK);
+        sinkProps.put(TOPIC_TO_REGION_BINDINGS, TEST_TOPIC_TO_REGION_BINDINGS);
         sinkProps.put(TOPICS, TEST_TOPIC_FOR_SINK);
 
         herder.putConnectorConfig(

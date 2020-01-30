@@ -38,7 +38,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
     private GeodeContext geodeContext;
     private GeodeConnectorConfig geodeConnectorConfig;
-    private List<String> topics;
+    private Map<String, List<String>> regionToTopics;
     private Map<String, Map<String, String>> sourcePartitions;
     private BlockingQueue<GeodeEvent> eventBuffer;
     private int batchSize;
@@ -55,12 +55,6 @@ public class GeodeKafkaSourceTask extends SourceTask {
         return null;
     }
 
-    void startForTesting(BlockingQueue eventBuffer, List<String> topics, int batchSize) {
-        this.eventBuffer = eventBuffer;
-        this.topics = topics;
-        this.batchSize = batchSize;
-    }
-
     @Override
     public void start(Map<String, String> props) {
         try {
@@ -72,15 +66,14 @@ public class GeodeKafkaSourceTask extends SourceTask {
             int queueSize = Integer.parseInt(props.get(QUEUE_SIZE));
             eventBuffer = new LinkedBlockingQueue<>(queueSize);
 
-            sourcePartitions = createSourcePartitionsMap(geodeConnectorConfig.getRegionNames());
-            topics = geodeConnectorConfig.getTopics();
+            regionToTopics = geodeConnectorConfig.getRegionToTopics();
+            sourcePartitions = createSourcePartitionsMap(regionToTopics.keySet());
 
             String cqPrefix = props.get(CQ_PREFIX);
             boolean loadEntireRegion = Boolean.parseBoolean(props.get(LOAD_ENTIRE_REGION));
 
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix, loadEntireRegion);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Unable to start source task", e);
             throw e;
         }
@@ -92,8 +85,10 @@ public class GeodeKafkaSourceTask extends SourceTask {
         ArrayList<GeodeEvent> events = new ArrayList<>(batchSize);
         if (eventBuffer.drainTo(events, batchSize) > 0) {
             for (GeodeEvent event : events) {
+                String regionName = event.getRegionName();
+                List<String> topics = regionToTopics.get(regionName);
                 for (String topic : topics) {
-                    records.add(new SourceRecord(sourcePartitions.get(event.getRegionName()), OFFSET_DEFAULT, topic, null, event.getEvent().getNewValue()));
+                    records.add(new SourceRecord(sourcePartitions.get(regionName), OFFSET_DEFAULT, topic, null, event.getEvent().getNewValue()));
                 }
             }
             return records;
@@ -108,9 +103,9 @@ public class GeodeKafkaSourceTask extends SourceTask {
     }
 
     void installOnGeode(GeodeConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix, boolean loadEntireRegion) {
-      boolean isDurable = geodeConnectorConfig.isDurable();
-      int taskId = geodeConnectorConfig.getTaskId();
-        for (String region : geodeConnectorConfig.getRegionNames()) {
+        boolean isDurable = geodeConnectorConfig.isDurable();
+        int taskId = geodeConnectorConfig.getTaskId();
+        for (String region : geodeConnectorConfig.getRegionToTopics().keySet()) {
             installListenersToRegion(geodeContext, taskId, eventBuffer, region, cqPrefix, loadEntireRegion, isDurable);
         }
         if (isDurable) {
@@ -132,8 +127,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
                 geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName), "select * from /" + regionName, cqAttributes,
                         isDurable);
             }
-        }
-        finally {
+        } finally {
             listener.signalInitialResultsLoaded();
         }
         return listener;
@@ -145,7 +139,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
      * @param regionNames list of regionNames
      * @return Map<String, Map < String, String>> a map of source partitions, keyed by region name
      */
-    Map<String, Map<String, String>> createSourcePartitionsMap(List<String> regionNames) {
+    Map<String, Map<String, String>> createSourcePartitionsMap(Collection<String> regionNames) {
         return regionNames.stream().map(regionName -> {
             Map<String, String> sourcePartition = new HashMap<>();
             sourcePartition.put(REGION_NAME, regionName);
