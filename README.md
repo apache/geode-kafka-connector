@@ -43,7 +43,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 #### GeodeKafkaSink Properties
 | Property | Required | Description| Default |
 |---|---|---|---|
-| locators | no, but...| A comma separated string of locators that configure which locators to connect to | "localhost[10334]" |
+| locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
 |topicToRegions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | None.  This is required to be set in the source connector properties
 |nullValuesMeanRemove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true 
 
@@ -52,7 +52,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 #### GeodeKafkaSource Properties
 | Property | Required| Description| Default |
 |---|---|---|---|
-| locators | no, but...| A comma separated string of locators that configure which locators to connect to | "localhost[10334]" |
+| locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
 |regionToTopics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | None.  This is required to be set in the source connector properties
 |geodeConnectorBatchSize| no | Maximum number of records to return on each poll| 100 |
 |geodeConnectorQueueSize| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |
