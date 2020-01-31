@@ -70,7 +70,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 
 * Consider modifying Kafka Properties like tasks.max in the source and sink parameters.
 
-Possible Upcoming Featured:
+### Possible Upcoming Featured:
 * Formatters - Possibly a JSON to and from PDX formatter
 * Security - security settings for Geode
 * Dynamic Region creation - Dynamically create regions when topics are created (filter what names to look for and what types of regions to create)
