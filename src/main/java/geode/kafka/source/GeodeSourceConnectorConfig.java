@@ -9,7 +9,7 @@ import java.util.Map;
 public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
 
     //Geode Configuration
-    public static final String DURABLE_CLIENT_ID_PREFIX = "durableClientId";
+    public static final String DURABLE_CLIENT_ID_PREFIX = "durableClientIdPrefix";
     public static final String DEFAULT_DURABLE_CLIENT_ID = "";
     public static final String DURABLE_CLIENT_TIME_OUT = "durableClientTimeout";
     public static final String DEFAULT_DURABLE_CLIENT_TIMEOUT = "60000";
@@ -21,14 +21,13 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
      * Used as a key for source partitions
      */
     public static final String REGION = "region";
-
-    public static final String REGION_TO_TOPIC_BINDINGS = "regionToTopic";
+    public static final String REGION_TO_TOPIC_BINDINGS = "regionToTopics";
 
     public static final String BATCH_SIZE = "geodeConnectorBatchSize";
     public static final String DEFAULT_BATCH_SIZE = "100";
 
     public static final String QUEUE_SIZE = "geodeConnectorQueueSize";
-    public static final String DEFAULT_QUEUE_SIZE = "100000";
+    public static final String DEFAULT_QUEUE_SIZE = "10000";
 
     public static final String LOAD_ENTIRE_REGION = "loadEntireRegion";
     public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";

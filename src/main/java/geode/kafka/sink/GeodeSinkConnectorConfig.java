@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
     //Used by sink
-    public static final String TOPIC_TO_REGION_BINDINGS = "topicToRegion";
+    public static final String TOPIC_TO_REGION_BINDINGS = "topicToRegions";
     public static final String NULL_VALUES_MEAN_REMOVE = "nullValuesMeanRemove";
     public static final String DEFAULT_NULL_VALUES_MEAN_REMOVE = "true";
 
