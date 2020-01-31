@@ -40,9 +40,6 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 
 
 ---
-### Configuration Properties
-| Property | Required | Description | Default |
-|---|---|---|---|
 #### GeodeKafkaSink Properties
 | Property | Required | Description| Default |
 |---|---|---|---|
