@@ -32,9 +32,11 @@ public class GeodeConnectorConfig {
      */
     public static final String LOCATORS = "locators";
     public static final String DEFAULT_LOCATOR = "localhost[10334]";
+    public static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
 
     protected final int taskId;
     protected List<LocatorHostPort> locatorHostPorts;
+    private String securityClientAuthInit;
 
     protected GeodeConnectorConfig() {
         taskId = 0;
@@ -43,6 +45,7 @@ public class GeodeConnectorConfig {
     public GeodeConnectorConfig(Map<String, String> connectorProperties) {
         taskId = Integer.parseInt(connectorProperties.get(TASK_ID));
         locatorHostPorts = parseLocators(connectorProperties.get(GeodeConnectorConfig.LOCATORS));
+        securityClientAuthInit = connectorProperties.get(SECURITY_CLIENT_AUTH_INIT);
     }
 
 
@@ -115,5 +118,9 @@ public class GeodeConnectorConfig {
 
     public List<LocatorHostPort> getLocatorHostPorts() {
         return locatorHostPorts;
+    }
+
+    public String getSecurityClientAuthInit() {
+        return securityClientAuthInit;
     }
 }

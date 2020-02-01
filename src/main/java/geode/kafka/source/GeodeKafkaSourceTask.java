@@ -68,11 +68,10 @@ public class GeodeKafkaSourceTask extends SourceTask {
     @Override
     public void start(Map<String, String> props) {
         try {
-            System.out.println("JASON start task");
             geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
             geodeContext = new GeodeContext();
-            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout());
+            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout(), geodeConnectorConfig.getSecurityClientAuthInit());
 
             batchSize = Integer.parseInt(props.get(BATCH_SIZE));
             int queueSize = Integer.parseInt(props.get(QUEUE_SIZE));
@@ -86,12 +85,9 @@ public class GeodeKafkaSourceTask extends SourceTask {
             boolean loadEntireRegion = geodeConnectorConfig.getLoadEntireRegion();
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix, loadEntireRegion);
         } catch (Exception e) {
-            System.out.println("JASON start task failed" + e);
-            e.printStackTrace();
             logger.error("Unable to start source task", e);
             throw e;
         }
-        System.out.println("JASON end task");
 
     }
 

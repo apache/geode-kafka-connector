@@ -58,12 +58,11 @@ public class GeodeKafkaSinkTask extends SinkTask {
             GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
             geodeContext = new GeodeContext();
-            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts());
+            geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getSecurityClientAuthInit());
             topicToRegions = geodeConnectorConfig.getTopicToRegions();
             regionNameToRegion = createProxyRegions(topicToRegions.values());
             nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Unable to start sink task", e);
             throw e;
         }
