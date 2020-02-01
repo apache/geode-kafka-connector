@@ -13,7 +13,7 @@ The GeodeKafkaSink allows Geode to consume data off of topics and store data fro
 Installation of the connector is similar in process to other Kafka Connectors.  For now, we will follow the guide for [Manual Installation](https://docs.confluent.io/current/connect/managing/install.html#install-connector-manually).
 
 In summary, we will use the standalone worker for this example.
-* Explode a zip file or build into a known and Kafka accessible location
+* Explode a zip file or build into a known (and Kafka accessible) location
 * Modify the connect-standalone.properties and point to where the connector is installed.
 ```
 plugin.path=/Users/jhuynh/Pivotal/geode-kafka-connector/build/libs/
@@ -53,7 +53,8 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 | Property | Required| Description| Default |
 |---|---|---|---|
 | locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
-|regionToTopics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | None.  This is required to be set in the source connector properties
+|regionToTopics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | None.  This is required to be set in the source connector properties|
+|security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
 |geodeConnectorBatchSize| no | Maximum number of records to return on each poll| 100 |
 |geodeConnectorQueueSize| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |
 | loadEntireRegion| no| Determines if we should queue up all entries that currently exist in the region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq| true |
