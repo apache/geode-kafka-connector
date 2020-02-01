@@ -45,7 +45,8 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 |---|---|---|---|
 | locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
 |topicToRegions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | None.  This is required to be set in the source connector properties
-|nullValuesMeanRemove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true 
+|security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
+|nullValuesMeanRemove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true |
 
 * The topicToRegions property allows us to create mappings between topics  and regions.  A single one-to-one mapping would look similar to "[topic:region]" A one-to-many mapping can be made by comma separating the regions, for example "[topic:region1,region2]"  This is equivalent to both regions being consumers of the topic.
 
