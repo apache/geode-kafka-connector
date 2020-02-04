@@ -58,7 +58,7 @@ public class GeodeKafkaSourceTaskTest {
 
         when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean())).thenReturn(fakeInitialResults);
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        task.installListenersToRegion(geodeContext, 1, eventBuffer, "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer), "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
         assertEquals(10, eventBuffer.size());
     }
 
@@ -75,7 +75,7 @@ public class GeodeKafkaSourceTaskTest {
 
         when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean())).thenReturn(fakeInitialResults);
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        task.installListenersToRegion(geodeContext, 1, eventBuffer, "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer), "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
         assertEquals(0, eventBuffer.size());
     }
 
@@ -88,7 +88,7 @@ public class GeodeKafkaSourceTaskTest {
 
         when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean())).thenReturn(new ArrayList());
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        GeodeKafkaSourceListener listener = task.installListenersToRegion(geodeContext, 1, eventBuffer, "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        GeodeKafkaSourceListener listener = task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer), "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
 
         listener.onEvent(mock(CqEvent.class));
         assertEquals(1, eventBuffer.size());
@@ -140,7 +140,7 @@ public class GeodeKafkaSourceTaskTest {
         when (config.getCqsToRegister()).thenReturn(regionToTopicsMap.keySet());
 
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-        task.installOnGeode(config, geodeContext, new LinkedBlockingQueue(), "someCqPrefix", true);
+        task.installOnGeode(config, geodeContext, createEventBufferSupplier(new LinkedBlockingQueue<>()), "someCqPrefix", true);
         verify(geodeContext, times(1)).newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean());
     }
 
@@ -218,4 +218,13 @@ public class GeodeKafkaSourceTaskTest {
 //        GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     }
 
+
+    private EventBufferSupplier createEventBufferSupplier(BlockingQueue<GeodeEvent> eventBuffer) {
+        return new EventBufferSupplier() {
+            @Override
+            public BlockingQueue<GeodeEvent> get() {
+                return eventBuffer;
+            }
+        };
+    }
 }

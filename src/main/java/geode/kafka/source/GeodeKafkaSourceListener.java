@@ -19,7 +19,6 @@ import org.apache.geode.cache.query.CqStatusListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 class GeodeKafkaSourceListener implements CqStatusListener {
@@ -27,12 +26,12 @@ class GeodeKafkaSourceListener implements CqStatusListener {
     private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSourceListener.class);
 
     public String regionName;
-    private BlockingQueue<GeodeEvent> eventBuffer;
+    private EventBufferSupplier eventBufferSupplier;
     private boolean initialResultsLoaded;
 
-    public GeodeKafkaSourceListener(BlockingQueue<GeodeEvent> eventBuffer, String regionName) {
-        this.eventBuffer = eventBuffer;
+    public GeodeKafkaSourceListener(EventBufferSupplier eventBufferSupplier, String regionName) {
         this.regionName = regionName;
+        this.eventBufferSupplier = eventBufferSupplier;
         initialResultsLoaded = false;
     }
 
@@ -42,12 +41,12 @@ class GeodeKafkaSourceListener implements CqStatusListener {
             Thread.yield();
         }
         try {
-            eventBuffer.offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS);
+            eventBufferSupplier.get().offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
 
             while (true) {
                 try {
-                    if (!eventBuffer.offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS))
+                    if (!eventBufferSupplier.get().offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS))
                         break;
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
