@@ -17,6 +17,7 @@ package geode.kafka.sink;
 import geode.kafka.GeodeContext;
 import geode.kafka.GeodeSinkConnectorConfig;
 import org.apache.geode.cache.Region;
+import org.apache.geode.cache.RegionExistsException;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
@@ -39,6 +40,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
     private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSinkTask.class);
 
     private GeodeContext geodeContext;
+    private int taskId;
     private Map<String, List<String>> topicToRegions;
     private Map<String, Region> regionNameToRegion;
     private boolean nullValuesMeansRemove = true;
@@ -56,24 +58,37 @@ public class GeodeKafkaSinkTask extends SinkTask {
     public void start(Map<String, String> props) {
         try {
             GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
-            logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
+            configure(geodeConnectorConfig);
             geodeContext = new GeodeContext();
             geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getSecurityClientAuthInit());
-            topicToRegions = geodeConnectorConfig.getTopicToRegions();
             regionNameToRegion = createProxyRegions(topicToRegions.values());
-            nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
         } catch (Exception e) {
             logger.error("Unable to start sink task", e);
             throw e;
         }
     }
 
+    void configure(GeodeSinkConnectorConfig geodeConnectorConfig) {
+        logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
+        taskId = geodeConnectorConfig.getTaskId();
+        topicToRegions = geodeConnectorConfig.getTopicToRegions();
+        nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
+    }
+
+    //For tests only
+    void setRegionNameToRegion(Map<String, Region> regionNameToRegion) {
+        this.regionNameToRegion = regionNameToRegion;
+    }
+
     @Override
     public void put(Collection<SinkRecord> records) {
+       put(records, new HashMap());
+    }
+
+    void put(Collection<SinkRecord> records, Map<String, BatchRecords>  batchRecordsMap) {
         //spin off a new thread to handle this operation?  Downside is ordering and retries...
-        Map<String, BatchRecords> batchRecordsMap = new HashMap<>();
         for (SinkRecord record : records) {
-            updateRegionsByTopic(record, batchRecordsMap);
+            updateBatchForRegionByTopic(record, batchRecordsMap);
         }
         batchRecordsMap.entrySet().stream().forEach((entry) -> {
             String region = entry.getKey();
@@ -82,7 +97,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
         });
     }
 
-    private void updateRegionsByTopic(SinkRecord sinkRecord, Map<String, BatchRecords> batchRecordsMap) {
+    private void updateBatchForRegionByTopic(SinkRecord sinkRecord, Map<String, BatchRecords> batchRecordsMap) {
         Collection<String> regionsToUpdate = topicToRegions.get(sinkRecord.topic());
         for (String region : regionsToUpdate) {
             updateBatchRecordsForRecord(sinkRecord, batchRecordsMap, region);
@@ -113,7 +128,13 @@ public class GeodeKafkaSinkTask extends SinkTask {
     }
 
     private Region createProxyRegion(String regionName) {
-        return geodeContext.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY).create(regionName);
+        try {
+            return geodeContext.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY).create(regionName);
+        }
+        catch (RegionExistsException e) {
+            //Each task is a seperate parallel task controlled by kafka.
+            return geodeContext.getClientCache().getRegion(regionName);
+        }
     }
 
     @Override

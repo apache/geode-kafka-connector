@@ -29,7 +29,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_CQ_PREFIX;
-import static org.apache.geode.pdx.internal.PeerTypeRegistration.REGION_NAME;
+import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_PARTITION;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -119,7 +119,7 @@ public class GeodeKafkaSourceTaskTest {
         regionToTopicsMap.put("region1", new ArrayList());
 
         GeodeSourceConnectorConfig config = mock(GeodeSourceConnectorConfig.class);
-        when (config.getRegionToTopics()).thenReturn(regionToTopicsMap);
+        when (config.getCqsToRegister()).thenReturn(regionToTopicsMap.keySet());
 
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
         task.installOnGeode(config, geodeContext, null, "someCqPrefix", false);
@@ -137,7 +137,7 @@ public class GeodeKafkaSourceTaskTest {
         regionToTopicsMap.put("region1", new ArrayList());
 
         GeodeSourceConnectorConfig config = mock(GeodeSourceConnectorConfig.class);
-        when (config.getRegionToTopics()).thenReturn(regionToTopicsMap);
+        when (config.getCqsToRegister()).thenReturn(regionToTopicsMap.keySet());
 
         GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
         task.installOnGeode(config, geodeContext, new LinkedBlockingQueue(), "someCqPrefix", true);
@@ -191,9 +191,9 @@ public class GeodeKafkaSourceTaskTest {
         List<String> regionNames = Arrays.asList(new String[]{"region1", "region2", "region3"});
         Map<String, Map<String,String>> sourcePartitions = task.createSourcePartitionsMap(regionNames);
         assertThat(3, is(sourcePartitions.size()));
-        assertThat(true, is(sourcePartitions.get("region1").get(REGION_NAME).equals("region1")));
-        assertThat(true, is(sourcePartitions.get("region2").get(REGION_NAME).equals("region2")));
-        assertThat(true, is(sourcePartitions.get("region3").get(REGION_NAME).equals("region3")));
+        assertThat(true, is(sourcePartitions.get("region1").get(REGION_PARTITION).equals("region1")));
+        assertThat(true, is(sourcePartitions.get("region2").get(REGION_PARTITION).equals("region2")));
+        assertThat(true, is(sourcePartitions.get("region3").get(REGION_PARTITION).equals("region3")));
     }
 
     @Test

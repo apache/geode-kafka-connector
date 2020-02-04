@@ -16,6 +16,7 @@ package geode.kafka;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,8 +63,8 @@ public class GeodeConnectorConfig {
      * @return mapping of regionName to list of topics to update
      */
     public static Map<String, List<String>> parseRegionToTopics(String combinedBindings) {
-        if (combinedBindings == "" || combinedBindings == null){
-            return null;
+        if (combinedBindings == null || combinedBindings.equals("")){
+            return new HashMap();
         }
         List<String> bindings = parseBindings(combinedBindings);
         return bindings.stream().map(binding -> {
@@ -95,7 +96,7 @@ public class GeodeConnectorConfig {
     }
 
     public static String reconstructString(Collection<String> strings) {
-        return strings.stream().collect(Collectors.joining("],[")) + "]";
+        return strings.stream().collect(Collectors.joining("],["));
     }
 
     List<LocatorHostPort> parseLocators(String locators) {

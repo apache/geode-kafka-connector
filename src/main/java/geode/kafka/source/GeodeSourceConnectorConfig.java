@@ -16,6 +16,7 @@ package geode.kafka.source;
 
 import geode.kafka.GeodeConnectorConfig;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,9 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
     /**
      * Used as a key for source partitions
      */
-    public static final String REGION = "region";
+    public static final String REGION_PARTITION = "regionPartition";
     public static final String REGION_TO_TOPIC_BINDINGS = "regionToTopics";
+    public static final String CQS_TO_REGISTER = "cqsToRegister";
 
     public static final String BATCH_SIZE = "geodeConnectorBatchSize";
     public static final String DEFAULT_BATCH_SIZE = "100";
@@ -52,19 +54,11 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
     private final boolean loadEntireRegion;
 
     private Map<String, List<String>> regionToTopics;
-
-    //just for tests
-    protected GeodeSourceConnectorConfig() {
-        super();
-        durableClientId = "";
-        durableClientIdPrefix = "";
-        durableClientTimeout = "0";
-        cqPrefix = DEFAULT_CQ_PREFIX;
-        loadEntireRegion = Boolean.parseBoolean(DEFAULT_LOAD_ENTIRE_REGION);
-    }
+    private Collection<String> cqsToRegister;
 
     public GeodeSourceConnectorConfig(Map<String, String> connectorProperties) {
         super(connectorProperties);
+        cqsToRegister = parseRegionToTopics(connectorProperties.get(CQS_TO_REGISTER)).keySet();
         regionToTopics = parseRegionToTopics(connectorProperties.get(REGION_TO_TOPIC_BINDINGS));
         durableClientIdPrefix = connectorProperties.get(DURABLE_CLIENT_ID_PREFIX);
         if (isDurable(durableClientIdPrefix)) {
@@ -111,6 +105,10 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
 
     public Map<String, List<String>> getRegionToTopics() {
         return regionToTopics;
+    }
+
+    public Collection<String> getCqsToRegister() {
+        return cqsToRegister;
     }
 
 }

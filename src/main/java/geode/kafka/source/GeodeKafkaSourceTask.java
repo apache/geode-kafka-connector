@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static geode.kafka.source.GeodeSourceConnectorConfig.BATCH_SIZE;
 import static geode.kafka.source.GeodeSourceConnectorConfig.QUEUE_SIZE;
-import static org.apache.geode.pdx.internal.PeerTypeRegistration.REGION_NAME;
+import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_PARTITION;
 
 public class GeodeKafkaSourceTask extends SourceTask {
 
@@ -48,9 +48,11 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
     private GeodeContext geodeContext;
     private GeodeSourceConnectorConfig geodeConnectorConfig;
+    private int taskId;
     private Map<String, List<String>> regionToTopics;
+    private Collection<String> cqsToRegister;
     private Map<String, Map<String, String>> sourcePartitions;
-    private BlockingQueue<GeodeEvent> eventBuffer;
+    private static BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue<>(100000);
     private int batchSize;
 
 
@@ -69,15 +71,15 @@ public class GeodeKafkaSourceTask extends SourceTask {
     public void start(Map<String, String> props) {
         try {
             geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
+            taskId = geodeConnectorConfig.getTaskId();
             logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
             geodeContext = new GeodeContext();
             geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(), geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout(), geodeConnectorConfig.getSecurityClientAuthInit());
 
             batchSize = Integer.parseInt(props.get(BATCH_SIZE));
-            int queueSize = Integer.parseInt(props.get(QUEUE_SIZE));
-            eventBuffer = new LinkedBlockingQueue<>(queueSize);
 
             regionToTopics = geodeConnectorConfig.getRegionToTopics();
+            cqsToRegister = geodeConnectorConfig.getCqsToRegister();
             sourcePartitions = createSourcePartitionsMap(regionToTopics.keySet());
 
             String cqPrefix = geodeConnectorConfig.getCqPrefix();
@@ -85,10 +87,10 @@ public class GeodeKafkaSourceTask extends SourceTask {
             boolean loadEntireRegion = geodeConnectorConfig.getLoadEntireRegion();
             installOnGeode(geodeConnectorConfig, geodeContext, eventBuffer, cqPrefix, loadEntireRegion);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Unable to start source task", e);
             throw e;
         }
-
     }
 
     @Override
@@ -100,7 +102,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
                 String regionName = event.getRegionName();
                 List<String> topics = regionToTopics.get(regionName);
                 for (String topic : topics) {
-                    records.add(new SourceRecord(sourcePartitions.get(regionName), OFFSET_DEFAULT, topic, null, event.getEvent().getNewValue()));
+                    records.add(new SourceRecord(sourcePartitions.get(regionName), OFFSET_DEFAULT, topic, null, event.getEvent().getKey(), null, event.getEvent().getNewValue()));
                 }
             }
             return records;
@@ -117,7 +119,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     void installOnGeode(GeodeSourceConnectorConfig geodeConnectorConfig, GeodeContext geodeContext, BlockingQueue eventBuffer, String cqPrefix, boolean loadEntireRegion) {
         boolean isDurable = geodeConnectorConfig.isDurable();
         int taskId = geodeConnectorConfig.getTaskId();
-        for (String region : geodeConnectorConfig.getRegionToTopics().keySet()) {
+        for (String region : geodeConnectorConfig.getCqsToRegister()) {
             installListenersToRegion(geodeContext, taskId, eventBuffer, region, cqPrefix, loadEntireRegion, isDurable);
         }
         if (isDurable) {
@@ -154,9 +156,9 @@ public class GeodeKafkaSourceTask extends SourceTask {
     Map<String, Map<String, String>> createSourcePartitionsMap(Collection<String> regionNames) {
         return regionNames.stream().map(regionName -> {
             Map<String, String> sourcePartition = new HashMap<>();
-            sourcePartition.put(REGION_NAME, regionName);
+            sourcePartition.put(REGION_PARTITION, regionName);
             return sourcePartition;
-        }).collect(Collectors.toMap(s -> s.get(REGION_NAME), s -> s));
+        }).collect(Collectors.toMap(s -> s.get(REGION_PARTITION), s -> s));
     }
 
     String generateCqName(int taskId, String cqPrefix, String regionName) {

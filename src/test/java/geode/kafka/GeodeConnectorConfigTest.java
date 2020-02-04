@@ -26,6 +26,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -99,7 +100,6 @@ public class GeodeConnectorConfigTest {
                 ,"[region1: topic1 ,topic3], [region2 :topic2]"});
     }
 
-
     @Test
     @Parameters(method="oneToManyBindings")
     public void reconstructBindingsToStringShouldReformAParsableString(String value) {
@@ -107,6 +107,10 @@ public class GeodeConnectorConfigTest {
         String reconstructString = GeodeConnectorConfig.reconstructString(splitBindings);
         splitBindings = GeodeConnectorConfig.parseBindings(reconstructString);
         assertEquals(Arrays.toString(splitBindings.toArray()), 2, splitBindings.size());
+        for(String topicOrRegion: splitBindings) {
+            assertFalse(topicOrRegion.contains("\\["));
+            assertFalse(topicOrRegion.contains("\\]"));
+        }
     }
 
     @Test

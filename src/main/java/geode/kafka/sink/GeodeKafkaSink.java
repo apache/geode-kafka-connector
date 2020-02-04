@@ -48,14 +48,12 @@ public class GeodeKafkaSink extends SinkConnector  {
     @Override
     public List<Map<String, String>> taskConfigs(int maxTasks) {
         List<Map<String, String>> taskConfigs = new ArrayList<>();
-        Map<String, String> taskProps = new HashMap<>();
-        taskProps.putAll(sharedProps);
-        List<String> bindings = GeodeConnectorConfig.parseStringByComma(taskProps.get(TOPIC_TO_REGION_BINDINGS));
-        List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
+        //All tasks will build up the topic to regions map. A few might not use certain keys but we have no control over partitioning in kafka and which tasks will fire
         for (int i = 0; i < maxTasks; i++) {
+            Map<String, String> taskProps = new HashMap<>();
+            taskProps.putAll(sharedProps);
             taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
-            taskProps.put(TOPIC_TO_REGION_BINDINGS, GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
             taskConfigs.add(taskProps);
         }
 

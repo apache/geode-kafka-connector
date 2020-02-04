@@ -29,6 +29,7 @@ import java.util.Map;
 import static geode.kafka.GeodeConnectorConfig.DEFAULT_LOCATOR;
 import static geode.kafka.GeodeConnectorConfig.LOCATORS;
 import static geode.kafka.source.GeodeSourceConnectorConfig.BATCH_SIZE;
+import static geode.kafka.source.GeodeSourceConnectorConfig.CQS_TO_REGISTER;
 import static geode.kafka.source.GeodeSourceConnectorConfig.CQ_PREFIX;
 import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_BATCH_SIZE;
 import static geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_CQ_PREFIX;
@@ -58,15 +59,14 @@ public class GeodeKafkaSource extends SourceConnector {
   @Override
   public List<Map<String, String>> taskConfigs(int maxTasks) {
     List<Map<String, String>> taskConfigs = new ArrayList<>();
-    Map<String, String> taskProps = new HashMap<>();
-    taskProps.putAll(sharedProps);
-
-    List<String> bindings = GeodeConnectorConfig.parseStringByComma(taskProps.get(REGION_TO_TOPIC_BINDINGS));
+    List<String> bindings = GeodeConnectorConfig.parseStringByComma(sharedProps.get(REGION_TO_TOPIC_BINDINGS));
     List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {
+      Map<String, String> taskProps = new HashMap<>();
+      taskProps.putAll(sharedProps);
       taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
-      taskProps.put(REGION_TO_TOPIC_BINDINGS, GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
+      taskProps.put(CQS_TO_REGISTER, GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
       taskConfigs.add(taskProps);
     }
     return taskConfigs;

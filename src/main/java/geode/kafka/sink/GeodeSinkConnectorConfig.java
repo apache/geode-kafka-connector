@@ -26,12 +26,6 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
     private Map<String, List<String>> topicToRegions;
     private final boolean nullValuesMeanRemove;
 
-    //just for tests
-    GeodeSinkConnectorConfig() {
-        super();
-        nullValuesMeanRemove = Boolean.parseBoolean(DEFAULT_NULL_VALUES_MEAN_REMOVE);
-    }
-
     public GeodeSinkConnectorConfig(Map<String, String> connectorProperties) {
         super(connectorProperties);
        topicToRegions = parseTopicToRegions(connectorProperties.get(TOPIC_TO_REGION_BINDINGS));

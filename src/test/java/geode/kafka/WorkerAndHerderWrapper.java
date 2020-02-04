@@ -41,6 +41,8 @@ import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BIND
 public class WorkerAndHerderWrapper {
 
     public static void main(String[] args) throws IOException {
+        String maxTasks = args[0];
+
         Map props = new HashMap();
         props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put("offset.storage.file.filename", "/tmp/connect.offsets");
@@ -68,7 +70,7 @@ public class WorkerAndHerderWrapper {
         Map<String, String> sourceProps = new HashMap<>();
         sourceProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSource.class.getName());
         sourceProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-source-connector");
-        sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
+        sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, maxTasks);
         sourceProps.put(REGION_TO_TOPIC_BINDINGS, TEST_REGION_TO_TOPIC_BINDINGS);
 
         herder.putConnectorConfig(
@@ -79,7 +81,7 @@ public class WorkerAndHerderWrapper {
         Map<String, String> sinkProps = new HashMap<>();
         sinkProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSink.class.getName());
         sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
-        sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, "1");
+        sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, maxTasks);
         sinkProps.put(TOPIC_TO_REGION_BINDINGS, TEST_TOPIC_TO_REGION_BINDINGS);
         sinkProps.put("topics", TEST_TOPIC_FOR_SINK);
 

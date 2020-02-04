@@ -14,5 +14,62 @@
  */
 package geode.kafka.sink;
 
+import geode.kafka.GeodeSinkConnectorConfig;
+import org.apache.geode.cache.Region;
+import org.apache.kafka.connect.sink.SinkRecord;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static geode.kafka.GeodeConnectorConfig.LOCATORS;
+import static geode.kafka.GeodeConnectorConfig.TASK_ID;
+import static geode.kafka.GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE;
+import static geode.kafka.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class GeodeKafkaSinkTaskTest {
+
+    private HashMap<String, String> createTestSinkProps(boolean nullMeansRemove) {
+        HashMap<String, String> props = new HashMap<>();
+        props.put(TOPIC_TO_REGION_BINDINGS, "[topic:region]");
+        props.put(TASK_ID, "0");
+        props.put(NULL_VALUES_MEAN_REMOVE, String.valueOf(nullMeansRemove));
+        props.put(LOCATORS, "localhost[10334]");
+        return props;
+    }
+
+    @Test
+    public void putRecordsAddsToRegionBatchRecords() {
+        boolean nullMeansRemove = true;
+        GeodeKafkaSinkTask task = new GeodeKafkaSinkTask();
+        HashMap<String, String> props = createTestSinkProps(nullMeansRemove);
+
+        SinkRecord topicRecord = mock(SinkRecord.class);
+        when(topicRecord.topic()).thenReturn("topic");
+        when(topicRecord.value()).thenReturn("value");
+        when(topicRecord.key()).thenReturn("key");
+
+        List<SinkRecord> records = new ArrayList();
+        records.add(topicRecord);
+
+        HashMap<String, Region> regionNameToRegion = new HashMap<>();
+        GeodeSinkConnectorConfig geodeSinkConnectorConfig = new GeodeSinkConnectorConfig(props);
+        HashMap<String, BatchRecords> batchRecordsMap = new HashMap();
+        BatchRecords batchRecords = mock(BatchRecords.class);
+        batchRecordsMap.put("region", batchRecords);
+        task.configure(geodeSinkConnectorConfig);
+        task.setRegionNameToRegion(regionNameToRegion);
+
+        task.put(records, batchRecordsMap);
+        assertTrue(batchRecordsMap.containsKey("region"));
+        verify(batchRecords, times(1)).addUpdateOperation(topicRecord, nullMeansRemove);
+    }
 }

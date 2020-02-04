@@ -14,8 +14,11 @@
  */
 package geode.kafka.sink;
 
+import geode.kafka.source.GeodeKafkaSourceTask;
 import org.apache.geode.cache.Region;
 import org.apache.kafka.connect.sink.SinkRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +30,7 @@ import java.util.Map;
  * A collection of records to put/remove from a region
  */
 public class BatchRecords {
+    private static final Logger logger = LoggerFactory.getLogger(BatchRecords.class);
 
     private Map updateMap;
     private Collection removeList;
@@ -67,7 +71,12 @@ public class BatchRecords {
 
 
     public void executeOperations(Region region) {
-        region.putAll(updateMap);
-        region.removeAll(removeList);
+        if (region != null) {
+            region.putAll(updateMap);
+            region.removeAll(removeList);
+        }
+        else {
+            logger.info("Unable to locate proxy region: " + region);
+        }
     }
 }
