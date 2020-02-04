@@ -57,7 +57,8 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 |regionToTopics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | None.  This is required to be set in the source connector properties|
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
 |geodeConnectorBatchSize| no | Maximum number of records to return on each poll| 100 |
-| loadEntireRegion| no| Determines if we should queue up all entries that currently exist in the region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq| true |
+|geodeConnectorQueueSize| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |
+| loadEntireRegion| no| Determines if we should queue up all entries that currently exist in a region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq| true |
 |durableClientIdPrefix| no | Prefix string for tasks to append to when registering as a durable client.  If empty string, will not register as a durable client | "" |
 | durableClientTimeout| no | How long in milliseconds to persist values in Geode's durable queue before the queue is invalidated| 60000 |
 | cqPrefix| no| Prefix string to identify Connector cq's on a Geode server |cqForGeodeKafka |
