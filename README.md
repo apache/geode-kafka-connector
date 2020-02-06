@@ -13,10 +13,13 @@ The GeodeKafkaSink allows Geode to consume data off of topics and store data fro
 Installation of the connector is similar in process to other Kafka Connectors.  For now, we will follow the guide for [Manual Installation](https://docs.confluent.io/current/connect/managing/install.html#install-connector-manually).
 
 In summary, we will use the standalone worker for this example.
-* Explode a zip file or build into a known (and Kafka accessible) location
+* Build the jar into a known (and Kafka accessible) location  (in the geode-kafka-connector project run './gradlew shadowJar' and the artifacts will be in build/lib/
 * Modify the connect-standalone.properties and point to where the connector is installed.
 ```
-plugin.path=/Users/jhuynh/Pivotal/geode-kafka-connector/build/libs/
+plugin.path=(Path to your clone)/geode-kafka-connector/build/libs/
+#depending on object type, you might want to modify the converter (for manually testing we can use the JSON or string converter)
+#key.converter=
+#value.converter=
 ```
 * Create and modify connect-geode-sink.properties file, for example
 ```
@@ -24,6 +27,7 @@ name=geode-kafka-sink
 connector.class=GeodeKafkaSink
 tasks.max=1
 topicToRegions=[someTopicToSinkFrom:someRegionToConsume]
+topics=someTopicToSinkFrom
 locators=localHost[10334]
 ```
 * Create and modify connect-geode-source.properties files
