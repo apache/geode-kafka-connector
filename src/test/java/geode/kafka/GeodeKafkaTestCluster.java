@@ -155,7 +155,6 @@ public class GeodeKafkaTestCluster {
     Properties props = new Properties();
 
     props.put("broker.id", "0");
-    props.put("log4j.configuration", "/Users/jhuynh/Pivotal/kafka/config/connect-log4j.properties");
     props.put("zookeeper.connect", "localhost:2181");
     props.put("host.name", "localHost");
     props.put("port", BROKER_PORT);

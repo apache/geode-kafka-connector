@@ -34,6 +34,7 @@ buildscript {
 }
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 apply plugin: 'wrapper'
@@ -78,4 +79,14 @@ dependencies {
     testImplementation 'org.awaitility:awaitility:4.0.2'
 }
 
+shadowJar {
+    dependencies {
+        // exclude dependencies provided in the kafka connect classpath
+        exclude dependency("org.apache.kafka:connect-api:.*")
+        exclude dependency("org.apache.kafka:kafka-clients:.*")
+        exclude dependency('net.jpountz.lz4:.*:.*')
+        exclude dependency('org.xerial.snappy:.*:.*')
+        exclude dependency('org.slf4j:.*:.*')
+    }
+}
 
