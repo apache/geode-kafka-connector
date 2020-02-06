@@ -18,7 +18,7 @@ In summary, we will use the standalone worker for this example.
 ```
 plugin.path=/Users/jhuynh/Pivotal/geode-kafka-connector/build/libs/
 ```
-* Create and modify connect-geode-source.properties file, for example
+* Create and modify connect-geode-sink.properties file, for example
 ```
 name=geode-kafka-sink
 connector.class=GeodeKafkaSink
@@ -26,7 +26,7 @@ tasks.max=1
 topicToRegions=[someTopicToSinkFrom:someRegionToConsume]
 locators=localHost[10334]
 ```
-* Create and modify connect-geode-sink.properties files
+* Create and modify connect-geode-source.properties files
 ```
 name=geode-kafka-source
 connector.class=GeodeKafkaSource
