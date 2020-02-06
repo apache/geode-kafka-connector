@@ -14,11 +14,11 @@
  */
 package geode.kafka;
 
-import kafka.server.KafkaConfig;
-import kafka.server.KafkaServerStartable;
-
 import java.io.IOException;
 import java.util.Properties;
+
+import kafka.server.KafkaConfig;
+import kafka.server.KafkaServerStartable;
 
 public class KafkaLocalCluster {
 
@@ -33,8 +33,7 @@ public class KafkaLocalCluster {
     try {
       kafka.startup();
       System.out.println("Kafka started up");
-    }
-    catch (Throwable t) {
+    } catch (Throwable t) {
       System.out.println(t);
     }
   }

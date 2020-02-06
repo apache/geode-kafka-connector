@@ -18,19 +18,18 @@ import java.io.IOException;
 
 public class WorkerAndHerderCluster {
 
-    private JavaProcess workerAndHerder;
+  private JavaProcess workerAndHerder;
 
-    public WorkerAndHerderCluster() {
-        workerAndHerder = new JavaProcess(WorkerAndHerderWrapper.class);
-    }
+  public WorkerAndHerderCluster() {
+    workerAndHerder = new JavaProcess(WorkerAndHerderWrapper.class);
+  }
 
-    public void start(String maxTasks) throws IOException, InterruptedException {
-        workerAndHerder.exec(maxTasks);
+  public void start(String maxTasks) throws IOException, InterruptedException {
+    workerAndHerder.exec(maxTasks);
 
-    }
+  }
 
-    public void stop() {
-        workerAndHerder.destroy();
-    }
+  public void stop() {
+    workerAndHerder.destroy();
+  }
 }
-

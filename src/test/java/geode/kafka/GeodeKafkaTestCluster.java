@@ -14,13 +14,20 @@
  */
 package geode.kafka;
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import kafka.admin.RackAwareMode;
 import kafka.zk.AdminZkClient;
 import kafka.zk.KafkaZkClient;
-import org.apache.geode.cache.Region;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,27 +40,18 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Time;
-import org.apache.kafka.connect.runtime.ConnectorConfig;
 import org.apache.kafka.connect.runtime.WorkerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
+import org.apache.geode.cache.Region;
+import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.client.ClientCacheFactory;
+import org.apache.geode.cache.client.ClientRegionShortcut;
 
 public class GeodeKafkaTestCluster {
 
@@ -76,7 +74,8 @@ public class GeodeKafkaTestCluster {
   private static Consumer<String, String> consumer;
 
   @BeforeClass
-  public static void setup() throws IOException, QuorumPeerConfig.ConfigException, InterruptedException {
+  public static void setup()
+      throws IOException, QuorumPeerConfig.ConfigException, InterruptedException {
     startZooKeeper();
     startKafka();
     startGeode();
@@ -86,11 +85,11 @@ public class GeodeKafkaTestCluster {
   @AfterClass
   public static void shutdown() {
     workerAndHerderCluster.stop();
-    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
-            15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
-//    AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-//    adminZkClient.deleteTopic(TEST_TOPIC_FOR_SOURCE);
-//    adminZkClient.deleteTopic(TEST_TOPIC_FOR_SINK);
+    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181", false, 200000,
+        15000, 10, Time.SYSTEM, "myGroup", "myMetricType", null);
+    // AdminZkClient adminZkClient = new AdminZkClient(zkClient);
+    // adminZkClient.deleteTopic(TEST_TOPIC_FOR_SOURCE);
+    // adminZkClient.deleteTopic(TEST_TOPIC_FOR_SINK);
     zkClient.close();
     kafkaLocalCluster.stop();
     geodeLocalCluster.stop();
@@ -104,18 +103,19 @@ public class GeodeKafkaTestCluster {
   }
 
   private static void createTopic(String topicName, int numPartitions, int replicationFactor) {
-    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
-            15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
+    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181", false, 200000,
+        15000, 10, Time.SYSTEM, "myGroup", "myMetricType", null);
 
     Properties topicProperties = new Properties();
     topicProperties.put("flush.messages", "1");
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
-    adminZkClient.createTopic(topicName, numPartitions,replicationFactor, topicProperties, RackAwareMode.Disabled$.MODULE$);
+    adminZkClient.createTopic(topicName, numPartitions, replicationFactor, topicProperties,
+        RackAwareMode.Disabled$.MODULE$);
   }
 
   private static void deleteTopic(String topicName) {
-    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181",false,200000,
-            15000,10, Time.SYSTEM, "myGroup","myMetricType", null);
+    KafkaZkClient zkClient = KafkaZkClient.apply("localhost:2181", false, 200000,
+        15000, 10, Time.SYSTEM, "myGroup", "myMetricType", null);
     AdminZkClient adminZkClient = new AdminZkClient(zkClient);
     adminZkClient.deleteTopic(topicName);
   }
@@ -129,7 +129,8 @@ public class GeodeKafkaTestCluster {
     zooKeeperLocalCluster.start();
   }
 
-  private static void startKafka() throws IOException, InterruptedException, QuorumPeerConfig.ConfigException {
+  private static void startKafka()
+      throws IOException, InterruptedException, QuorumPeerConfig.ConfigException {
     kafkaLocalCluster = new KafkaLocalCluster(getKafkaConfig());
     kafkaLocalCluster.start();
   }
@@ -139,9 +140,10 @@ public class GeodeKafkaTestCluster {
     geodeLocalCluster.start();
   }
 
-  private static  Properties getZooKeeperProperties() throws IOException {
+  private static Properties getZooKeeperProperties() throws IOException {
     Properties properties = new Properties();
-    properties.setProperty("dataDir", (debug)? "/tmp/zookeeper" :temporaryFolder.newFolder("zookeeper").getAbsolutePath());
+    properties.setProperty("dataDir",
+        (debug) ? "/tmp/zookeeper" : temporaryFolder.newFolder("zookeeper").getAbsolutePath());
     properties.setProperty("clientPort", "2181");
     properties.setProperty("tickTime", "2000");
     return properties;
@@ -159,43 +161,43 @@ public class GeodeKafkaTestCluster {
     props.put("port", BROKER_PORT);
     props.put("offsets.topic.replication.factor", "1");
 
-    //Specifically GeodeKafka connector configs
+    // Specifically GeodeKafka connector configs
     return props;
   }
 
 
-  //consumer props, less important, just for testing?
-  public static Consumer<String,String> createConsumer() {
-      final Properties props = new Properties();
+  // consumer props, less important, just for testing?
+  public static Consumer<String, String> createConsumer() {
+    final Properties props = new Properties();
     props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put(ConsumerConfig.GROUP_ID_CONFIG,
-              "myGroup");
-      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-              StringDeserializer.class.getName());
-      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-              StringDeserializer.class.getName());
-      props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        "myGroup");
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+        StringDeserializer.class.getName());
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+        StringDeserializer.class.getName());
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
     // Create the consumer using props.
-      final Consumer<String, String> consumer =
-              new KafkaConsumer<>(props);
-      // Subscribe to the topic.
-      consumer.subscribe(Collections.singletonList(TEST_TOPIC_FOR_SOURCE));
-      return consumer;
+    final Consumer<String, String> consumer =
+        new KafkaConsumer<>(props);
+    // Subscribe to the topic.
+    consumer.subscribe(Collections.singletonList(TEST_TOPIC_FOR_SOURCE));
+    return consumer;
   }
 
-  //consumer props, less important, just for testing?
-  public static Producer<String,String> createProducer() {
+  // consumer props, less important, just for testing?
+  public static Producer<String, String> createProducer() {
     final Properties props = new Properties();
     props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-            StringSerializer.class.getName());
+        StringSerializer.class.getName());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-            StringSerializer.class.getName());
+        StringSerializer.class.getName());
 
     // Create the producer using props.
     final Producer<String, String> producer =
-            new KafkaProducer<>(props);
+        new KafkaProducer<>(props);
     return producer;
   }
 
@@ -207,9 +209,10 @@ public class GeodeKafkaTestCluster {
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SOURCE);
+      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY)
+          .create(TEST_REGION_FOR_SOURCE);
 
-      for (int i = 0; i < 10 ; i++) {
+      for (int i = 0; i < 10; i++) {
         region.put("KEY" + i, "VALUE" + i);
       }
 
@@ -221,8 +224,7 @@ public class GeodeKafkaTestCluster {
         }
         return valueReceived.get() == 10;
       });
-    }
-    finally {
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SOURCE);
     }
   }
@@ -236,9 +238,10 @@ public class GeodeKafkaTestCluster {
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SOURCE);
+      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY)
+          .create(TEST_REGION_FOR_SOURCE);
 
-      for (int i = 0; i < 10 ; i++) {
+      for (int i = 0; i < 10; i++) {
         region.put("KEY" + i, "VALUE" + i);
       }
 
@@ -250,23 +253,24 @@ public class GeodeKafkaTestCluster {
         }
         return valueReceived.get() == 10;
       });
-    }
-    finally {
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SOURCE);
     }
   }
 
   @Test
-  public void endToEndSourceSingleRegionMultiTaskMultiPartitionWithMoreTasksThanPartitionsTest() throws Exception {
+  public void endToEndSourceSingleRegionMultiTaskMultiPartitionWithMoreTasksThanPartitionsTest()
+      throws Exception {
     try {
       createTopic(TEST_TOPIC_FOR_SOURCE, 2, 1);
       startWorker(5);
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SOURCE);
+      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY)
+          .create(TEST_REGION_FOR_SOURCE);
 
-      for (int i = 0; i < 10 ; i++) {
+      for (int i = 0; i < 10; i++) {
         region.put("KEY" + i, "VALUE" + i);
       }
 
@@ -278,8 +282,7 @@ public class GeodeKafkaTestCluster {
         }
         return valueReceived.get() == 10;
       });
-    }
-    finally {
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SOURCE);
     }
   }
@@ -292,7 +295,8 @@ public class GeodeKafkaTestCluster {
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
+      Region region =
+          client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
 
       Producer<String, String> producer = createProducer();
       for (int i = 0; i < 10; i++) {
@@ -300,23 +304,25 @@ public class GeodeKafkaTestCluster {
       }
 
       int i = 0;
-      await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
-    }
-    finally {
+      await().atMost(10, TimeUnit.SECONDS)
+          .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SINK);
     }
   }
 
 
   @Test
-  public void endToEndWithOneTaskForASingleBindingAgainstAMultiPartitionTopicSinkTest() throws Exception {
+  public void endToEndWithOneTaskForASingleBindingAgainstAMultiPartitionTopicSinkTest()
+      throws Exception {
     try {
       createTopic(TEST_TOPIC_FOR_SINK, 10, 1);
       startWorker(5);
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
+      Region region =
+          client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
 
       Producer<String, String> producer = createProducer();
       for (int i = 0; i < 10; i++) {
@@ -324,22 +330,24 @@ public class GeodeKafkaTestCluster {
       }
 
       int i = 0;
-      await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
-    }
-    finally {
+      await().atMost(10, TimeUnit.SECONDS)
+          .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SINK);
     }
   }
 
   @Test
-  public void endToEndWithOneTaskForASingleBindingAgainstAMultiPartitionTopicWithMoreWorkersSinkTest() throws Exception {
+  public void endToEndWithOneTaskForASingleBindingAgainstAMultiPartitionTopicWithMoreWorkersSinkTest()
+      throws Exception {
     try {
       createTopic(TEST_TOPIC_FOR_SINK, 10, 1);
       startWorker(15);
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
+      Region region =
+          client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
 
       Producer<String, String> producer = createProducer();
       for (int i = 0; i < 10; i++) {
@@ -347,9 +355,9 @@ public class GeodeKafkaTestCluster {
       }
 
       int i = 0;
-      await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
-    }
-    finally {
+      await().atMost(10, TimeUnit.SECONDS)
+          .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SINK);
     }
   }
@@ -362,7 +370,8 @@ public class GeodeKafkaTestCluster {
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
+      Region region =
+          client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
 
       Producer<String, String> producer = createProducer();
       for (int i = 0; i < 10; i++) {
@@ -370,9 +379,9 @@ public class GeodeKafkaTestCluster {
       }
 
       int i = 0;
-      await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
-    }
-    finally {
+      await().atMost(10, TimeUnit.SECONDS)
+          .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SINK);
     }
   }
@@ -385,17 +394,19 @@ public class GeodeKafkaTestCluster {
       consumer = createConsumer();
 
       ClientCache client = createGeodeClient();
-      Region region = client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
+      Region region =
+          client.createClientRegionFactory(ClientRegionShortcut.PROXY).create(TEST_REGION_FOR_SINK);
 
       Producer<String, String> producer = createProducer();
       for (int i = 0; i < 10; i++) {
-        producer.send(new ProducerRecord(TEST_TOPIC_FOR_SINK, i, UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+        producer.send(new ProducerRecord(TEST_TOPIC_FOR_SINK, i, UUID.randomUUID().toString(),
+            UUID.randomUUID().toString()));
       }
 
       int i = 0;
-      await().atMost(10, TimeUnit.SECONDS).untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
-    }
-    finally {
+      await().atMost(10, TimeUnit.SECONDS)
+          .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
+    } finally {
       deleteTopic(TEST_TOPIC_FOR_SINK);
     }
   }

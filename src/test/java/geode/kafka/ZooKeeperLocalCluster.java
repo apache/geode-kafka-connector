@@ -14,13 +14,13 @@
  */
 package geode.kafka;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.admin.AdminServer;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
-
-import java.io.IOException;
-import java.util.Properties;
 
 public class ZooKeeperLocalCluster {
 

@@ -21,19 +21,19 @@ import org.apache.geode.cache.query.CqEvent;
  */
 public class GeodeEvent {
 
-    private String regionName;
-    private CqEvent event;
+  private String regionName;
+  private CqEvent event;
 
-    public GeodeEvent(String regionName, CqEvent event) {
-        this.regionName = regionName;
-        this.event = event;
-    }
+  public GeodeEvent(String regionName, CqEvent event) {
+    this.regionName = regionName;
+    this.event = event;
+  }
 
-    public String getRegionName() {
-        return regionName;
-    }
+  public String getRegionName() {
+    return regionName;
+  }
 
-    public CqEvent getEvent() {
-        return event;
-    }
+  public CqEvent getEvent() {
+    return event;
+  }
 }

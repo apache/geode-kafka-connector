@@ -14,6 +14,13 @@
  */
 package geode.kafka;
 
+import static geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.kafka.connect.errors.ConnectException;
+
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.query.CqAttributes;
@@ -21,78 +28,70 @@ import org.apache.geode.cache.query.CqException;
 import org.apache.geode.cache.query.CqExistsException;
 import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.RegionNotFoundException;
-import org.apache.kafka.connect.errors.ConnectException;
-
-import java.util.Collection;
-import java.util.List;
-
-import static geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
 
 public class GeodeContext {
 
-    private ClientCache clientCache;
+  private ClientCache clientCache;
 
 
-    public GeodeContext() {
+  public GeodeContext() {}
+
+  public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
+      String durableClientId, String durableClientTimeout, String securityAuthInit) {
+    clientCache = createClientCache(locatorHostPortList, durableClientId, durableClientTimeout,
+        securityAuthInit);
+    return clientCache;
+  }
+
+  public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
+      String securityAuthInit) {
+    clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit);
+    return clientCache;
+  }
+
+  public ClientCache getClientCache() {
+    return clientCache;
+  }
+
+  public ClientCache createClientCache(List<LocatorHostPort> locators, String durableClientName,
+      String durableClientTimeOut, String securityAuthInit) {
+    ClientCacheFactory ccf = new ClientCacheFactory();
+
+    if (securityAuthInit != null) {
+      ccf.set(SECURITY_CLIENT_AUTH_INIT, securityAuthInit);
     }
-
-    public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList, String durableClientId, String durableClientTimeout, String securityAuthInit) {
-        clientCache = createClientCache(locatorHostPortList, durableClientId, durableClientTimeout, securityAuthInit);
-        return clientCache;
+    if (!durableClientName.equals("")) {
+      ccf.set("durable-client-id", durableClientName)
+          .set("durable-client-timeout", durableClientTimeOut);
     }
+    // currently we only allow using the default pool.
+    // If we ever want to allow adding multiple pools we'll have to configure pool factories
+    ccf.setPoolSubscriptionEnabled(true);
 
-    public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList, String securityAuthInit) {
-        clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit);
-        return clientCache;
+    for (LocatorHostPort locator : locators) {
+      ccf.addPoolLocator(locator.getHostName(), locator.getPort());
     }
+    return ccf.create();
+  }
 
-    public ClientCache getClientCache() {
-        return clientCache;
+  public CqQuery newCq(String name, String query, CqAttributes cqAttributes, boolean isDurable)
+      throws ConnectException {
+    try {
+      CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
+      cq.execute();
+      return cq;
+    } catch (RegionNotFoundException | CqException | CqExistsException e) {
+      throw new ConnectException(e);
     }
+  }
 
-    /**
-     *
-     * @param locators
-     * @param durableClientName
-     * @param durableClientTimeOut
-     * @return
-     */
-    public ClientCache createClientCache(List<LocatorHostPort> locators, String durableClientName, String durableClientTimeOut, String securityAuthInit) {
-        ClientCacheFactory ccf = new ClientCacheFactory();
-
-        if (securityAuthInit != null) {
-            ccf.set(SECURITY_CLIENT_AUTH_INIT, securityAuthInit);
-        }
-        if (!durableClientName.equals("")) {
-            ccf.set("durable-client-id", durableClientName)
-                    .set("durable-client-timeout", durableClientTimeOut);
-        }
-        //currently we only allow using the default pool.
-        //If we ever want to allow adding multiple pools we'll have to configure pool factories
-        ccf.setPoolSubscriptionEnabled(true);
-
-        for (LocatorHostPort locator: locators) {
-            ccf.addPoolLocator(locator.getHostName(), locator.getPort());
-        }
-        return ccf.create();
+  public Collection newCqWithInitialResults(String name, String query, CqAttributes cqAttributes,
+      boolean isDurable) throws ConnectException {
+    try {
+      CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
+      return cq.executeWithInitialResults();
+    } catch (RegionNotFoundException | CqException | CqExistsException e) {
+      throw new ConnectException(e);
     }
-
-    public CqQuery newCq(String name, String query, CqAttributes cqAttributes, boolean isDurable) throws ConnectException {
-        try {
-            CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
-            cq.execute();
-            return cq;
-        } catch (RegionNotFoundException | CqException | CqExistsException e) {
-            throw new ConnectException(e);
-        }
-    }
-
-    public Collection newCqWithInitialResults(String name, String query, CqAttributes cqAttributes, boolean isDurable) throws ConnectException {
-        try {
-            CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
-            return cq.executeWithInitialResults();
-        } catch (RegionNotFoundException | CqException | CqExistsException e) {
-            throw new ConnectException(e);
-        }
-    }
+  }
 }

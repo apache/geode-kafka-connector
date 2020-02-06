@@ -14,53 +14,53 @@
  */
 package geode.kafka.source;
 
-import org.junit.Test;
+import static geode.kafka.GeodeConnectorConfig.TASK_ID;
+import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.TASK_ID;
-import static geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class GeodeKafkaSourceTest {
 
-    @Test
-    public void taskConfigsCreatesMaxNumberOfTasks() {
-        GeodeKafkaSource source = new GeodeKafkaSource();
-        Map<String, String> props = new HashMap();
-        props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
-        source.start(props);
-        Collection<Map<String,String>> tasks = source.taskConfigs(5);
-        assertEquals(5, tasks.size());
-    }
+  @Test
+  public void taskConfigsCreatesMaxNumberOfTasks() {
+    GeodeKafkaSource source = new GeodeKafkaSource();
+    Map<String, String> props = new HashMap();
+    props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
+    source.start(props);
+    Collection<Map<String, String>> tasks = source.taskConfigs(5);
+    assertEquals(5, tasks.size());
+  }
 
-    @Test
-    public void sourceTaskConfigsAllAssignedEntireRegionToTopicBinding() {
-        GeodeKafkaSource source = new GeodeKafkaSource();
-        Map<String, String> props = new HashMap();
-        props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
-        source.start(props);
-        Collection<Map<String,String>> tasks = source.taskConfigs(5);
-        for(Map<String, String> prop : tasks) {
-            assertEquals("[someRegion:someTopic]", prop.get(REGION_TO_TOPIC_BINDINGS));
-        }
+  @Test
+  public void sourceTaskConfigsAllAssignedEntireRegionToTopicBinding() {
+    GeodeKafkaSource source = new GeodeKafkaSource();
+    Map<String, String> props = new HashMap();
+    props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
+    source.start(props);
+    Collection<Map<String, String>> tasks = source.taskConfigs(5);
+    for (Map<String, String> prop : tasks) {
+      assertEquals("[someRegion:someTopic]", prop.get(REGION_TO_TOPIC_BINDINGS));
     }
+  }
 
-    @Test
-    public void eachTaskHasUniqueTaskIds() {
-        GeodeKafkaSource sink = new GeodeKafkaSource();
-        Map<String, String> props = new HashMap();
-        props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
-        sink.start(props);
-        Collection<Map<String,String>> tasks = sink.taskConfigs(5);
-        HashSet<String> seenIds = new HashSet();
-        for(Map<String, String> taskProp : tasks) {
-            assertTrue(seenIds.add(taskProp.get(TASK_ID)));
-        }
+  @Test
+  public void eachTaskHasUniqueTaskIds() {
+    GeodeKafkaSource sink = new GeodeKafkaSource();
+    Map<String, String> props = new HashMap();
+    props.put(REGION_TO_TOPIC_BINDINGS, "[someRegion:someTopic]");
+    sink.start(props);
+    Collection<Map<String, String>> tasks = sink.taskConfigs(5);
+    HashSet<String> seenIds = new HashSet();
+    for (Map<String, String> taskProp : tasks) {
+      assertTrue(seenIds.add(taskProp.get(TASK_ID)));
     }
+  }
 
 }

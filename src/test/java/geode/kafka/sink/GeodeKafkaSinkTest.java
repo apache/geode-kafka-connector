@@ -14,52 +14,52 @@
  */
 package geode.kafka.sink;
 
-import org.junit.Test;
+import static geode.kafka.GeodeConnectorConfig.TASK_ID;
+import static geode.kafka.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import static geode.kafka.GeodeConnectorConfig.TASK_ID;
-import static geode.kafka.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class GeodeKafkaSinkTest {
 
-    @Test
-    public void taskConfigsCreatesMaxNumberOfTasks() {
-        GeodeKafkaSink sink = new GeodeKafkaSink();
-        Map<String, String> props = new HashMap();
-        props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
-        sink.start(props);
-        Collection<Map<String,String>> tasks = sink.taskConfigs(5);
-        assertEquals(5, tasks.size());
-    }
+  @Test
+  public void taskConfigsCreatesMaxNumberOfTasks() {
+    GeodeKafkaSink sink = new GeodeKafkaSink();
+    Map<String, String> props = new HashMap();
+    props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
+    sink.start(props);
+    Collection<Map<String, String>> tasks = sink.taskConfigs(5);
+    assertEquals(5, tasks.size());
+  }
 
-    @Test
-    public void sinkTaskConfigsAllAssignedEntireTopicToRegionBinding() {
-        GeodeKafkaSink sink = new GeodeKafkaSink();
-        Map<String, String> props = new HashMap();
-        props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
-        sink.start(props);
-        Collection<Map<String,String>> tasks = sink.taskConfigs(5);
-        for(Map<String, String> prop : tasks) {
-            assertEquals("[someTopic:someRegion]", prop.get(TOPIC_TO_REGION_BINDINGS));
-        }
+  @Test
+  public void sinkTaskConfigsAllAssignedEntireTopicToRegionBinding() {
+    GeodeKafkaSink sink = new GeodeKafkaSink();
+    Map<String, String> props = new HashMap();
+    props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
+    sink.start(props);
+    Collection<Map<String, String>> tasks = sink.taskConfigs(5);
+    for (Map<String, String> prop : tasks) {
+      assertEquals("[someTopic:someRegion]", prop.get(TOPIC_TO_REGION_BINDINGS));
     }
+  }
 
-    @Test
-    public void eachTaskHasUniqueTaskIds() {
-        GeodeKafkaSink sink = new GeodeKafkaSink();
-        Map<String, String> props = new HashMap();
-        props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
-        sink.start(props);
-        Collection<Map<String,String>> tasks = sink.taskConfigs(5);
-        HashSet<String> seenIds = new HashSet();
-        for(Map<String, String> taskProp : tasks) {
-            assertTrue(seenIds.add(taskProp.get(TASK_ID)));
-        }
+  @Test
+  public void eachTaskHasUniqueTaskIds() {
+    GeodeKafkaSink sink = new GeodeKafkaSink();
+    Map<String, String> props = new HashMap();
+    props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
+    sink.start(props);
+    Collection<Map<String, String>> tasks = sink.taskConfigs(5);
+    HashSet<String> seenIds = new HashSet();
+    for (Map<String, String> taskProp : tasks) {
+      assertTrue(seenIds.add(taskProp.get(TASK_ID)));
     }
+  }
 }
