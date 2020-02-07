@@ -21,7 +21,8 @@ import org.apache.geode.security.AuthInitialize;
 import org.apache.geode.security.AuthenticationFailedException;
 
 /**
- * This is purely for example purposes and used in conjunction with the SimpleSecurityManager in Apache Geode
+ * This is purely for example purposes and used in conjunction with the SimpleSecurityManager in
+ * Apache Geode
  * DO NOT USE THIS AS A REAL WORLD SOLUTION
  */
 public class ExampleAuthInit implements AuthInitialize {
