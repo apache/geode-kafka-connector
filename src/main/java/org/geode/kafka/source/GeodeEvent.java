@@ -22,18 +22,29 @@ import org.apache.geode.cache.query.CqEvent;
 public class GeodeEvent {
 
   private String regionName;
-  private CqEvent event;
+  private Object key;
+  private Object value;
 
   public GeodeEvent(String regionName, CqEvent event) {
+    this(regionName, event.getKey(), event.getNewValue());
+  }
+
+  public GeodeEvent(String regionName, Object key, Object value) {
     this.regionName = regionName;
-    this.event = event;
+    this.key = key;
+    this.value = value;
   }
 
   public String getRegionName() {
     return regionName;
   }
 
-  public CqEvent getEvent() {
-    return event;
+  public Object getKey() {
+    return key;
   }
+
+  public Object getValue() {
+    return value;
+  }
+
 }

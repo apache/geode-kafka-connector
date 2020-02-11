@@ -38,13 +38,13 @@ public class GeodeConnectorConfig extends AbstractConfig {
   public static final String DEFAULT_LOCATOR = "localhost[10334]";
   public static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
   private static final String DEFAULT_SECURITY_AUTH_INIT = "org.geode.kafka.security.SystemPropertyAuthInit";
-  public static final String SECURITY_USER = "securityUsername";
-  public static final String SECURITY_PASSWORD= "securityPassword";
+  public static final String SECURITY_USER = "security-username";
+  public static final String SECURITY_PASSWORD= "security-password";
 
   protected final int taskId;
   protected List<LocatorHostPort> locatorHostPorts;
   private String securityClientAuthInit;
-  private String securityUser;
+  private String securityUserName;
   private String securityPassword;
 
   //Just for testing
@@ -64,7 +64,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
     super(configDef, connectorProperties);
     taskId = getInt(TASK_ID);
     locatorHostPorts = parseLocators(getString(GeodeConnectorConfig.LOCATORS));
-    securityUser = getString(SECURITY_USER);
+    securityUserName = getString(SECURITY_USER);
     securityPassword = getString(SECURITY_PASSWORD);
     securityClientAuthInit = getString(SECURITY_CLIENT_AUTH_INIT);
     //if we registered a username/password instead of auth init, we should use the default auth init if one isn't specified
@@ -160,7 +160,15 @@ public class GeodeConnectorConfig extends AbstractConfig {
     return securityClientAuthInit;
   }
 
+  public String getSecurityUserName() {
+    return securityUserName;
+  }
+
+  public String getSecurityPassword() {
+    return securityPassword;
+  }
+
   public boolean usesSecurity() {
-    return securityClientAuthInit != null || securityUser != null;
+    return securityClientAuthInit != null || securityUserName != null;
   }
 }

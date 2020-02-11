@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.geode.cache.query.CqResults;
+import org.apache.geode.cache.query.Struct;
 import org.geode.kafka.GeodeContext;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
@@ -68,7 +70,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
       geodeContext = new GeodeContext();
       geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
           geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout(),
-          geodeConnectorConfig.getSecurityClientAuthInit(), geodeConnectorConfig.usesSecurity());
+          geodeConnectorConfig.getSecurityClientAuthInit(), geodeConnectorConfig.getSecurityUserName(), geodeConnectorConfig.getSecurityPassword(), geodeConnectorConfig.usesSecurity());
 
       batchSize = geodeConnectorConfig.getBatchSize();
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
@@ -98,7 +100,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
         List<String> topics = regionToTopics.get(regionName);
         for (String topic : topics) {
           records.add(new SourceRecord(sourcePartitions.get(regionName), OFFSET_DEFAULT, topic,
-              null, event.getEvent().getKey(), null, event.getEvent().getNewValue()));
+              null, event.getKey(), null, event.getValue()));
         }
       }
       return records;
@@ -134,12 +136,11 @@ public class GeodeKafkaSourceTask extends SourceTask {
     CqAttributes cqAttributes = cqAttributesFactory.create();
     try {
       if (loadEntireRegion) {
-        Collection<CqEvent> events =
+        CqResults events =
             geodeContext.newCqWithInitialResults(generateCqName(taskId, cqPrefix, regionName),
                 "select * from /" + regionName, cqAttributes,
                 isDurable);
-        eventBuffer.get().addAll(
-            events.stream().map(e -> new GeodeEvent(regionName, e)).collect(Collectors.toList()));
+        eventBuffer.get().addAll((Collection<GeodeEvent>)events.stream().map(e -> new GeodeEvent(regionName, ((Struct)e).get("key"), ((Struct)e).get("value"))).collect(Collectors.toList()));
       } else {
         geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName),
             "select * from /" + regionName, cqAttributes,

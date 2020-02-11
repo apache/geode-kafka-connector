@@ -36,6 +36,15 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.geode.cache.query.CqAttributes;
+import org.apache.geode.cache.query.CqResults;
+import org.apache.geode.cache.query.SelectResults;
+import org.apache.geode.cache.query.Struct;
+import org.apache.geode.cache.query.internal.LinkedStructSet;
+import org.apache.geode.cache.query.internal.ResultsBag;
+import org.apache.geode.cache.query.internal.ResultsBag;
+import org.apache.geode.cache.query.internal.StructImpl;
+import org.apache.geode.cache.query.internal.types.StructTypeImpl;
 import org.geode.kafka.GeodeContext;
 import org.junit.Test;
 
@@ -52,9 +61,9 @@ public class GeodeKafkaSourceTaskTest {
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
     boolean loadEntireRegion = true;
     boolean isDurable = false;
-    List<CqEvent> fakeInitialResults = new LinkedList<>();
+    CqResults fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
-      fakeInitialResults.add(mock(CqEvent.class));
+      fakeInitialResults.add(mock(Struct.class));
     }
 
     when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean()))
@@ -71,7 +80,7 @@ public class GeodeKafkaSourceTaskTest {
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
     boolean loadEntireRegion = false;
     boolean isDurable = false;
-    List<CqEvent> fakeInitialResults = new LinkedList<>();
+    CqResults fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
       fakeInitialResults.add(mock(CqEvent.class));
     }
@@ -92,7 +101,7 @@ public class GeodeKafkaSourceTaskTest {
     boolean isDurable = false;
 
     when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean()))
-        .thenReturn(new ArrayList());
+        .thenReturn(mock(CqResults.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     GeodeKafkaSourceListener listener =
         task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
@@ -140,7 +149,7 @@ public class GeodeKafkaSourceTaskTest {
 
     GeodeContext geodeContext = mock(GeodeContext.class);
     when(geodeContext.getClientCache()).thenReturn(clientCache);
-
+    when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(CqAttributes.class), anyBoolean())).thenReturn(new ResultsBag());
     Map<String, List<String>> regionToTopicsMap = new HashMap<>();
     regionToTopicsMap.put("region1", new ArrayList());
 

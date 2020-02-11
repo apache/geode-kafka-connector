@@ -27,8 +27,8 @@ public class SystemPropertyAuthInit implements AuthInitialize {
   public Properties getCredentials(Properties securityProps, DistributedMember server,
       boolean isPeer) throws AuthenticationFailedException {
     Properties extractedProperties = new Properties();
-    extractedProperties.put("security-username", System.getProperty(GeodeConnectorConfig.SECURITY_USER));
-    extractedProperties.put("security-password", System.getProperty(GeodeConnectorConfig.SECURITY_PASSWORD));
+    extractedProperties.put("security-username", securityProps.get("security-username"));
+    extractedProperties.put("security-password", securityProps.get("security-password"));
     return extractedProperties;
   }
 }
