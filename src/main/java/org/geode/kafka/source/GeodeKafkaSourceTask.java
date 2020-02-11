@@ -64,16 +64,14 @@ public class GeodeKafkaSourceTask extends SourceTask {
   public void start(Map<String, String> props) {
     try {
       geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
-      int taskId = geodeConnectorConfig.getTaskId();
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
       geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
           geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout(),
-          geodeConnectorConfig.getSecurityClientAuthInit());
+          geodeConnectorConfig.getSecurityClientAuthInit(), geodeConnectorConfig.usesSecurity());
 
-      batchSize = Integer.parseInt(props.get(GeodeSourceConnectorConfig.BATCH_SIZE));
-      eventBufferSupplier = new SharedEventBufferSupplier(Integer.parseInt(props.get(
-          GeodeSourceConnectorConfig.QUEUE_SIZE)));
+      batchSize = geodeConnectorConfig.getBatchSize();
+      eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
 
       regionToTopics = geodeConnectorConfig.getRegionToTopics();
       geodeConnectorConfig.getCqsToRegister();

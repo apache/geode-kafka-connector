@@ -24,13 +24,14 @@ import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
 
+import static org.geode.kafka.sink.GeodeSinkConnectorConfig.SINK_CONFIG_DEF;
+
 public class GeodeKafkaSink extends SinkConnector {
-  private static final ConfigDef CONFIG_DEF = new ConfigDef();
   private Map<String, String> sharedProps;
 
   @Override
   public void start(Map<String, String> props) {
-    sharedProps = computeMissingConfigurations(props);
+    sharedProps = props;
   }
 
   @Override
@@ -61,7 +62,7 @@ public class GeodeKafkaSink extends SinkConnector {
 
   @Override
   public ConfigDef config() {
-    return CONFIG_DEF;
+    return SINK_CONFIG_DEF;
   }
 
   @Override
@@ -70,12 +71,4 @@ public class GeodeKafkaSink extends SinkConnector {
     return "unknown";
   }
 
-
-  private Map<String, String> computeMissingConfigurations(Map<String, String> props) {
-    props.computeIfAbsent(
-        GeodeConnectorConfig.LOCATORS, (key) -> GeodeConnectorConfig.DEFAULT_LOCATOR);
-    props.computeIfAbsent(
-        GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE, (key) -> GeodeSinkConnectorConfig.DEFAULT_NULL_VALUES_MEAN_REMOVE);
-    return props;
-  }
 }

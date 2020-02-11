@@ -27,6 +27,8 @@ import org.apache.geode.cache.query.CqExistsException;
 import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.RegionNotFoundException;
 
+import static org.geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
+
 public class GeodeContext {
 
   private ClientCache clientCache;
@@ -35,15 +37,15 @@ public class GeodeContext {
   public GeodeContext() {}
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-      String durableClientId, String durableClientTimeout, String securityAuthInit) {
+      String durableClientId, String durableClientTimeout, String securityAuthInit, boolean usesSecurity) {
     clientCache = createClientCache(locatorHostPortList, durableClientId, durableClientTimeout,
-        securityAuthInit);
+        securityAuthInit, usesSecurity);
     return clientCache;
   }
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-      String securityAuthInit) {
-    clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit);
+      String securityAuthInit, boolean usesSecurity) {
+    clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit, usesSecurity);
     return clientCache;
   }
 
@@ -52,11 +54,11 @@ public class GeodeContext {
   }
 
   public ClientCache createClientCache(List<LocatorHostPort> locators, String durableClientName,
-      String durableClientTimeOut, String securityAuthInit) {
+      String durableClientTimeOut, String securityAuthInit, boolean usesSecurity) {
     ClientCacheFactory ccf = new ClientCacheFactory();
 
-    if (securityAuthInit != null) {
-      ccf.set(GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT, securityAuthInit);
+    if (usesSecurity ) {
+      ccf.set(SECURITY_CLIENT_AUTH_INIT, securityAuthInit);
     }
     if (!durableClientName.equals("")) {
       ccf.set("durable-client-id", durableClientName)

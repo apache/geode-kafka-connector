@@ -12,28 +12,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package geode.kafka.example;
+package org.geode.kafka.security;
 
 import java.util.Properties;
 
 import org.apache.geode.distributed.DistributedMember;
 import org.apache.geode.security.AuthInitialize;
 import org.apache.geode.security.AuthenticationFailedException;
+import org.geode.kafka.GeodeConnectorConfig;
 
-/**
- * This is purely for example purposes and used in conjunction with the SimpleSecurityManager in
- * Apache Geode
- * DO NOT USE THIS AS A REAL WORLD SOLUTION
- */
-public class ExampleAuthInit implements AuthInitialize {
+
+public class SystemPropertyAuthInit implements AuthInitialize {
   @Override
   public Properties getCredentials(Properties securityProps, DistributedMember server,
       boolean isPeer) throws AuthenticationFailedException {
     Properties extractedProperties = new Properties();
-    // Do not do this in real use case. This is hardcoded and sets the user name and password for
-    // all users
-    extractedProperties.put("security-username", "Bearer");
-    extractedProperties.put("security-password", "Bearer");
+    extractedProperties.put("security-username", System.getProperty(GeodeConnectorConfig.SECURITY_USER));
+    extractedProperties.put("security-password", System.getProperty(GeodeConnectorConfig.SECURITY_PASSWORD));
     return extractedProperties;
   }
 }

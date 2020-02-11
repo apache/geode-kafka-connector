@@ -14,14 +14,19 @@
  */
 package org.geode.kafka.sink;
 
+import org.apache.kafka.common.config.ConfigDef;
+
 import java.util.List;
 import java.util.Map;
 
 import org.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
+  public static final ConfigDef SINK_CONFIG_DEF = configurables();
+
   // Used by sink
   public static final String TOPIC_TO_REGION_BINDINGS = "topicToRegions";
+  public static final String DEFAULT_TOPIC_TO_REGION_BINDING = "[gkcTopic:gkcRegion]";
   public static final String NULL_VALUES_MEAN_REMOVE = "nullValuesMeanRemove";
   public static final String DEFAULT_NULL_VALUES_MEAN_REMOVE = "true";
 
@@ -29,9 +34,16 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   private final boolean nullValuesMeanRemove;
 
   public GeodeSinkConnectorConfig(Map<String, String> connectorProperties) {
-    super(connectorProperties);
-    topicToRegions = parseTopicToRegions(connectorProperties.get(TOPIC_TO_REGION_BINDINGS));
-    nullValuesMeanRemove = Boolean.parseBoolean(connectorProperties.get(NULL_VALUES_MEAN_REMOVE));
+    super(SINK_CONFIG_DEF, connectorProperties);
+    topicToRegions = parseTopicToRegions(getString(TOPIC_TO_REGION_BINDINGS));
+    nullValuesMeanRemove = getBoolean(NULL_VALUES_MEAN_REMOVE);
+  }
+
+  protected static ConfigDef configurables() {
+    ConfigDef configDef = GeodeConnectorConfig.configurables();
+    configDef.define(TOPIC_TO_REGION_BINDINGS, ConfigDef.Type.STRING, DEFAULT_TOPIC_TO_REGION_BINDING, ConfigDef.Importance.HIGH, "");
+    configDef.define(NULL_VALUES_MEAN_REMOVE, ConfigDef.Type.BOOLEAN, DEFAULT_NULL_VALUES_MEAN_REMOVE, ConfigDef.Importance.MEDIUM, "");
+    return configDef;
   }
 
   public Map<String, List<String>> getTopicToRegions() {

@@ -26,13 +26,12 @@ import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
 
+import static org.geode.kafka.source.GeodeSourceConnectorConfig.SOURCE_CONFIG_DEF;
+
 
 public class GeodeKafkaSource extends SourceConnector {
 
   private Map<String, String> sharedProps;
-  // TODO maybe club this into GeodeConnnectorConfig
-  private static final ConfigDef CONFIG_DEF = new ConfigDef();
-
 
   @Override
   public Class<? extends Task> taskClass() {
@@ -61,30 +60,12 @@ public class GeodeKafkaSource extends SourceConnector {
 
   @Override
   public ConfigDef config() {
-    return CONFIG_DEF;
+    return SOURCE_CONFIG_DEF;
   }
 
   @Override
   public void start(Map<String, String> props) {
-    sharedProps = computeMissingConfigurations(props);
-  }
-
-  private Map<String, String> computeMissingConfigurations(Map<String, String> props) {
-    props.computeIfAbsent(
-        GeodeConnectorConfig.LOCATORS, (key) -> GeodeConnectorConfig.DEFAULT_LOCATOR);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.DURABLE_CLIENT_TIME_OUT, (key) -> GeodeSourceConnectorConfig.DEFAULT_DURABLE_CLIENT_TIMEOUT);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.DURABLE_CLIENT_ID_PREFIX, (key) -> GeodeSourceConnectorConfig.DEFAULT_DURABLE_CLIENT_ID);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.BATCH_SIZE, (key) -> GeodeSourceConnectorConfig.DEFAULT_BATCH_SIZE);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.QUEUE_SIZE, (key) -> GeodeSourceConnectorConfig.DEFAULT_QUEUE_SIZE);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.CQ_PREFIX, (key) -> GeodeSourceConnectorConfig.DEFAULT_CQ_PREFIX);
-    props.computeIfAbsent(
-        GeodeSourceConnectorConfig.LOAD_ENTIRE_REGION, (key) -> GeodeSourceConnectorConfig.DEFAULT_LOAD_ENTIRE_REGION);
-    return props;
+    sharedProps = props;
   }
 
   @Override

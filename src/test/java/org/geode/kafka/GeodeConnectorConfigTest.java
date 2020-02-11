@@ -14,14 +14,20 @@
  */
 package org.geode.kafka;
 
+
+import static org.geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
+import static org.geode.kafka.GeodeConnectorConfig.SECURITY_USER;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,6 +134,43 @@ public class GeodeConnectorConfigTest {
     assertTrue(regionToTopics.get("region1").contains("topic1"));
   }
 
+  @Test
+  public void usesSecurityShouldBeTrueIfSecurityUserSet() {
+    Map<String, String> props = new HashMap<>();
+    props.put(SECURITY_USER, "some user");
+    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    assertTrue(config.usesSecurity());
+  }
+
+  @Test
+  public void usesSecurityShouldBeTrueIfSecurityClientAuthInitSet() {
+    Map<String, String> props = new HashMap<>();
+    props.put(SECURITY_CLIENT_AUTH_INIT, "someclass");
+    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    assertTrue(config.usesSecurity());
+  }
+
+  @Test
+  public void usesSecurityShouldBeFalseIfSecurityUserAndSecurityClientAuthInitNotSet() {
+    Map<String, String> props = new HashMap<>();
+    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    assertFalse(config.usesSecurity());
+  }
+
+  @Test
+  public void securityClientAuthInitShouldBeSetIfUserIsSet() {
+    Map<String, String> props = new HashMap<>();
+    props.put(SECURITY_USER, "some user");
+    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    assertNotNull(config.getSecurityClientAuthInit());
+  }
+
+  @Test
+  public void securityClientAuthInitShouldNotBeSetIfUserIsNotSetAndNotSpecificallySet() {
+    Map<String, String> props = new HashMap<>();
+    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    assertNull(config.getSecurityClientAuthInit());
+  }
 
   /*
    * taskId = Integer.parseInt(connectorProperties.get(TASK_ID));

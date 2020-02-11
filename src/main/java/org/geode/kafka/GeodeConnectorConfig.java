@@ -14,6 +14,9 @@
  */
 package org.geode.kafka;
 
+import org.apache.kafka.common.config.AbstractConfig;
+import org.apache.kafka.common.config.ConfigDef;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class GeodeConnectorConfig {
+public class GeodeConnectorConfig extends AbstractConfig {
 
   // GeodeKafka Specific Configuration
   /**
@@ -34,19 +37,50 @@ public class GeodeConnectorConfig {
   public static final String LOCATORS = "locators";
   public static final String DEFAULT_LOCATOR = "localhost[10334]";
   public static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
+  private static final String DEFAULT_SECURITY_AUTH_INIT = "geode.kafka.SystemPropertyAuthInit";
+  public static final String SECURITY_USER = "securityUsername";
+  public static final String SECURITY_PASSWORD= "securityPassword";
 
   protected final int taskId;
   protected List<LocatorHostPort> locatorHostPorts;
   private String securityClientAuthInit;
+  private String securityUser;
+  private String securityPassword;
 
+  //Just for testing
   protected GeodeConnectorConfig() {
+    super(new ConfigDef(), new HashMap());
     taskId = 0;
   }
 
-  public GeodeConnectorConfig(Map<String, String> connectorProperties) {
-    taskId = Integer.parseInt(connectorProperties.get(TASK_ID));
-    locatorHostPorts = parseLocators(connectorProperties.get(GeodeConnectorConfig.LOCATORS));
-    securityClientAuthInit = connectorProperties.get(SECURITY_CLIENT_AUTH_INIT);
+  //Just for testing
+  protected GeodeConnectorConfig(Map<String, String> props) {
+    super(new ConfigDef(), props);
+    taskId = 0;
+  }
+
+
+  public GeodeConnectorConfig(ConfigDef configDef, Map<String, String> connectorProperties) {
+    super(configDef, connectorProperties);
+    taskId = getInt(TASK_ID);
+    locatorHostPorts = parseLocators(getString(GeodeConnectorConfig.LOCATORS));
+    securityUser = getString(SECURITY_USER);
+    securityPassword = getString(SECURITY_PASSWORD);
+    securityClientAuthInit = getString(SECURITY_CLIENT_AUTH_INIT);
+    //if we registered a username/password instead of auth init, we should use the default auth init if one isn't specified
+    if (usesSecurity()) {
+      securityClientAuthInit = securityClientAuthInit != null ? securityClientAuthInit : DEFAULT_SECURITY_AUTH_INIT;
+    }
+  }
+
+  protected static ConfigDef configurables() {
+    ConfigDef configDef = new ConfigDef();
+    configDef.define(TASK_ID, ConfigDef.Type.INT,  "0", ConfigDef.Importance.MEDIUM,"");
+    configDef.define(LOCATORS, ConfigDef.Type.STRING, DEFAULT_LOCATOR, ConfigDef.Importance.HIGH, "");
+    configDef.define(SECURITY_USER, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH, "");
+    configDef.define(SECURITY_PASSWORD, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH, "");
+    configDef.define(SECURITY_CLIENT_AUTH_INIT, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH, "");
+    return configDef;
   }
 
 
@@ -124,5 +158,9 @@ public class GeodeConnectorConfig {
 
   public String getSecurityClientAuthInit() {
     return securityClientAuthInit;
+  }
+
+  public boolean usesSecurity() {
+    return securityClientAuthInit != null || securityUser != null;
   }
 }
