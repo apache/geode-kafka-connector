@@ -138,7 +138,8 @@ public class GeodeConnectorConfigTest {
   public void usesSecurityShouldBeTrueIfSecurityUserSet() {
     Map<String, String> props = new HashMap<>();
     props.put(SECURITY_USER, "some user");
-    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    GeodeConnectorConfig config =
+        new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertTrue(config.usesSecurity());
   }
 
@@ -146,14 +147,16 @@ public class GeodeConnectorConfigTest {
   public void usesSecurityShouldBeTrueIfSecurityClientAuthInitSet() {
     Map<String, String> props = new HashMap<>();
     props.put(SECURITY_CLIENT_AUTH_INIT, "someclass");
-    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    GeodeConnectorConfig config =
+        new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertTrue(config.usesSecurity());
   }
 
   @Test
   public void usesSecurityShouldBeFalseIfSecurityUserAndSecurityClientAuthInitNotSet() {
     Map<String, String> props = new HashMap<>();
-    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    GeodeConnectorConfig config =
+        new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertFalse(config.usesSecurity());
   }
 
@@ -161,14 +164,16 @@ public class GeodeConnectorConfigTest {
   public void securityClientAuthInitShouldBeSetIfUserIsSet() {
     Map<String, String> props = new HashMap<>();
     props.put(SECURITY_USER, "some user");
-    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    GeodeConnectorConfig config =
+        new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertNotNull(config.getSecurityClientAuthInit());
   }
 
   @Test
   public void securityClientAuthInitShouldNotBeSetIfUserIsNotSetAndNotSpecificallySet() {
     Map<String, String> props = new HashMap<>();
-    GeodeConnectorConfig config = new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
+    GeodeConnectorConfig config =
+        new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertNull(config.getSecurityClientAuthInit());
   }
 

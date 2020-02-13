@@ -30,26 +30,20 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.geode.cache.query.CqAttributes;
-import org.apache.geode.cache.query.CqResults;
-import org.apache.geode.cache.query.SelectResults;
-import org.apache.geode.cache.query.Struct;
-import org.apache.geode.cache.query.internal.LinkedStructSet;
-import org.apache.geode.cache.query.internal.ResultsBag;
-import org.apache.geode.cache.query.internal.ResultsBag;
-import org.apache.geode.cache.query.internal.StructImpl;
-import org.apache.geode.cache.query.internal.types.StructTypeImpl;
 import org.geode.kafka.GeodeContext;
 import org.junit.Test;
 
 import org.apache.geode.cache.client.ClientCache;
+import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqEvent;
+import org.apache.geode.cache.query.CqResults;
+import org.apache.geode.cache.query.Struct;
+import org.apache.geode.cache.query.internal.ResultsBag;
 
 
 public class GeodeKafkaSourceTaskTest {
@@ -149,7 +143,8 @@ public class GeodeKafkaSourceTaskTest {
 
     GeodeContext geodeContext = mock(GeodeContext.class);
     when(geodeContext.getClientCache()).thenReturn(clientCache);
-    when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(CqAttributes.class), anyBoolean())).thenReturn(new ResultsBag());
+    when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(CqAttributes.class),
+        anyBoolean())).thenReturn(new ResultsBag());
     Map<String, List<String>> regionToTopicsMap = new HashMap<>();
     regionToTopicsMap.put("region1", new ArrayList());
 

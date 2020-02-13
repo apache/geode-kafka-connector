@@ -26,7 +26,7 @@ plugin.path=(Path to your clone)/geode-kafka-connector/build/libs/
 name=geode-kafka-sink
 connector.class=GeodeKafkaSink
 tasks.max=1
-topicToRegions=[someTopicToSinkFrom:someRegionToConsume]
+topic-to-regions=[someTopicToSinkFrom:someRegionToConsume]
 topics=someTopicToSinkFrom
 locators=localHost[10334]
 ```
@@ -35,7 +35,7 @@ locators=localHost[10334]
 name=geode-kafka-source
 connector.class=GeodeKafkaSource
 tasks.max=1
-regionToTopics=[someRegionToSourceFrom:someTopicToConsume]
+region-to-topics=[someRegionToSourceFrom:someTopicToConsume]
 locators=localHost[10334]
 ```
 
@@ -47,27 +47,29 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 #### GeodeKafkaSink Properties
 | Property | Required | Description| Default |
 |---|---|---|---|
-| locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
-|topicToRegions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | None.  This is required to be set in the source connector properties
+|locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
+|topic-to-regions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | "[gkctopic:gkcregion]"
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
-|nullValuesMeanRemove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true |
+|null-values-mean-remove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true |
 
-* The topicToRegions property allows us to create mappings between topics  and regions.  A single one-to-one mapping would look similar to "[topic:region]" A one-to-many mapping can be made by comma separating the regions, for example "[topic:region1,region2]"  This is equivalent to both regions being consumers of the topic.
+* The topic-to-regions property allows us to create mappings between topics  and regions.  A single one-to-one mapping would look similar to "[topic:region]" A one-to-many mapping can be made by comma separating the regions, for example "[topic:region1,region2]"  This is equivalent to both regions being consumers of the topic.
 
 #### GeodeKafkaSource Properties
 | Property | Required| Description| Default |
 |---|---|---|---|
 | locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
-|regionToTopics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | None.  This is required to be set in the source connector properties|
+|region-to-topics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | "[gkcregion:gkctopic]"|
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
-|geodeConnectorBatchSize| no | Maximum number of records to return on each poll| 100 |
-|geodeConnectorQueueSize| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |
-| loadEntireRegion| no| Determines if we should queue up all entries that currently exist in a region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq| true |
-|durableClientIdPrefix| no | Prefix string for tasks to append to when registering as a durable client.  If empty string, will not register as a durable client | "" |
-| durableClientTimeout| no | How long in milliseconds to persist values in Geode's durable queue before the queue is invalidated| 60000 |
-| cqPrefix| no| Prefix string to identify Connector cq's on a Geode server |cqForGeodeKafka |
+|security-username| no | Supply a username to be used to authenticate with Geode.  Will autoset the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user| null|
+|security-password| no | Supply a password to be used to authenticate with Geode| null|
+|geode-connector-batch-size| no | Maximum number of records to return on each poll| 100 |
+|geode-connector-queue-size| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |
+| load-entire-region| no| Determines if we should queue up all entries that currently exist in a region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq| true |
+|durable-client-id-prefix| no | Prefix string for tasks to append to when registering as a durable client.  If empty string, will not register as a durable client | "" |
+| durable-client-timeout| no | How long in milliseconds to persist values in Geode's durable queue before the queue is invalidated| 60000 |
+| cq-prefix| no| Prefix string to identify Connector cq's on a Geode server |cqForGeodeKafka |
 
-* The regionToTopics property allows us to create mappings between regions and topics.  A single one-to-one mapping would look similar to "[region:topic]" A one-to-many mapping can be made by comma separating the topics, for example "[region:topic1,topic2]"  This is equivalent to the region be a producer for both topics 
+* The region-to-topics property allows us to create mappings between regions and topics.  A single one-to-one mapping would look similar to "[region:topic]" A one-to-many mapping can be made by comma separating the topics, for example "[region:topic1,topic2]"  This is equivalent to the region be a producer for both topics 
 
 ---
 

@@ -14,20 +14,19 @@
  */
 package org.geode.kafka.sink;
 
-import org.apache.kafka.common.config.ConfigDef;
-
 import java.util.List;
 import java.util.Map;
 
+import org.apache.kafka.common.config.ConfigDef;
 import org.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   public static final ConfigDef SINK_CONFIG_DEF = configurables();
 
   // Used by sink
-  public static final String TOPIC_TO_REGION_BINDINGS = "topicToRegions";
+  public static final String TOPIC_TO_REGION_BINDINGS = "topic-to-regions";
   public static final String DEFAULT_TOPIC_TO_REGION_BINDING = "[gkcTopic:gkcRegion]";
-  public static final String NULL_VALUES_MEAN_REMOVE = "nullValuesMeanRemove";
+  public static final String NULL_VALUES_MEAN_REMOVE = "null-values-mean-remove";
   public static final String DEFAULT_NULL_VALUES_MEAN_REMOVE = "true";
 
   private Map<String, List<String>> topicToRegions;
@@ -41,8 +40,12 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
 
   protected static ConfigDef configurables() {
     ConfigDef configDef = GeodeConnectorConfig.configurables();
-    configDef.define(TOPIC_TO_REGION_BINDINGS, ConfigDef.Type.STRING, DEFAULT_TOPIC_TO_REGION_BINDING, ConfigDef.Importance.HIGH, "");
-    configDef.define(NULL_VALUES_MEAN_REMOVE, ConfigDef.Type.BOOLEAN, DEFAULT_NULL_VALUES_MEAN_REMOVE, ConfigDef.Importance.MEDIUM, "");
+    configDef.define(TOPIC_TO_REGION_BINDINGS, ConfigDef.Type.STRING,
+        DEFAULT_TOPIC_TO_REGION_BINDING, ConfigDef.Importance.HIGH,
+        "A comma separated list of \"one topic to many regions\" bindings.  Each binding is surrounded by brackets. For example \"[topicName:regionName], [anotherTopic: regionName, anotherRegion]");
+    configDef.define(NULL_VALUES_MEAN_REMOVE, ConfigDef.Type.BOOLEAN,
+        DEFAULT_NULL_VALUES_MEAN_REMOVE, ConfigDef.Importance.MEDIUM,
+        "If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region");
     return configDef;
   }
 

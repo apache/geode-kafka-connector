@@ -26,29 +26,30 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
   public static final ConfigDef SOURCE_CONFIG_DEF = configurables();
 
   // Geode Configuration
-  public static final String DURABLE_CLIENT_ID_PREFIX = "durableClientIdPrefix";
+  public static final String DURABLE_CLIENT_ID_PREFIX = "durable-client-id-prefix";
   public static final String DEFAULT_DURABLE_CLIENT_ID = "";
-  public static final String DURABLE_CLIENT_TIME_OUT = "durableClientTimeout";
+  public static final String DURABLE_CLIENT_TIME_OUT = "durable-client-timeout";
   public static final String DEFAULT_DURABLE_CLIENT_TIMEOUT = "60000";
 
-  public static final String CQ_PREFIX = "cqPrefix";
+  public static final String CQ_PREFIX = "cq-prefix";
   public static final String DEFAULT_CQ_PREFIX = "cqForGeodeKafka";
 
   /**
    * Used as a key for source partitions
    */
   public static final String REGION_PARTITION = "regionPartition";
-  public static final String REGION_TO_TOPIC_BINDINGS = "regionToTopics";
+  public static final String REGION_TO_TOPIC_BINDINGS = "region-to-topics";
   public static final String DEFAULT_REGION_TO_TOPIC_BINDING = "[gkcRegion:gkcTopic]";
-  public static final String CQS_TO_REGISTER = "cqsToRegister"; //used internally so that only 1 task will register a cq
+  public static final String CQS_TO_REGISTER = "cqsToRegister"; // used internally so that only 1
+                                                                // task will register a cq
 
-  public static final String BATCH_SIZE = "geodeConnectorBatchSize";
+  public static final String BATCH_SIZE = "geode-connector-batch-size";
   public static final String DEFAULT_BATCH_SIZE = "100";
 
-  public static final String QUEUE_SIZE = "geodeConnectorQueueSize";
+  public static final String QUEUE_SIZE = "geode-connector-queue-size";
   public static final String DEFAULT_QUEUE_SIZE = "10000";
 
-  public static final String LOAD_ENTIRE_REGION = "loadEntireRegion";
+  public static final String LOAD_ENTIRE_REGION = "load-entire-region";
   public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
 
   private final String durableClientId;
@@ -81,14 +82,27 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
 
   protected static ConfigDef configurables() {
     ConfigDef configDef = GeodeConnectorConfig.configurables();
-    configDef.define(CQS_TO_REGISTER, ConfigDef.Type.STRING, "", ConfigDef.Importance.HIGH, "Internally created and used parameter, for signalling a task to register cqs");
-    configDef.define(REGION_TO_TOPIC_BINDINGS, ConfigDef.Type.STRING, DEFAULT_REGION_TO_TOPIC_BINDING, ConfigDef.Importance.HIGH, "");
-    configDef.define(DURABLE_CLIENT_ID_PREFIX, ConfigDef.Type.STRING, DEFAULT_DURABLE_CLIENT_ID, ConfigDef.Importance.LOW, "");
-    configDef.define(DURABLE_CLIENT_TIME_OUT, ConfigDef.Type.STRING, DEFAULT_DURABLE_CLIENT_TIMEOUT, ConfigDef.Importance.LOW, "");
-    configDef.define(CQ_PREFIX, ConfigDef.Type.STRING, DEFAULT_CQ_PREFIX, ConfigDef.Importance.LOW, "");
-    configDef.define(BATCH_SIZE, ConfigDef.Type.INT, DEFAULT_BATCH_SIZE, ConfigDef.Importance.MEDIUM, "");
-    configDef.define(QUEUE_SIZE, ConfigDef.Type.INT, DEFAULT_QUEUE_SIZE, ConfigDef.Importance.MEDIUM, "");
-    configDef.define(LOAD_ENTIRE_REGION, ConfigDef.Type.BOOLEAN, DEFAULT_LOAD_ENTIRE_REGION, ConfigDef.Importance.MEDIUM, "");
+    configDef.define(CQS_TO_REGISTER, ConfigDef.Type.STRING, "", ConfigDef.Importance.HIGH,
+        "Internally created and used parameter, for signalling a task to register cqs");
+    configDef.define(REGION_TO_TOPIC_BINDINGS, ConfigDef.Type.STRING,
+        DEFAULT_REGION_TO_TOPIC_BINDING, ConfigDef.Importance.HIGH,
+        "A comma separated list of \"one region to many topics\" mappings.  Each mapping is surrounded by brackets.  For example \"[regionName:topicName], \"[anotherRegion: topicName, anotherTopic]\"");
+    configDef.define(DURABLE_CLIENT_ID_PREFIX, ConfigDef.Type.STRING, DEFAULT_DURABLE_CLIENT_ID,
+        ConfigDef.Importance.LOW,
+        "Prefix string for tasks to append to when registering as a durable client.  If empty string, will not register as a durable client");
+    configDef.define(DURABLE_CLIENT_TIME_OUT, ConfigDef.Type.STRING, DEFAULT_DURABLE_CLIENT_TIMEOUT,
+        ConfigDef.Importance.LOW,
+        "How long in milliseconds to persist values in Geode's durable queue before the queue is invalidated");
+    configDef.define(CQ_PREFIX, ConfigDef.Type.STRING, DEFAULT_CQ_PREFIX, ConfigDef.Importance.LOW,
+        "Prefix string to identify Connector cq's on a Geode server");
+    configDef.define(BATCH_SIZE, ConfigDef.Type.INT, DEFAULT_BATCH_SIZE,
+        ConfigDef.Importance.MEDIUM, "Maximum number of records to return on each poll");
+    configDef.define(QUEUE_SIZE, ConfigDef.Type.INT, DEFAULT_QUEUE_SIZE,
+        ConfigDef.Importance.MEDIUM,
+        "Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue ");
+    configDef.define(LOAD_ENTIRE_REGION, ConfigDef.Type.BOOLEAN, DEFAULT_LOAD_ENTIRE_REGION,
+        ConfigDef.Importance.MEDIUM,
+        "Determines if we should queue up all entries that currently exist in a region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a cq");
     return configDef;
   }
 

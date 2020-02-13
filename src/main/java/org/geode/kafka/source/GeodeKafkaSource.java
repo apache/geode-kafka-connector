@@ -14,19 +14,19 @@
  */
 package org.geode.kafka.source;
 
+import static org.geode.kafka.source.GeodeSourceConnectorConfig.SOURCE_CONFIG_DEF;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.geode.kafka.GeodeConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
-
-import static org.geode.kafka.source.GeodeSourceConnectorConfig.SOURCE_CONFIG_DEF;
+import org.geode.kafka.GeodeConnectorConfig;
 
 
 public class GeodeKafkaSource extends SourceConnector {
@@ -43,7 +43,8 @@ public class GeodeKafkaSource extends SourceConnector {
     List<Map<String, String>> taskConfigs = new ArrayList<>();
     List<String> bindings =
         GeodeConnectorConfig
-            .parseStringByComma(sharedProps.get(GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS));
+            .parseStringByComma(
+                sharedProps.get(GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS));
     List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {
