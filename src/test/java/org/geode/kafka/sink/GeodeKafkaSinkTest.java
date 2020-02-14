@@ -29,6 +29,11 @@ import org.junit.Test;
 public class GeodeKafkaSinkTest {
 
   @Test
+  public void taskClassReferencesCorrectSinkTaskClass() {
+    assertEquals(GeodeKafkaSinkTask.class, new GeodeKafkaSink().taskClass());
+  }
+
+  @Test
   public void taskConfigsCreatesMaxNumberOfTasks() {
     GeodeKafkaSink sink = new GeodeKafkaSink();
     Map<String, String> props = new HashMap();

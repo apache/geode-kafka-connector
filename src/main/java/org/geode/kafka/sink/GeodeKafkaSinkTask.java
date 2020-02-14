@@ -138,7 +138,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
       return geodeContext.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY)
           .create(regionName);
     } catch (RegionExistsException e) {
-      // Each task is a seperate parallel task controlled by kafka.
+      // Each task is a separate parallel task controlled by kafka.
       return geodeContext.getClientCache().getRegion(regionName);
     }
   }

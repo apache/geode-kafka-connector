@@ -54,13 +54,6 @@ public class GeodeConnectorConfig extends AbstractConfig {
     taskId = 0;
   }
 
-  // Just for testing
-  protected GeodeConnectorConfig(Map<String, String> props) {
-    super(new ConfigDef(), props);
-    taskId = 0;
-  }
-
-
   public GeodeConnectorConfig(ConfigDef configDef, Map<String, String> connectorProperties) {
     super(configDef, connectorProperties);
     taskId = getInt(TASK_ID);
