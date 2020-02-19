@@ -76,7 +76,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
     configDef.define(LOCATORS, ConfigDef.Type.STRING, DEFAULT_LOCATOR, ConfigDef.Importance.HIGH,
         "A comma separated string of locators that configure which locators to connect to");
     configDef.define(SECURITY_USER, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH,
-        "Supply a username to be used to authenticate with Geode.  Will autoset the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user");
+        "Supply a username to be used to authenticate with Geode.  Will automatically set the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user");
     configDef.define(SECURITY_PASSWORD, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH,
         "Supply a password to be used to authenticate with Geode");
     configDef.define(SECURITY_CLIENT_AUTH_INIT, ConfigDef.Type.STRING, null,

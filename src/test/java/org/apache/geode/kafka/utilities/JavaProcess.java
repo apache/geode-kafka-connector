@@ -22,8 +22,8 @@ public class JavaProcess {
   public Process process;
   Class classWithMain;
 
-  public JavaProcess(Class classWithmain) {
-    this.classWithMain = classWithmain;
+  public JavaProcess(Class classWithMain) {
+    this.classWithMain = classWithMain;
   }
 
   public void exec(String... args) throws IOException, InterruptedException {

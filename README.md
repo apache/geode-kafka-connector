@@ -5,7 +5,7 @@ The GeodeKafkaSink allows Geode to consume data off of topics and store data fro
 
 ### How to install the geode-kafka-connector
 ---
-#### Prequisite
+#### Prerequisite
 * Kafka is installed and is up and running.  See the Kafka quickstart for more info: [Kafka Quickstart](https://kafka.apache.org/quickstart)
 * A Geode Cluster with at least one locator and one server and regions to source from and sink to.
 * Topics created in Kafka to source from and sink to.
@@ -60,7 +60,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 | locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
 |region-to-topics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | [gkcregion:gkctopic]|
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
-|security-username| no | Supply a username to be used to authenticate with Geode.  Will autoset the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user| null|
+|security-username| no | Supply a username to be used to authenticate with Geode.  Will automatically set the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user| null|
 |security-password| no | Supply a password to be used to authenticate with Geode| null|
 |geode-connector-batch-size| no | Maximum number of records to return on each poll| 100 |
 |geode-connector-queue-size| no | Maximum number of entries in the connector queue before backing up all Geode cq listeners sharing the task queue | 10000 |

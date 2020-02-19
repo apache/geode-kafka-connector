@@ -144,7 +144,7 @@ public class GeodeConnectorConfigTest {
   @Test
   public void usesSecurityShouldBeTrueIfSecurityClientAuthInitSet() {
     Map<String, String> props = new HashMap<>();
-    props.put(GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT, "someclass");
+    props.put(GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT, "some_class");
     GeodeConnectorConfig config =
         new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertTrue(config.usesSecurity());
