@@ -14,9 +14,9 @@
  */
 package org.apache.geode.kafka;
 
-import static org.geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
-import static org.geode.kafka.GeodeConnectorConfig.SECURITY_PASSWORD;
-import static org.geode.kafka.GeodeConnectorConfig.SECURITY_USER;
+import static org.apache.geode.kafka.GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT;
+import static org.apache.geode.kafka.GeodeConnectorConfig.SECURITY_PASSWORD;
+import static org.apache.geode.kafka.GeodeConnectorConfig.SECURITY_USER;
 
 import java.util.List;
 

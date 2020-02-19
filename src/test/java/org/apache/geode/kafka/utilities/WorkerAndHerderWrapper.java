@@ -34,8 +34,8 @@ import org.apache.kafka.connect.util.ConnectUtils;
 
 import org.apache.geode.kafka.GeodeConnectorConfig;
 import org.apache.geode.kafka.sink.GeodeKafkaSink;
-import org.apache.geode.kafka.source.GeodeKafkaSource;
 import org.apache.geode.kafka.sink.GeodeSinkConnectorConfig;
+import org.apache.geode.kafka.source.GeodeKafkaSource;
 
 public class WorkerAndHerderWrapper {
 

@@ -1,6 +1,5 @@
 package org.apache.geode.kafka;
 
-import static org.awaitility.Awaitility.await;
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.createProducer;
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.createTopic;
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.deleteTopic;
@@ -9,6 +8,7 @@ import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.getZooKeeperP
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.startKafka;
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.startWorkerAndHerderCluster;
 import static org.apache.geode.kafka.utilities.GeodeKafkaTestUtils.startZooKeeper;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;

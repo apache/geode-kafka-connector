@@ -14,8 +14,8 @@
  */
 package org.apache.geode.kafka.sink;
 
-import static org.geode.kafka.sink.GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE;
-import static org.geode.kafka.sink.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static org.apache.geode.kafka.sink.GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.sink.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.apache.geode.kafka.GeodeConnectorConfig;
 import org.junit.Test;
 
 import org.apache.geode.cache.Region;
+import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSinkTaskTest {
 

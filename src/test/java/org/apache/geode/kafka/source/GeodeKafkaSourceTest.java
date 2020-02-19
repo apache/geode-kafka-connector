@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.geode.kafka.GeodeConnectorConfig;
 import org.junit.Test;
+
+import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSourceTest {
 

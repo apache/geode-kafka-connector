@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
-import org.apache.geode.kafka.GeodeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +30,7 @@ import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.Struct;
+import org.apache.geode.kafka.GeodeContext;
 
 public class GeodeKafkaSourceTask extends SourceTask {
 

@@ -130,12 +130,12 @@ public class GeodeKafkaTestUtils {
   }
 
   public static WorkerAndHerderCluster startWorkerAndHerderCluster(int maxTasks,
-                                                                   String sourceRegion,
-                                                                   String sinkRegion,
-                                                                   String sourceTopic,
-                                                                   String sinkTopic,
-                                                                   String offsetPath,
-                                                                   String locatorString) {
+      String sourceRegion,
+      String sinkRegion,
+      String sourceTopic,
+      String sinkTopic,
+      String offsetPath,
+      String locatorString) {
     WorkerAndHerderCluster workerAndHerderCluster = new WorkerAndHerderCluster();
     try {
       workerAndHerderCluster.start(String.valueOf(maxTasks), sourceRegion, sinkRegion, sourceTopic,

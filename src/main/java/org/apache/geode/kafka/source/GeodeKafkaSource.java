@@ -26,6 +26,7 @@ import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
+
 import org.apache.geode.kafka.GeodeConnectorConfig;
 
 

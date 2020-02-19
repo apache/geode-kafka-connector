@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
+
 import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSink extends SinkConnector {

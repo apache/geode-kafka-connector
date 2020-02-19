@@ -20,8 +20,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.geode.kafka.GeodeConnectorConfig;
 import org.junit.Test;
+
+import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeSourceConnectorConfigTest {
 

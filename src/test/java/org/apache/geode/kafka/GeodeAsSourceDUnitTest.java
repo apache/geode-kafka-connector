@@ -43,7 +43,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionShortcut;
 import org.apache.geode.cache.client.ClientRegionShortcut;
-import org.apache.geode.kafka.utilities.GeodeKafkaTestUtils;
 import org.apache.geode.kafka.utilities.KafkaLocalCluster;
 import org.apache.geode.kafka.utilities.WorkerAndHerderCluster;
 import org.apache.geode.test.dunit.rules.ClientVM;

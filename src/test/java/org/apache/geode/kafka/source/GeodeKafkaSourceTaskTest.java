@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.geode.kafka.GeodeContext;
 import org.junit.Test;
 
 import org.apache.geode.cache.client.ClientCache;
@@ -44,6 +43,7 @@ import org.apache.geode.cache.query.CqEvent;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.Struct;
 import org.apache.geode.cache.query.internal.ResultsBag;
+import org.apache.geode.kafka.GeodeContext;
 
 
 public class GeodeKafkaSourceTaskTest {
