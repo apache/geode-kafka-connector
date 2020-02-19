@@ -30,7 +30,7 @@ public class LocatorLauncherWrapper {
     properties.setProperty(ConfigurationProperties.NAME, "locator1");
 
     Locator.startLocatorAndDS(10334,
-        new File("/Users/jhuynh/Pivotal/geode-kafka-connector/locator.log"), properties);
+        null/*new File("/Users/jhuynh/Pivotal/geode-kafka-connector/locator.log")*/, properties);
     while (true) {
 
     }

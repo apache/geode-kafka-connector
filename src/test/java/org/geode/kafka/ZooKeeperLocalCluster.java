@@ -52,5 +52,6 @@ public class ZooKeeperLocalCluster {
     };
     zooKeeperThread.start();
     System.out.println("ZooKeeper thread started");
+
   }
 }

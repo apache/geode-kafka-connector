@@ -14,15 +14,22 @@
  */
 package org.geode.kafka;
 
+import static org.awaitility.Awaitility.await;
+
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import kafka.admin.RackAwareMode;
 import kafka.zk.AdminZkClient;
 import kafka.zk.KafkaZkClient;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -32,18 +39,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.runtime.WorkerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
-
-import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.Region;
-import org.apache.geode.cache.RegionShortcut;
-import org.apache.geode.cache.client.ClientCache;
-import org.apache.geode.cache.client.ClientCacheFactory;
-import org.apache.geode.cache.client.ClientRegionShortcut;
-import org.apache.geode.cache.server.CacheServer;
-import org.apache.geode.distributed.ConfigurationProperties;
-import org.apache.geode.distributed.Locator;
-import org.apache.geode.test.dunit.VM;
+import org.junit.rules.TemporaryFolder;
 
 public class GeodeKafkaTestUtils {
   protected static ZooKeeperLocalCluster startZooKeeper(Properties zookeeperProperties)
@@ -54,7 +50,7 @@ public class GeodeKafkaTestUtils {
   }
 
   protected static KafkaLocalCluster startKafka(Properties kafkaProperties)
-      throws IOException, InterruptedException, QuorumPeerConfig.ConfigException {
+      throws IOException, InterruptedException {
     KafkaLocalCluster kafkaLocalCluster = new KafkaLocalCluster(kafkaProperties);
     kafkaLocalCluster.start();
     return kafkaLocalCluster;
@@ -78,6 +74,41 @@ public class GeodeKafkaTestUtils {
     adminZkClient.deleteTopic(topicName);
   }
 
+  protected static Producer<String, String> createProducer() {
+    final Properties props = new Properties();
+    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+        StringSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+        StringSerializer.class.getName());
+
+    // Create the producer using props.
+    final Producer<String, String> producer =
+        new KafkaProducer<>(props);
+    return producer;
+  }
+
+  protected static Properties getZooKeeperProperties(TemporaryFolder temporaryFolder)
+      throws IOException {
+    Properties properties = new Properties();
+    properties.setProperty("dataDir", temporaryFolder.newFolder("zookeeper").getAbsolutePath());
+    properties.setProperty("clientPort", "2181");
+    properties.setProperty("tickTime", "2000");
+    return properties;
+  }
+
+  protected static Properties getKafkaConfig(String logPath) {
+    int BROKER_PORT = 9092;
+    Properties props = new Properties();
+    props.put("broker.id", "0");
+    props.put("zookeeper.connect", "localhost:2181");
+    props.put("host.name", "localHost");
+    props.put("port", BROKER_PORT);
+    props.put("offsets.topic.replication.factor", "1");
+    props.put("log.dirs", logPath);
+    return props;
+  }
+
   // consumer props, less important, just for testing?
   public static Consumer<String, String> createConsumer(String testTopicForSource) {
     final Properties props = new Properties();
@@ -98,50 +129,13 @@ public class GeodeKafkaTestUtils {
     return consumer;
   }
 
-  // consumer props, less important, just for testing?
-  public static Producer<String, String> createProducer() {
-    final Properties props = new Properties();
-    props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-        StringSerializer.class.getName());
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-        StringSerializer.class.getName());
-
-    // Create the producer using props.
-    final Producer<String, String> producer =
-        new KafkaProducer<>(props);
-    return producer;
-
-  }
-
-  public static void startGeodeLocator(VM locatorVM) {
-    locatorVM.invoke(() -> {
-      Properties properties = new Properties();
-      properties.setProperty(ConfigurationProperties.NAME, "locator1");
-      Locator.startLocatorAndDS(10334,
-          null, properties);
-    });
-  }
-
-  public static void startGeodeServerAndCreateSourceRegion(VM serverVM, String regionName) {
-    serverVM.invoke(() -> {
-      Properties properties = new Properties();
-      Cache cache = new CacheFactory(properties)
-          .set(ConfigurationProperties.LOCATORS, "localhost[10334]")
-          .set(ConfigurationProperties.NAME, "server-1")
-          .create();
-      CacheServer cacheServer = cache.addCacheServer();
-      cacheServer.setPort(0);
-      cacheServer.start();
-
-      cache.createRegionFactory(RegionShortcut.PARTITION).create(regionName);
-    });
-  }
-
-  protected static WorkerAndHerderCluster startWorkerAndHerderCluster(int maxTasks) {
+  protected static WorkerAndHerderCluster startWorkerAndHerderCluster(int maxTasks,
+      String sourceRegion, String sinkRegion, String sourceTopic, String sinkTopic,
+      String offsetPath, String locatorString) {
     WorkerAndHerderCluster workerAndHerderCluster = new WorkerAndHerderCluster();
     try {
-      workerAndHerderCluster.start(String.valueOf(maxTasks));
+      workerAndHerderCluster.start(String.valueOf(maxTasks), sourceRegion, sinkRegion, sourceTopic,
+          sinkTopic, offsetPath, locatorString);
       Thread.sleep(20000);
     } catch (Exception e) {
       throw new RuntimeException("Could not start the worker and herder cluster" + e);
@@ -149,28 +143,16 @@ public class GeodeKafkaTestUtils {
     return workerAndHerderCluster;
   }
 
-  protected static void startGeodeClientAndRegion(VM client, String regionName) {
-    client.invoke(() -> {
-      ClientCache clientCache = new ClientCacheFactory()
-          .addPoolLocator("localhost", 10334)
-          .create();
-
-      clientCache.createClientRegionFactory(ClientRegionShortcut.PROXY).create(regionName);
-    });
-  }
-
-  protected static void putDataIntoGeodeCluster(VM client, String regionName, int num) {
-    client.invoke(() -> {
-      ClientCache clientCache = new ClientCacheFactory()
-          .addPoolLocator("localhost", 10334)
-          .create();
-      Region region = clientCache.getRegion(regionName);
-      for (int i = 0; i < num; i++) {
-        region.put("KEY" + i, "VALUE" + i);
+  protected static void verifyEventsAreConsumed(Consumer<String, String> consumer, int numEvents) {
+    AtomicInteger valueReceived = new AtomicInteger(0);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> {
+      ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(2));
+      for (ConsumerRecord<String, String> record : records) {
+        System.out.println("NABA :: " + record);
+        valueReceived.incrementAndGet();
       }
+      return valueReceived.get() == numEvents;
     });
 
   }
-
-
 }

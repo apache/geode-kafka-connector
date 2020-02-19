@@ -176,7 +176,6 @@ public class GeodeKafkaTestCluster {
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
         StringDeserializer.class.getName());
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
     // Create the consumer using props.
     final Consumer<String, String> consumer =
         new KafkaConsumer<>(props);

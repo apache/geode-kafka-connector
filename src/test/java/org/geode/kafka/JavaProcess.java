@@ -31,9 +31,17 @@ public class JavaProcess {
         System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
     String classpath = System.getProperty("java.class.path");
     String className = classWithMain.getName();
-
+    int commandLength = args.length + 4;
+    String[] processBuilderCommand = new String[commandLength];
+    processBuilderCommand[0] = java;
+    processBuilderCommand[1] = "-cp";
+    processBuilderCommand[2] = classpath;
+    processBuilderCommand[3] = className;
+    for (int i = 0; i < args.length; i++) {
+      processBuilderCommand[4 + i] = args[i];
+    }
     ProcessBuilder builder = new ProcessBuilder(
-        java, "-cp", classpath, className, convertArgsToString(args));
+        processBuilderCommand);
 
     process = builder.inheritIO().start();
   }
