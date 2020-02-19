@@ -48,7 +48,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 | Property | Required | Description| Default |
 |---|---|---|---|
 |locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
-|topic-to-regions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | "[gkctopic:gkcregion]"
+|topic-to-regions| yes| A comma separated list of "one topic to many regions" bindings.  Each binding is surrounded by brackets. For example "[topicName:regionName], [anotherTopic: regionName, anotherRegion]" | [gkctopic:gkcregion]
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
 |null-values-mean-remove | no | If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region | true |
 
@@ -58,7 +58,7 @@ bin/connect-standalone.sh config/connect-standalone.properties config/connect-ge
 | Property | Required| Description| Default |
 |---|---|---|---|
 | locators | no, but...| A comma separated string of locators that configure which locators to connect to | localhost[10334] |
-|region-to-topics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | "[gkcregion:gkctopic]"|
+|region-to-topics| yes | A comma separated list of "one region to many topics" mappings.  Each mapping is surrounded by brackets.  For example "[regionName:topicName], "[anotherRegion: topicName, anotherTopic]" | [gkcregion:gkctopic]|
 |security-client-auth-init| no | Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)
 |security-username| no | Supply a username to be used to authenticate with Geode.  Will autoset the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user| null|
 |security-password| no | Supply a password to be used to authenticate with Geode| null|
