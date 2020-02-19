@@ -37,21 +37,11 @@ public class JavaProcess {
     processBuilderCommand[1] = "-cp";
     processBuilderCommand[2] = classpath;
     processBuilderCommand[3] = className;
-    for (int i = 0; i < args.length; i++) {
-      processBuilderCommand[4 + i] = args[i];
-    }
+    System.arraycopy(args, 0, processBuilderCommand, 4, args.length);
     ProcessBuilder builder = new ProcessBuilder(
         processBuilderCommand);
 
     process = builder.inheritIO().start();
-  }
-
-  private String convertArgsToString(String... args) {
-    String string = "";
-    for (String arg : args) {
-      string += arg;
-    }
-    return string;
   }
 
   public void waitFor() throws InterruptedException {

@@ -45,8 +45,7 @@ public class GeodeKafkaSink extends SinkConnector {
     // All tasks will build up the topic to regions map. A few might not use certain keys but we
     // have no control over partitioning in kafka and which tasks will fire
     for (int i = 0; i < maxTasks; i++) {
-      Map<String, String> taskProps = new HashMap<>();
-      taskProps.putAll(sharedProps);
+      Map<String, String> taskProps = new HashMap<>(sharedProps);
       taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
       taskConfigs.add(taskProps);
     }

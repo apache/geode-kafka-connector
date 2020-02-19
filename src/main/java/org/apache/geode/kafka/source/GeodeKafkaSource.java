@@ -49,8 +49,7 @@ public class GeodeKafkaSource extends SourceConnector {
     List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {
-      Map<String, String> taskProps = new HashMap<>();
-      taskProps.putAll(sharedProps);
+      Map<String, String> taskProps = new HashMap<>(sharedProps);
       taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
       taskProps.put(GeodeSourceConnectorConfig.CQS_TO_REGISTER,
           GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
