@@ -77,7 +77,7 @@ public class GeodeConnectorConfigTest {
     String binding = "[region1:topic1]";
     List<String> splitBindings = GeodeConnectorConfig.parseBindings(binding);
     assertEquals(1, splitBindings.size());
-    assertEquals(binding.replaceAll("\\[", "").replaceAll("\\]", ""), splitBindings.get(0));
+    assertEquals(binding.replaceAll("\\[", "").replaceAll("]", ""), splitBindings.get(0));
   }
 
   public List<String> oneToOneBindings() {

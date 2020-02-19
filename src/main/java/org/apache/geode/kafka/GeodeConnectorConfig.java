@@ -113,7 +113,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
   public static List<String> parseBindings(String bindings) {
     return Arrays.stream(bindings.split("](\\s)*,")).map((s) -> {
       s = s.replaceAll("\\[", "");
-      s = s.replaceAll("\\]", "");
+      s = s.replaceAll("]", "");
       s = s.trim();
       return s;
     }).collect(Collectors.toList());
