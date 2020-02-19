@@ -61,9 +61,7 @@ public class BatchRecords {
     // if so if a previous value was in the remove list
     // let's not remove it at the end of this operation
     if (nullValuesMeansRemove) {
-      if (removeList.contains(record.key())) {
-        removeList.remove(record.key());
-      }
+      removeList.remove(record.key());
     }
     updateMap.put(record.key(), record.value());
   }

@@ -82,8 +82,8 @@ public class GeodeConnectorConfigTest {
 
   public List<String> oneToOneBindings() {
     return Arrays.asList(
-        new String[] {"[region1:topic1],[region2:topic2]", "[region1:topic1] , [region2:topic2]",
-            "[region1:topic1], [region2:topic2] ,", "[region1: topic1], [region2 :topic2]"});
+        "[region1:topic1],[region2:topic2]", "[region1:topic1] , [region2:topic2]",
+        "[region1:topic1], [region2:topic2] ,", "[region1: topic1], [region2 :topic2]");
   }
 
   @Test
@@ -94,10 +94,10 @@ public class GeodeConnectorConfigTest {
   }
 
   public List<String> oneToManyBindings() {
-    return Arrays.asList(new String[] {"[region1:topic1,topic2],[region2:topic2,topic3]",
+    return Arrays.asList("[region1:topic1,topic2],[region2:topic2,topic3]",
         "[region1:topic1 , topic2] , [region2:topic2 , topic3]",
         "[region1:topic1 ,], [region2:topic2 ,] ,",
-        "[region1: topic1 ,topic3], [region2 :topic2]"});
+        "[region1: topic1 ,topic3], [region2 :topic2]");
   }
 
   @Test

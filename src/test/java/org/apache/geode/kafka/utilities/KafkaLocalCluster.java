@@ -34,7 +34,7 @@ public class KafkaLocalCluster {
       kafka.startup();
       System.out.println("Kafka started up");
     } catch (Throwable t) {
-      System.out.println(t);
+      System.out.println(t.getMessage());
     }
   }
 

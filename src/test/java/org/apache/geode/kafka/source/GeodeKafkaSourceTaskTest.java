@@ -200,7 +200,7 @@ public class GeodeKafkaSourceTaskTest {
   @Test
   public void createSourcePartitionsShouldReturnAMapOfSourcePartitions() {
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-    List<String> regionNames = Arrays.asList(new String[] {"region1", "region2", "region3"});
+    List<String> regionNames = Arrays.asList("region1", "region2", "region3");
     Map<String, Map<String, String>> sourcePartitions = task.createSourcePartitionsMap(regionNames);
     assertThat(3, is(sourcePartitions.size()));
     assertThat(true, is(sourcePartitions.get("region1").get(REGION_PARTITION).equals("region1")));
