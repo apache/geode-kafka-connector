@@ -235,4 +235,4 @@ nbdist/
 .nb-gradle/
 
 .idea/
-./dunit/
+**/dunit

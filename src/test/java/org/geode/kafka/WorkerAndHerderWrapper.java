@@ -18,7 +18,6 @@ import static org.geode.kafka.sink.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BIND
 import static org.geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,19 +42,18 @@ public class WorkerAndHerderWrapper {
     String offsetPath = "/tmp/connect.offsets";
     String regionToTopicBinding = GeodeKafkaTestCluster.TEST_REGION_TO_TOPIC_BINDINGS;
     String topicToRegionBinding = GeodeKafkaTestCluster.TEST_TOPIC_TO_REGION_BINDINGS;
-    String testTopicForSink = GeodeKafkaTestCluster.TEST_TOPIC_FOR_SINK;
+    String sinkTopic = GeodeKafkaTestCluster.TEST_TOPIC_FOR_SINK;
     String locatorString = null;
     System.out.println("MaxTask " + maxTasks);
     if (args.length == 7) {
       String sourceRegion = args[1];
       String sinkRegion = args[2];
       String sourceTopic = args[3];
-      String sinkTopic = args[4];
+      sinkTopic = args[4];
       offsetPath = args[5];
       regionToTopicBinding = "[" + sourceRegion + ":" + sourceTopic + "]";
       topicToRegionBinding = "[" + sinkTopic + ":" + sinkRegion + "]";
       locatorString = args[6];
-      System.out.println("NABA args = " + Arrays.deepToString(args));
     }
 
     Map props = new HashMap();
@@ -104,8 +102,7 @@ public class WorkerAndHerderWrapper {
     sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, maxTasks);
     sinkProps.put(TOPIC_TO_REGION_BINDINGS, topicToRegionBinding);
     sinkProps.put(GeodeConnectorConfig.LOCATORS, locatorString);
-    System.out.println("NABA : binding " + topicToRegionBinding);
-    sinkProps.put("topics", testTopicForSink);
+    sinkProps.put("topics", sinkTopic);
 
     herder.putConnectorConfig(
         sinkProps.get(ConnectorConfig.NAME_CONFIG),

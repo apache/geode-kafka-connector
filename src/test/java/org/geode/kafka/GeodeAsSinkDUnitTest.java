@@ -1,7 +1,6 @@
 package org.geode.kafka;
 
 import static org.awaitility.Awaitility.await;
-import static org.geode.kafka.GeodeKafkaTestUtils.createConsumer;
 import static org.geode.kafka.GeodeKafkaTestUtils.createProducer;
 import static org.geode.kafka.GeodeKafkaTestUtils.createTopic;
 import static org.geode.kafka.GeodeKafkaTestUtils.deleteTopic;
@@ -10,15 +9,12 @@ import static org.geode.kafka.GeodeKafkaTestUtils.getZooKeeperProperties;
 import static org.geode.kafka.GeodeKafkaTestUtils.startKafka;
 import static org.geode.kafka.GeodeKafkaTestUtils.startWorkerAndHerderCluster;
 import static org.geode.kafka.GeodeKafkaTestUtils.startZooKeeper;
-import static org.geode.kafka.GeodeKafkaTestUtils.verifyEventsAreConsumed;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.module.scala.ser.SymbolSerializerModule;
 import kafka.zk.KafkaZkClient;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.utils.Time;
@@ -39,7 +35,7 @@ import org.apache.geode.test.dunit.rules.ClientVM;
 import org.apache.geode.test.dunit.rules.ClusterStartupRule;
 import org.apache.geode.test.dunit.rules.MemberVM;
 
-//@RunWith(Parameterized.class)
+@RunWith(Parameterized.class)
 public class GeodeAsSinkDUnitTest {
   @Rule
   public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
@@ -82,13 +78,13 @@ public class GeodeAsSinkDUnitTest {
     return Arrays.asList(new Object[][] {{1, 1}, {5, 10}, {15, 10}});
   }
 
-  private /*final*/ int numTask = 1;
-  private /*final*/ int numPartition = 1;
+  private final int numTask;
+  private final int numPartition;
 
-//  public GeodeAsSinkDUnitTest(int numTask, int numPartition) {
-//    this.numTask = numTask;
-//    this.numPartition = numPartition;
-//  }
+  public GeodeAsSinkDUnitTest(int numTask, int numPartition) {
+    this.numTask = numTask;
+    this.numPartition = numPartition;
+  }
 
   @Test
   public void whenKafkaProducerProducesEventsThenGeodeMustReceiveTheseEvents() throws Exception {
@@ -161,5 +157,5 @@ public class GeodeAsSinkDUnitTest {
       kafkaLocalCluster.stop();
     }
 
-    }
+  }
 }

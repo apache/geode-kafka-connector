@@ -148,7 +148,6 @@ public class GeodeKafkaTestUtils {
     await().atMost(10, TimeUnit.SECONDS).until(() -> {
       ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(2));
       for (ConsumerRecord<String, String> record : records) {
-        System.out.println("NABA :: " + record);
         valueReceived.incrementAndGet();
       }
       return valueReceived.get() == numEvents;
