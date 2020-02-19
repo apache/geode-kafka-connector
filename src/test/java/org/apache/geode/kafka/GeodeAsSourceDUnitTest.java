@@ -114,7 +114,7 @@ public class GeodeAsSourceDUnitTest {
     String sinkTopic = "SINK_TOPIC_" + testIdentifier;
     String sourceTopic = "SOURCE_TOPIC_" + testIdentifier;
 
-    /**
+    /*
      * Start the Apache Geode cluster and create the source and sink regions.
      * Create a Apache Geode client which inserts data into the source
      */
@@ -129,7 +129,7 @@ public class GeodeAsSourceDUnitTest {
           .create(sourceRegion);
     });
 
-    /**
+    /*
      * Start the Kafka Cluster, workers and the topic to which the Apache Geode will connect as
      * a source
      */
