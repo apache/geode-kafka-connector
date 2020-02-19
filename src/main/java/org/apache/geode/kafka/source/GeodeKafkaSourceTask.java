@@ -76,7 +76,6 @@ public class GeodeKafkaSourceTask extends SourceTask {
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
 
       regionToTopics = geodeConnectorConfig.getRegionToTopics();
-      geodeConnectorConfig.getCqsToRegister();
       sourcePartitions = createSourcePartitionsMap(regionToTopics.keySet());
 
       String cqPrefix = geodeConnectorConfig.getCqPrefix();

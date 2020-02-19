@@ -72,7 +72,7 @@ public class BatchRecords {
       region.putAll(updateMap);
       region.removeAll(removeList);
     } else {
-      logger.info("Unable to locate proxy region: " + region);
+      logger.info("Unable to locate proxy region is null");
     }
   }
 }

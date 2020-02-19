@@ -52,7 +52,7 @@ public class GeodeConnectorConfigTest {
     List<String> regionNames = config.parseStringByComma("region1, region2, region3,region4");
     assertEquals(4, regionNames.size());
     assertThat(true,
-        allOf(is(regionNames instanceof List), is(regionNames.contains("region1")),
+        allOf(is(regionNames.contains("region1")),
             is(regionNames.contains("region2")), is(regionNames.contains("region3")),
             is(regionNames.contains("region4"))));
   }

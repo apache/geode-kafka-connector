@@ -46,9 +46,8 @@ public class GeodeKafkaSinkTaskTest {
 
   @Test
   public void putRecordsAddsToRegionBatchRecords() {
-    boolean nullMeansRemove = true;
     GeodeKafkaSinkTask task = new GeodeKafkaSinkTask();
-    HashMap<String, String> props = createTestSinkProps(nullMeansRemove);
+    HashMap<String, String> props = createTestSinkProps(true);
 
     SinkRecord topicRecord = mock(SinkRecord.class);
     when(topicRecord.topic()).thenReturn("topic");
@@ -68,14 +67,13 @@ public class GeodeKafkaSinkTaskTest {
 
     task.put(records, batchRecordsMap);
     assertTrue(batchRecordsMap.containsKey("region"));
-    verify(batchRecords, times(1)).addUpdateOperation(topicRecord, nullMeansRemove);
+    verify(batchRecords, times(1)).addUpdateOperation(topicRecord, true);
   }
 
   @Test
   public void newBatchRecordsAreCreatedIfOneDoesntExist() {
-    boolean nullMeansRemove = true;
     GeodeKafkaSinkTask task = new GeodeKafkaSinkTask();
-    HashMap<String, String> props = createTestSinkProps(nullMeansRemove);
+    HashMap<String, String> props = createTestSinkProps(true);
 
     SinkRecord topicRecord = mock(SinkRecord.class);
     when(topicRecord.topic()).thenReturn("topic");

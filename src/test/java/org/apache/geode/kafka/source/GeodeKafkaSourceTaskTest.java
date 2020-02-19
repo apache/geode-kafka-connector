@@ -53,8 +53,6 @@ public class GeodeKafkaSourceTaskTest {
   public void whenLoadingEntireRegionAbleToPutInitialResultsIntoEventBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    boolean loadEntireRegion = true;
-    boolean isDurable = false;
     CqResults fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
       fakeInitialResults.add(mock(Struct.class));
@@ -64,7 +62,7 @@ public class GeodeKafkaSourceTaskTest {
         .thenReturn(fakeInitialResults);
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
-        "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        "testRegion", DEFAULT_CQ_PREFIX, true, false);
     assertEquals(10, eventBuffer.size());
   }
 
@@ -72,8 +70,6 @@ public class GeodeKafkaSourceTaskTest {
   public void whenNotLoadingEntireRegionShouldNotPutInitialResultsIntoEventBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    boolean loadEntireRegion = false;
-    boolean isDurable = false;
     CqResults fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
       fakeInitialResults.add(mock(CqEvent.class));
@@ -83,7 +79,7 @@ public class GeodeKafkaSourceTaskTest {
         .thenReturn(fakeInitialResults);
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
-        "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+        "testRegion", DEFAULT_CQ_PREFIX, false, false);
     assertEquals(0, eventBuffer.size());
   }
 
@@ -91,15 +87,13 @@ public class GeodeKafkaSourceTaskTest {
   public void cqListenerOnEventPopulatesEventsBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    boolean loadEntireRegion = false;
-    boolean isDurable = false;
 
     when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean()))
         .thenReturn(mock(CqResults.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     GeodeKafkaSourceListener listener =
         task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
-            "testRegion", DEFAULT_CQ_PREFIX, loadEntireRegion, isDurable);
+            "testRegion", DEFAULT_CQ_PREFIX, false, false);
 
     listener.onEvent(mock(CqEvent.class));
     assertEquals(1, eventBuffer.size());

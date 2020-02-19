@@ -53,13 +53,12 @@ public class BatchRecordsTest {
 
   @Test
   public void updatingARecordShouldNotRemoveFromTheRemoveListIfNullValuesIsNotSet() {
-    boolean nullValuesMeanRemove = false;
     Map updates = mock(Map.class);
     Collection removes = mock(Collection.class);
     when(removes.contains(any())).thenReturn(true);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
-    records.addUpdateOperation(sinkRecord, nullValuesMeanRemove);
+    records.addUpdateOperation(sinkRecord, false);
     verify(removes, times(0)).remove(any());
   }
 

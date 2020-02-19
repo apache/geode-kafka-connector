@@ -163,7 +163,9 @@ public class GeodeAsSourceDUnitTest {
       if (workerAndHerderCluster != null) {
         workerAndHerderCluster.stop();
       }
-      kafkaLocalCluster.stop();
+      if (kafkaLocalCluster != null) {
+        kafkaLocalCluster.stop();
+      }
     }
   }
 }
