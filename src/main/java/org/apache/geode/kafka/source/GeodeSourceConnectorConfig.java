@@ -54,7 +54,6 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
   public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
 
   private final String durableClientId;
-  private final String durableClientIdPrefix;
   private final String durableClientTimeout;
   private final String cqPrefix;
   private final boolean loadEntireRegion;
@@ -68,7 +67,7 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
     super(SOURCE_CONFIG_DEF, connectorProperties);
     cqsToRegister = parseRegionToTopics(getString(CQS_TO_REGISTER)).keySet();
     regionToTopics = parseRegionToTopics(getString(REGION_TO_TOPIC_BINDINGS));
-    durableClientIdPrefix = getString(DURABLE_CLIENT_ID_PREFIX);
+    String durableClientIdPrefix = getString(DURABLE_CLIENT_ID_PREFIX);
     if (isDurable(durableClientIdPrefix)) {
       durableClientId = durableClientIdPrefix + taskId;
     } else {

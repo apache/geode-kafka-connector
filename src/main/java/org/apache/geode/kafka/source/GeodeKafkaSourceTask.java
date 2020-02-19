@@ -43,7 +43,6 @@ public class GeodeKafkaSourceTask extends SourceTask {
   private static final Map<String, Long> OFFSET_DEFAULT = createOffset();
 
   private GeodeContext geodeContext;
-  private GeodeSourceConnectorConfig geodeConnectorConfig;
   private EventBufferSupplier eventBufferSupplier;
   private Map<String, List<String>> regionToTopics;
   private Map<String, Map<String, String>> sourcePartitions;
@@ -64,7 +63,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
   @Override
   public void start(Map<String, String> props) {
     try {
-      geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
+      GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
       geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),

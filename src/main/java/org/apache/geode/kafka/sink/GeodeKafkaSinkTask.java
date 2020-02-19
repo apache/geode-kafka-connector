@@ -40,7 +40,6 @@ public class GeodeKafkaSinkTask extends SinkTask {
   private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSinkTask.class);
 
   private GeodeContext geodeContext;
-  private int taskId;
   private Map<String, List<String>> topicToRegions;
   private Map<String, Region> regionNameToRegion;
   private boolean nullValuesMeansRemove = true;
@@ -73,7 +72,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   void configure(GeodeSinkConnectorConfig geodeConnectorConfig) {
     logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
-    taskId = geodeConnectorConfig.getTaskId();
+    int taskId = geodeConnectorConfig.getTaskId();
     topicToRegions = geodeConnectorConfig.getTopicToRegions();
     nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
   }

@@ -42,9 +42,6 @@ public class GeodeAsSinkDUnitTest {
   @Rule
   public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
-  private static MemberVM locator, server;
-  private static ClientVM client;
-
   @Rule
   public TestName testName = new TestName();
 
@@ -91,12 +88,11 @@ public class GeodeAsSinkDUnitTest {
   @Test
   public void whenKafkaProducerProducesEventsThenGeodeMustReceiveTheseEvents() throws Exception {
 
-    locator = clusterStartupRule.startLocatorVM(0, 10334);
+    MemberVM locator = clusterStartupRule.startLocatorVM(0, 10334);
     int locatorPort = locator.getPort();
-    server = clusterStartupRule.startServerVM(1, locatorPort);
-    client =
-        clusterStartupRule
-            .startClientVM(2, client -> client.withLocatorConnection(locatorPort));
+    MemberVM server = clusterStartupRule.startServerVM(1, locatorPort);
+    ClientVM client1 = clusterStartupRule
+        .startClientVM(2, client -> client.withLocatorConnection(locatorPort));
     int NUM_EVENT = 10;
 
     // Set unique names for all the different components
@@ -132,7 +128,7 @@ public class GeodeAsSinkDUnitTest {
       workerAndHerderCluster = startWorkerAndHerderCluster(numTask, sourceRegion, sinkRegion,
           sourceTopic, sinkTopic, temporaryFolderForOffset.getRoot().getAbsolutePath(),
           "localhost[" + locatorPort + "]");
-      client.invoke(() -> {
+      client1.invoke(() -> {
         ClusterStartupRule.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY)
             .create(sinkRegion);
       });
@@ -143,7 +139,7 @@ public class GeodeAsSinkDUnitTest {
         producer.send(new ProducerRecord(sinkTopic, "KEY" + i, "VALUE" + i));
       }
 
-      client.invoke(() -> {
+      client1.invoke(() -> {
         Region region = ClusterStartupRule.getClientCache().getRegion(sinkRegion);
         await().atMost(10, TimeUnit.SECONDS)
             .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));

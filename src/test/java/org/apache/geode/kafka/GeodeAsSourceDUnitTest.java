@@ -54,9 +54,6 @@ public class GeodeAsSourceDUnitTest {
   @Rule
   public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
-  private static MemberVM locator, server;
-  private static ClientVM client;
-
 
   @Rule
   public TestName testName = new TestName();
@@ -103,12 +100,11 @@ public class GeodeAsSourceDUnitTest {
 
   @Test
   public void whenDataIsInsertedInGeodeSourceThenKafkaConsumerMustReceiveEvents() throws Exception {
-    locator = clusterStartupRule.startLocatorVM(0, 10334);
+    MemberVM locator = clusterStartupRule.startLocatorVM(0, 10334);
     int locatorPort = locator.getPort();
-    server = clusterStartupRule.startServerVM(1, locatorPort);
-    client =
-        clusterStartupRule
-            .startClientVM(2, client -> client.withLocatorConnection(locatorPort));
+    MemberVM server = clusterStartupRule.startServerVM(1, locatorPort);
+    ClientVM client1 = clusterStartupRule
+        .startClientVM(2, client -> client.withLocatorConnection(locatorPort));
     int NUM_EVENT = 10;
 
     // Set unique names for all the different components
@@ -128,7 +124,7 @@ public class GeodeAsSourceDUnitTest {
       ClusterStartupRule.getCache().createRegionFactory(RegionShortcut.PARTITION)
           .create(sinkRegion);
     });
-    client.invoke(() -> {
+    client1.invoke(() -> {
       ClusterStartupRule.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY)
           .create(sourceRegion);
     });
@@ -152,7 +148,7 @@ public class GeodeAsSourceDUnitTest {
       Consumer<String, String> consumer = createConsumer(sourceTopic);
 
       // Insert data into the Apache Geode source from the client
-      client.invoke(() -> {
+      client1.invoke(() -> {
         Region region = ClusterStartupRule.getClientCache().getRegion(sourceRegion);
         for (int i = 0; i < NUM_EVENT; i++) {
           region.put("KEY" + i, "VALUE" + i);
