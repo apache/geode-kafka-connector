@@ -108,7 +108,7 @@ public class GeodeAsSourceDUnitTest {
     int NUM_EVENT = 10;
 
     // Set unique names for all the different components
-    String testIdentifier = testName.getMethodName().replaceAll("\\[|\\]", "");
+    String testIdentifier = testName.getMethodName().replaceAll("[\\[\\]]", "");
     String sourceRegion = "SOURCE_REGION_" + testIdentifier;
     String sinkRegion = "SINK_REGION_" + testIdentifier;
     String sinkTopic = "SINK_TOPIC_" + testIdentifier;
