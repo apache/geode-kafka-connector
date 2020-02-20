@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.connect.storage.StringConverter;
 
 public class GeodeConnectorConfig extends AbstractConfig {
 
@@ -41,6 +42,9 @@ public class GeodeConnectorConfig extends AbstractConfig {
       "org.geode.kafka.security.SystemPropertyAuthInit";
   public static final String SECURITY_USER = "security-username";
   public static final String SECURITY_PASSWORD = "security-password";
+
+  public static final String DEFAULT_KEY_CONVERTER = StringConverter.class.getCanonicalName();
+  public static final String DEFAULT_VALUE_CONVERTER = StringConverter.class.getCanonicalName();
 
   protected final int taskId;
   protected List<LocatorHostPort> locatorHostPorts;

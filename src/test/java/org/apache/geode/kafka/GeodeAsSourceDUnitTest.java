@@ -54,7 +54,6 @@ public class GeodeAsSourceDUnitTest {
   @Rule
   public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
-
   @Rule
   public TestName testName = new TestName();
 

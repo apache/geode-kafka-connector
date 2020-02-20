@@ -14,6 +14,8 @@
  */
 package org.apache.geode.kafka.utilities;
 
+import static org.apache.geode.kafka.GeodeConnectorConfig.DEFAULT_KEY_CONVERTER;
+import static org.apache.geode.kafka.GeodeConnectorConfig.DEFAULT_VALUE_CONVERTER;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
@@ -136,10 +138,26 @@ public class GeodeKafkaTestUtils {
       String sinkTopic,
       String offsetPath,
       String locatorString) {
+    return startWorkerAndHerderCluster(maxTasks, sourceRegion, sinkRegion, sourceTopic, sinkTopic,
+        offsetPath, locatorString, DEFAULT_KEY_CONVERTER, "", DEFAULT_VALUE_CONVERTER, "");
+  }
+
+  public static WorkerAndHerderCluster startWorkerAndHerderCluster(int maxTasks,
+      String sourceRegion,
+      String sinkRegion,
+      String sourceTopic,
+      String sinkTopic,
+      String offsetPath,
+      String locatorString,
+      String keyConverter,
+      String keyConverterArgs,
+      String valueConverter,
+      String valueConverterArgs) {
     WorkerAndHerderCluster workerAndHerderCluster = new WorkerAndHerderCluster();
     try {
       workerAndHerderCluster.start(String.valueOf(maxTasks), sourceRegion, sinkRegion, sourceTopic,
-          sinkTopic, offsetPath, locatorString);
+          sinkTopic, offsetPath, locatorString, keyConverter, keyConverterArgs, valueConverter,
+          valueConverterArgs);
       Thread.sleep(20000);
     } catch (Exception e) {
       throw new RuntimeException("Could not start the worker and herder cluster" + e);

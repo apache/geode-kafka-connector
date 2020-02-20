@@ -101,7 +101,6 @@ public class GeodeAsSinkDUnitTest {
 
   @Test
   public void whenKafkaProducerProducesEventsThenGeodeMustReceiveTheseEvents() throws Exception {
-
     MemberVM locator = clusterStartupRule.startLocatorVM(0, 10334);
     int locatorPort = locator.getPort();
     MemberVM server = clusterStartupRule.startServerVM(1, locatorPort);

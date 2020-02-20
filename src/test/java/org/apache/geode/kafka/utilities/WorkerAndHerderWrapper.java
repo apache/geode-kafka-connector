@@ -17,8 +17,10 @@ package org.apache.geode.kafka.utilities;
 import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.connect.connector.policy.AllConnectorClientConfigOverridePolicy;
@@ -40,7 +42,7 @@ import org.apache.geode.kafka.source.GeodeKafkaSource;
 public class WorkerAndHerderWrapper {
 
   public static void main(String[] args) throws IOException {
-    if (args.length != 7) {
+    if (args.length != 11) {
       throw new RuntimeException("Insufficient arguments to start workers and herders");
     }
     String maxTasks = args[0];
@@ -52,6 +54,18 @@ public class WorkerAndHerderWrapper {
     String regionToTopicBinding = "[" + sourceRegion + ":" + sourceTopic + "]";
     String topicToRegionBinding = "[" + sinkTopic + ":" + sinkRegion + "]";
     String locatorString = args[6];
+    String keyConverter = args[7];
+    String keyConverterArgs = args[8];
+    Map<String, String> keyConverterProps = new HashMap<>();
+    if (keyConverterArgs != null && !keyConverterArgs.isEmpty()) {
+      keyConverterProps = parseArguments(keyConverterArgs, true);
+    }
+    String valueConverter = args[9];
+    String valueConverterArgs = args[10];
+    Map<String, String> valueConverterProps = new HashMap<>();
+    if (valueConverterArgs != null && !valueConverterArgs.isEmpty()) {
+      valueConverterProps = parseArguments(valueConverterArgs, false);
+    }
 
     Map props = new HashMap();
     props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -61,10 +75,10 @@ public class WorkerAndHerderWrapper {
 
     props.put("internal.key.converter.schemas.enable", "false");
     props.put("internal.value.converter.schemas.enable", "false");
-    props.put(WorkerConfig.KEY_CONVERTER_CLASS_CONFIG,
-        "org.apache.kafka.connect.storage.StringConverter");
-    props.put(WorkerConfig.VALUE_CONVERTER_CLASS_CONFIG,
-        "org.apache.kafka.connect.storage.StringConverter");
+    props.put(WorkerConfig.KEY_CONVERTER_CLASS_CONFIG, keyConverter);
+    props.putAll(keyConverterProps);
+    props.put(WorkerConfig.VALUE_CONVERTER_CLASS_CONFIG, valueConverter);
+    props.putAll(valueConverterProps);
     props.put("key.converter.schemas.enable", "false");
     props.put("value.converter.schemas.enable", "false");
     props.put(GeodeConnectorConfig.LOCATORS, locatorString);
@@ -107,5 +121,20 @@ public class WorkerAndHerderWrapper {
         });
 
 
+  }
+
+  // We expect that converter properties will be supplied as a comma separated list of the form
+  // "first.property.name=first.property.value,second.property.name=second.property.value"
+  public static Map<String, String> parseArguments(String args, boolean isKeyConverter) {
+    String propertyNamePrefix;
+    if (isKeyConverter) {
+      propertyNamePrefix = "key.converter.";
+    } else {
+      propertyNamePrefix = "value.converter.";
+    }
+    return Arrays.stream(args.split(","))
+        .collect(Collectors.toMap(
+            string -> propertyNamePrefix + string.substring(0, string.indexOf("=")).trim(),
+            string -> string.substring(string.indexOf("=") + 1).trim()));
   }
 }
