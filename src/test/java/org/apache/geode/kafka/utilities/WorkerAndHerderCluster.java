@@ -29,10 +29,12 @@ public class WorkerAndHerderCluster {
   }
 
   public void start(String maxTasks, String sourceRegion, String sinkRegion, String sourceTopic,
-      String sinkTopic, String offsetPath, String locatorString)
+      String sinkTopic, String offsetPath, String locatorString, String keyConverter,
+      String keyConverterArgs, String valueConverter, String valueConverterArgs)
       throws IOException, InterruptedException {
     String[] args = new String[] {maxTasks, sourceRegion, sinkRegion, sourceTopic, sinkTopic,
-        offsetPath, locatorString};
+        offsetPath, locatorString, keyConverter, keyConverterArgs, valueConverter,
+        valueConverterArgs};
     workerAndHerder.exec(args);
   }
 

@@ -63,6 +63,7 @@ public class GeodeContext {
       String securityPassword, boolean usesSecurity) {
     ClientCacheFactory ccf = new ClientCacheFactory();
 
+    ccf.setPdxReadSerialized(true);
     if (usesSecurity) {
       if (securityUserName != null && securityPassword != null) {
         ccf.set(SECURITY_USER, securityUserName);
