@@ -39,7 +39,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
   public static final String DEFAULT_LOCATOR = "localhost[10334]";
   public static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
   private static final String DEFAULT_SECURITY_AUTH_INIT =
-      "org.geode.kafka.security.SystemPropertyAuthInit";
+      "org.apache.geode.kafka.security.SystemPropertyAuthInit";
   public static final String SECURITY_USER = "security-username";
   public static final String SECURITY_PASSWORD = "security-password";
 
