@@ -3,6 +3,10 @@
 Kafka provides an integration point through Source and Sink Connectors.  The GeodeKafkaSource allows Geode to be a data source for Kafka
 The GeodeKafkaSink allows Geode to consume data off of topics and store data from Kafka.
 
+### Build 
+mvn package
+
+
 ### How to install the geode-kafka-connector
 ---
 #### Prerequisite
