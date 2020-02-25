@@ -17,8 +17,8 @@ mvn package
 Installation of the connector is similar in process to other Kafka Connectors.  For now, we will follow the guide for [Manual Installation](https://docs.confluent.io/current/connect/managing/install.html#install-connector-manually).
 
 In summary, we will use the standalone worker for this example.
-* Build the jar into a known (and Kafka accessible) location  (in the geode-kafka-connector project run './gradlew shadowJar' and the artifacts will be in build/lib/
-* Modify the connect-standalone.properties and point to where the connector is installed.
+* Build the jar into a known (and Kafka accessible) location
+* Modify the connect-standalone.properties and point to where the connector jar is located.
 ```
 plugin.path=(Path to your clone)/geode-kafka-connector/build/libs/
 #depending on object type, you might want to modify the converter (for manually testing we can use the JSON or string converter)
