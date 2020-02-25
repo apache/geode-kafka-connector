@@ -16,8 +16,8 @@ package org.apache.geode.kafka;
 
 public class LocatorHostPort {
 
-  private String hostName;
-  private int port;
+  private final String hostName;
+  private final int port;
 
   public LocatorHostPort(String hostName, int port) {
     this.hostName = hostName;

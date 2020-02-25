@@ -54,7 +54,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
 
   // Just for testing
   protected GeodeConnectorConfig() {
-    super(new ConfigDef(), new HashMap());
+    super(new ConfigDef(), new HashMap<>());
     taskId = 0;
   }
 
@@ -104,14 +104,13 @@ public class GeodeConnectorConfig extends AbstractConfig {
    */
   public static Map<String, List<String>> parseRegionToTopics(String combinedBindings) {
     if (combinedBindings == null || combinedBindings.equals("")) {
-      return new HashMap();
+      return new HashMap<>();
     }
     List<String> bindings = parseBindings(combinedBindings);
-    return bindings.stream().map(binding -> {
-      String[] regionToTopicsArray = parseBinding(binding);
-      return regionToTopicsArray;
-    }).collect(Collectors.toMap(regionToTopicsArray -> regionToTopicsArray[0],
-        regionToTopicsArray -> parseStringByComma(regionToTopicsArray[1])));
+    return bindings.stream().map(
+        GeodeConnectorConfig::parseBinding)
+        .collect(Collectors.toMap(regionToTopicsArray -> regionToTopicsArray[0],
+            regionToTopicsArray -> parseStringByComma(regionToTopicsArray[1])));
   }
 
   public static List<String> parseBindings(String bindings) {
@@ -133,11 +132,11 @@ public class GeodeConnectorConfig extends AbstractConfig {
   }
 
   public static List<String> parseStringBy(String string, String regex) {
-    return Arrays.stream(string.split(regex)).map((s) -> s.trim()).collect(Collectors.toList());
+    return Arrays.stream(string.split(regex)).map(String::trim).collect(Collectors.toList());
   }
 
   public static String reconstructString(Collection<String> strings) {
-    return strings.stream().collect(Collectors.joining("],["));
+    return String.join("],[", strings);
   }
 
   List<LocatorHostPort> parseLocators(String locators) {

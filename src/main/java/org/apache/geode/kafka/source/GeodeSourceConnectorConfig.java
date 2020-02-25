@@ -60,8 +60,8 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
   private final int batchSize;
   private final int queueSize;
 
-  private Map<String, List<String>> regionToTopics;
-  private Collection<String> cqsToRegister;
+  private final Map<String, List<String>> regionToTopics;
+  private final Collection<String> cqsToRegister;
 
   public GeodeSourceConnectorConfig(Map<String, String> connectorProperties) {
     super(SOURCE_CONFIG_DEF, connectorProperties);

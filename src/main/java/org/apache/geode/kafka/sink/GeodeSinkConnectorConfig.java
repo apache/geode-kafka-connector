@@ -30,7 +30,7 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   public static final String NULL_VALUES_MEAN_REMOVE = "null-values-mean-remove";
   public static final String DEFAULT_NULL_VALUES_MEAN_REMOVE = "true";
 
-  private Map<String, List<String>> topicToRegions;
+  private final Map<String, List<String>> topicToRegions;
   private final boolean nullValuesMeanRemove;
 
   public GeodeSinkConnectorConfig(Map<String, String> connectorProperties) {

@@ -14,6 +14,8 @@
  */
 package org.apache.geode.kafka.utilities;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.util.Properties;
 
@@ -25,7 +27,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 public class ZooKeeperLocalCluster {
 
   ZooKeeperServerMain zooKeeperServer;
-  private Properties zooKeeperProperties;
+  private final Properties zooKeeperProperties;
   Thread zooKeeperThread;
 
   public ZooKeeperLocalCluster(Properties zooKeeperProperties) {
@@ -40,16 +42,13 @@ public class ZooKeeperLocalCluster {
     final ServerConfig configuration = new ServerConfig();
     configuration.readFrom(quorumConfiguration);
 
-    zooKeeperThread = new Thread() {
-      public void run() {
-        try {
-          zooKeeperServer.runFromConfig(configuration);
-        } catch (IOException | AdminServer.AdminServerException e) {
-          System.out.println("ZooKeeper Failed");
-          e.printStackTrace(System.err);
-        }
+    zooKeeperThread = new Thread(() -> {
+      try {
+        zooKeeperServer.runFromConfig(configuration);
+      } catch (IOException | AdminServer.AdminServerException e) {
+        fail("Unable to start ZooKeeper cluster");
       }
-    };
+    });
     zooKeeperThread.start();
     System.out.println("ZooKeeper thread started");
 

@@ -48,6 +48,7 @@ import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.kafka.utilities.KafkaLocalCluster;
 import org.apache.geode.kafka.utilities.TestObject;
 import org.apache.geode.kafka.utilities.WorkerAndHerderCluster;
+import org.apache.geode.pdx.FieldType;
 import org.apache.geode.pdx.PdxInstance;
 import org.apache.geode.pdx.PdxInstanceFactory;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;
@@ -170,8 +171,7 @@ public class JsonPdxConverterDUnitTest {
             .forEach(field -> {
               try {
                 Object value = field.get(originalObject);
-                Class type = field.getType();
-                instanceFactory.writeField(field.getName(), value, type);
+                instanceFactory.writeField(field.getName(), value, Object.class);
               } catch (IllegalAccessException ignore) {
               }
             });

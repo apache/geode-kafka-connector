@@ -35,11 +35,11 @@ import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSinkTaskTest {
 
-  private HashMap<String, String> createTestSinkProps(boolean nullMeansRemove) {
+  private HashMap<String, String> createTestSinkProps() {
     HashMap<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[topic:region]");
     props.put(GeodeConnectorConfig.TASK_ID, "0");
-    props.put(NULL_VALUES_MEAN_REMOVE, String.valueOf(nullMeansRemove));
+    props.put(NULL_VALUES_MEAN_REMOVE, "true");
     props.put(GeodeConnectorConfig.LOCATORS, "localhost[10334]");
     return props;
   }
@@ -47,19 +47,19 @@ public class GeodeKafkaSinkTaskTest {
   @Test
   public void putRecordsAddsToRegionBatchRecords() {
     GeodeKafkaSinkTask task = new GeodeKafkaSinkTask();
-    HashMap<String, String> props = createTestSinkProps(true);
+    HashMap<String, String> props = createTestSinkProps();
 
     SinkRecord topicRecord = mock(SinkRecord.class);
     when(topicRecord.topic()).thenReturn("topic");
     when(topicRecord.value()).thenReturn("value");
     when(topicRecord.key()).thenReturn("key");
 
-    List<SinkRecord> records = new ArrayList();
+    List<SinkRecord> records = new ArrayList<>();
     records.add(topicRecord);
 
-    HashMap<String, Region> regionNameToRegion = new HashMap<>();
+    HashMap<String, Region<Object, Object>> regionNameToRegion = new HashMap<>();
     GeodeSinkConnectorConfig geodeSinkConnectorConfig = new GeodeSinkConnectorConfig(props);
-    HashMap<String, BatchRecords> batchRecordsMap = new HashMap();
+    HashMap<String, BatchRecords> batchRecordsMap = new HashMap<>();
     BatchRecords batchRecords = mock(BatchRecords.class);
     batchRecordsMap.put("region", batchRecords);
     task.configure(geodeSinkConnectorConfig);
@@ -73,19 +73,19 @@ public class GeodeKafkaSinkTaskTest {
   @Test
   public void newBatchRecordsAreCreatedIfOneDoesntExist() {
     GeodeKafkaSinkTask task = new GeodeKafkaSinkTask();
-    HashMap<String, String> props = createTestSinkProps(true);
+    HashMap<String, String> props = createTestSinkProps();
 
     SinkRecord topicRecord = mock(SinkRecord.class);
     when(topicRecord.topic()).thenReturn("topic");
     when(topicRecord.value()).thenReturn("value");
     when(topicRecord.key()).thenReturn("key");
 
-    List<SinkRecord> records = new ArrayList();
+    List<SinkRecord> records = new ArrayList<>();
     records.add(topicRecord);
 
-    HashMap<String, Region> regionNameToRegion = new HashMap<>();
+    HashMap<String, Region<Object, Object>> regionNameToRegion = new HashMap<>();
     GeodeSinkConnectorConfig geodeSinkConnectorConfig = new GeodeSinkConnectorConfig(props);
-    HashMap<String, BatchRecords> batchRecordsMap = new HashMap();
+    HashMap<String, BatchRecords> batchRecordsMap = new HashMap<>();
     task.configure(geodeSinkConnectorConfig);
     task.setRegionNameToRegion(regionNameToRegion);
 

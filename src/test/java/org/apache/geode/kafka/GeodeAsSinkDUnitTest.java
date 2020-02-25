@@ -54,16 +54,16 @@ import org.apache.geode.test.dunit.rules.MemberVM;
 @RunWith(Parameterized.class)
 public class GeodeAsSinkDUnitTest {
   @Rule
-  public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
+  public final ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
   @Rule
-  public TestName testName = new TestName();
+  public final TestName testName = new TestName();
 
   @ClassRule
-  public static TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
+  public static final TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
 
   @Rule
-  public TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
+  public final TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
 
   @BeforeClass
   public static void setup()
@@ -149,11 +149,11 @@ public class GeodeAsSinkDUnitTest {
       Producer<String, String> producer = createProducer();
 
       for (int i = 0; i < NUM_EVENT; i++) {
-        producer.send(new ProducerRecord(sinkTopic, "KEY" + i, "VALUE" + i));
+        producer.send(new ProducerRecord<>(sinkTopic, "KEY" + i, "VALUE" + i));
       }
 
       client1.invoke(() -> {
-        Region region = ClusterStartupRule.getClientCache().getRegion(sinkRegion);
+        Region<Object, Object> region = ClusterStartupRule.getClientCache().getRegion(sinkRegion);
         await().atMost(10, TimeUnit.SECONDS)
             .untilAsserted(() -> assertEquals(10, region.sizeOnServer()));
       });

@@ -52,16 +52,16 @@ import org.apache.geode.test.dunit.rules.MemberVM;
 @RunWith(Parameterized.class)
 public class GeodeAsSourceDUnitTest {
   @Rule
-  public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
+  public final ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
   @Rule
-  public TestName testName = new TestName();
+  public final TestName testName = new TestName();
 
   @ClassRule
-  public static TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
+  public static final TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
 
   @Rule
-  public TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
+  public final TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
 
   @BeforeClass
   public static void setup()
@@ -148,7 +148,7 @@ public class GeodeAsSourceDUnitTest {
 
       // Insert data into the Apache Geode source from the client
       client1.invoke(() -> {
-        Region region = ClusterStartupRule.getClientCache().getRegion(sourceRegion);
+        Region<Object, Object> region = ClusterStartupRule.getClientCache().getRegion(sourceRegion);
         for (int i = 0; i < NUM_EVENT; i++) {
           region.put("KEY" + i, "VALUE" + i);
         }

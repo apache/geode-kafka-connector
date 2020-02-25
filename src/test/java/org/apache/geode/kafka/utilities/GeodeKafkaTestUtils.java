@@ -44,15 +44,13 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.junit.rules.TemporaryFolder;
 
 public class GeodeKafkaTestUtils {
-  public static ZooKeeperLocalCluster startZooKeeper(Properties zookeeperProperties)
+  public static void startZooKeeper(Properties zookeeperProperties)
       throws IOException, QuorumPeerConfig.ConfigException {
     ZooKeeperLocalCluster zooKeeperLocalCluster = new ZooKeeperLocalCluster(zookeeperProperties);
     zooKeeperLocalCluster.start();
-    return zooKeeperLocalCluster;
   }
 
-  public static KafkaLocalCluster startKafka(Properties kafkaProperties)
-      throws IOException, InterruptedException {
+  public static KafkaLocalCluster startKafka(Properties kafkaProperties) {
     KafkaLocalCluster kafkaLocalCluster = new KafkaLocalCluster(kafkaProperties);
     kafkaLocalCluster.start();
     return kafkaLocalCluster;
@@ -85,9 +83,7 @@ public class GeodeKafkaTestUtils {
         StringSerializer.class.getName());
 
     // Create the producer using props.
-    final Producer<String, String> producer =
-        new KafkaProducer<>(props);
-    return producer;
+    return new KafkaProducer<>(props);
   }
 
   public static Properties getZooKeeperProperties(TemporaryFolder temporaryFolder)

@@ -25,7 +25,7 @@ public class SharedEventBufferSupplier implements EventBufferSupplier {
     recreateEventBufferIfNeeded(size);
   }
 
-  BlockingQueue recreateEventBufferIfNeeded(int size) {
+  void recreateEventBufferIfNeeded(int size) {
     if (eventBuffer == null || (eventBuffer.size() + eventBuffer.remainingCapacity()) != size) {
       synchronized (GeodeKafkaSource.class) {
         if (eventBuffer == null || (eventBuffer.size() + eventBuffer.remainingCapacity()) != size) {
@@ -37,7 +37,6 @@ public class SharedEventBufferSupplier implements EventBufferSupplier {
         }
       }
     }
-    return eventBuffer;
   }
 
   /**

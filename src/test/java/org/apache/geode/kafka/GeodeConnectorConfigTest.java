@@ -15,6 +15,7 @@
 package org.apache.geode.kafka;
 
 
+import static org.apache.geode.kafka.GeodeConnectorConfig.parseStringByComma;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -39,8 +40,7 @@ public class GeodeConnectorConfigTest {
 
   @Test
   public void parseRegionNamesShouldSplitOnComma() {
-    GeodeConnectorConfig config = new GeodeConnectorConfig();
-    List<String> regionNames = config.parseStringByComma("region1,region2,region3,region4");
+    List<String> regionNames = parseStringByComma("region1,region2,region3,region4");
     assertEquals(4, regionNames.size());
     assertThat(true, allOf(is(regionNames.contains("region1")), is(regionNames.contains("region2")),
         is(regionNames.contains("region3")), is(regionNames.contains("region4"))));
@@ -48,8 +48,7 @@ public class GeodeConnectorConfigTest {
 
   @Test
   public void parseRegionNamesShouldChomp() {
-    GeodeConnectorConfig config = new GeodeConnectorConfig();
-    List<String> regionNames = config.parseStringByComma("region1, region2, region3,region4");
+    List<String> regionNames = parseStringByComma("region1, region2, region3,region4");
     assertEquals(4, regionNames.size());
     assertThat(true,
         allOf(is(regionNames.contains("region1")),
@@ -118,7 +117,7 @@ public class GeodeConnectorConfigTest {
   public void configurationShouldReturnRegionToTopicsMappingWhenParseRegionToTopics(String value) {
     Map<String, List<String>> regionToTopics = GeodeConnectorConfig.parseRegionToTopics(value);
     assertEquals(2, regionToTopics.size());
-    assertTrue(regionToTopics.get("region1") != null);
+    assertNotNull(regionToTopics.get("region1"));
     assertEquals(1, regionToTopics.get("region1").size());
     assertTrue(regionToTopics.get("region1").contains("topic1"));
   }
@@ -127,7 +126,7 @@ public class GeodeConnectorConfigTest {
   public void regionToTopicParsingShouldParseCorrectlyWithASingleBinding() {
     Map<String, List<String>> regionToTopics =
         GeodeConnectorConfig.parseRegionToTopics("[region1:topic1]");
-    assertTrue(regionToTopics.get("region1") != null);
+    assertNotNull(regionToTopics.get("region1"));
     assertEquals(1, regionToTopics.get("region1").size());
     assertTrue(regionToTopics.get("region1").contains("topic1"));
   }

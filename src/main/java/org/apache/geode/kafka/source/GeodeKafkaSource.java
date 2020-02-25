@@ -79,8 +79,4 @@ public class GeodeKafkaSource extends SourceConnector {
     // TODO
     return AppInfoParser.getVersion();
   }
-
-  public Map<String, String> getSharedProps() {
-    return sharedProps;
-  }
 }

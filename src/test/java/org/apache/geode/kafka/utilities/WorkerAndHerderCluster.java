@@ -18,20 +18,16 @@ import java.io.IOException;
 
 public class WorkerAndHerderCluster {
 
-  private JavaProcess workerAndHerder;
+  private final JavaProcess workerAndHerder;
 
   public WorkerAndHerderCluster() {
     workerAndHerder = new JavaProcess(WorkerAndHerderWrapper.class);
   }
 
-  public void start(String maxTasks) throws IOException, InterruptedException {
-    workerAndHerder.exec(maxTasks);
-  }
-
   public void start(String maxTasks, String sourceRegion, String sinkRegion, String sourceTopic,
-      String sinkTopic, String offsetPath, String locatorString, String keyConverter,
-      String keyConverterArgs, String valueConverter, String valueConverterArgs)
-      throws IOException, InterruptedException {
+                    String sinkTopic, String offsetPath, String locatorString, String keyConverter,
+                    String keyConverterArgs, String valueConverter, String valueConverterArgs)
+      throws IOException {
     String[] args = new String[] {maxTasks, sourceRegion, sinkRegion, sourceTopic, sinkTopic,
         offsetPath, locatorString, keyConverter, keyConverterArgs, valueConverter,
         valueConverterArgs};

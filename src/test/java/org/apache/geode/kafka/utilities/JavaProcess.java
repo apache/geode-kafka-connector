@@ -20,13 +20,13 @@ import java.io.IOException;
 public class JavaProcess {
 
   public Process process;
-  Class classWithMain;
+  final Class<?> classWithMain;
 
-  public JavaProcess(Class classWithMain) {
+  public JavaProcess(Class<?> classWithMain) {
     this.classWithMain = classWithMain;
   }
 
-  public void exec(String... args) throws IOException, InterruptedException {
+  public void exec(String... args) throws IOException {
     String java =
         System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
     String classpath = System.getProperty("java.class.path");
@@ -42,10 +42,6 @@ public class JavaProcess {
         processBuilderCommand);
 
     process = builder.inheritIO().start();
-  }
-
-  public void waitFor() throws InterruptedException {
-    process.waitFor();
   }
 
   public void destroy() {

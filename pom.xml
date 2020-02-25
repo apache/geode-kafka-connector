@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache</groupId>
+    <artifactId>kafka-connect-geode</artifactId>
+    <packaging>jar</packaging>
+    <name>kafka-connect-geode</name>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>https://geode.apache.org/</url>
+    </organization>
+    <url>https://geode.apache.org/</url>
+    <description>
+        Apache Geode Sink and Source connector for Kafka Connect
+    </description>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://https://github.com/apache/geode-kafka-connector.git</connection>
+        <developerConnection>scm:git:git@github.com:apache/geode-kafka-connector.git</developerConnection>
+        <url>https://github.com/apache/geode-kafka-connector</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <geode.core.version>1.9.0</geode.core.version>
+        <geode.cq.version>1.9.0</geode.cq.version>
+        <geode.dunit.version>1.9.0</geode.dunit.version>
+        <kafka.connect-api.version>2.3.1</kafka.connect-api.version>
+        <log4j.version>2.13.0</log4j.version>
+        <kafka_2.12.version>2.3.1</kafka_2.12.version>
+        <curator-framework.version>4.2.0</curator-framework.version>
+        <kafka-streams-test-utils.version>1.1.0</kafka-streams-test-utils.version>
+        <kafka.connect-runtime.version>2.3.1</kafka.connect-runtime.version>
+        <junit.version>4.12</junit.version>
+        <mockito.version>3.2.4</mockito.version>
+        <JUnitParams.version>1.1.1</JUnitParams.version>
+        <awaitility.version>3.1.6</awaitility.version>
+        <maven-plugin.version>3.8.1</maven-plugin.version>
+        <zookeeper.version>3.5.7</zookeeper.version>
+        <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>Confluent</name>
+            <url>${confluent.maven.repo}</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/connect-api -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <version>${kafka.connect-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.geode/geode-core -->
+        <dependency>
+            <groupId>org.apache.geode</groupId>
+            <artifactId>geode-core</artifactId>
+            <version>${geode.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geode</groupId>
+            <artifactId>geode-cq</artifactId>
+            <version>${geode.cq.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.12</artifactId>
+            <version>${kafka_2.12.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-streams-test-utils -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams-test-utils</artifactId>
+            <version>${kafka-streams-test-utils.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator-framework.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/connect-runtime -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-runtime</artifactId>
+            <version>${kafka.connect-runtime.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/pl.pragmatists/JUnitParams -->
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>${JUnitParams.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.geode/geode-dunit -->
+        <dependency>
+            <groupId>org.apache.geode</groupId>
+            <artifactId>geode-dunit</artifactId>
+            <version>${geode.dunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.confluent</groupId>
+                <version>0.10.0</version>
+                <artifactId>kafka-connect-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>kafka-connect</goal>
+                        </goals>
+                        <configuration>
+                            <title>Kafka Connect Apache Geode</title>
+                            <documentationUrl>https://geode.apache.org/docs/</documentationUrl>
+                            <description>
+                            The Apache Geode connector can be used to move data from Kakfa to Geode and vice versa. The Sink take data from a Kafka topic and puts in a region in Geode, while the Source will move any data inserted into Geode region, to Kafka topics .
+
+                                Apache Geode is an in-memory data grid which stores data in a key-value format. When the Geode acts as a Sink, the key value pair is extracted from the Sink Record from the Kafka topic and that key-value pair is stored in Geode regions. When Geode acts as a Source, whenever a key-value pair is inserted into the region, an event is sent to connector containing the data. This data is then placed into the Kafka topic.
+
+                                The mapping between the region and topics must be provided by the user. They must also ensure that the Apache Geode cluster is up and running along with all the required regions along with the topics in Kafka. The Apache Geode cluster must consist of at least one locator and one server.
+                            </description>
+                            <logo>logos/elasticsearch.jpg</logo>
+
+                            <supportProviderName>Apache Software Foundation / VMware</supportProviderName>
+                            <supportSummary>VMware, along with Apache Geode community members support the Apache Geode Connector </supportSummary>
+                            <supportUrl>https://geode.apache.org/docs/</supportUrl>
+                            <supportLogo>logos/PoweredBYlogo.png</supportLogo>
+
+                            <ownerUsername>apache</ownerUsername>
+                            <ownerType>organization</ownerType>
+                            <ownerName>Apache Software Foundation.</ownerName>
+                            <ownerUrl>https://www.apache.org/</ownerUrl>
+                            <ownerLogo>logos/APACHE-20th-logo.png</ownerLogo>
+
+                            <componentTypes>
+                                <componentType>sink</componentType>
+                                <componentType>source</componentType>
+                            </componentTypes>
+
+                            <tags>
+                                <tag>Apache</tag>
+                                <tag>Geode</tag>
+                                <tag>in-memory</tag>
+                                <tag>datagrid</tag>
+                                <tag>key-value</tag>
+                                <tag>GemFire</tag>
+                            </tags>
+
+                            <requirements>
+                                <requirement>Apache Geode 1.9 or above</requirement>
+                            </requirements>
+
+                            <deliveryGuarantee>
+                                <deliveryGuarantee>atLeastOnce</deliveryGuarantee>
+                            </deliveryGuarantee>
+
+                            <confluentControlCenterIntegration>true</confluentControlCenterIntegration>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-plugin.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-plugin.version}</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:-processing</arg>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/development.xml</descriptor>
+                        <descriptor>src/assembly/package.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/standalone.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

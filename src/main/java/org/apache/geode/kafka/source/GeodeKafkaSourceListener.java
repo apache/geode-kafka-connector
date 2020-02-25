@@ -26,8 +26,8 @@ class GeodeKafkaSourceListener implements CqStatusListener {
 
   private static final Logger logger = LoggerFactory.getLogger(GeodeKafkaSourceListener.class);
 
-  public String regionName;
-  private EventBufferSupplier eventBufferSupplier;
+  public final String regionName;
+  private final EventBufferSupplier eventBufferSupplier;
   private boolean initialResultsLoaded;
 
   public GeodeKafkaSourceListener(EventBufferSupplier eventBufferSupplier, String regionName) {

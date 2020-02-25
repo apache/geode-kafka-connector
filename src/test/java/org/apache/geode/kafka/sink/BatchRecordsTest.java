@@ -20,19 +20,20 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.junit.Test;
 
 import org.apache.geode.cache.Region;
 
+@SuppressWarnings("unchecked")
 public class BatchRecordsTest {
   @Test
   public void updatingARecordShouldRemoveFromTheRemoveListIfNullValuesIsRemoveBooleanIsSet() {
-    Map updates = mock(Map.class);
-    Collection removes = mock(Collection.class);
+    HashMap<Object, Object> updates = mock(HashMap.class);
+    ArrayList<Object> removes = mock(ArrayList.class);
     when(removes.contains(any())).thenReturn(true);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
@@ -42,8 +43,8 @@ public class BatchRecordsTest {
 
   @Test
   public void updatingARecordShouldAddToTheUpdateMap() {
-    Map updates = mock(Map.class);
-    Collection removes = mock(Collection.class);
+    HashMap<Object, Object> updates = mock(HashMap.class);
+    ArrayList<Object> removes = mock(ArrayList.class);
     when(removes.contains(any())).thenReturn(false);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
@@ -53,8 +54,8 @@ public class BatchRecordsTest {
 
   @Test
   public void updatingARecordShouldNotRemoveFromTheRemoveListIfNullValuesIsNotSet() {
-    Map updates = mock(Map.class);
-    Collection removes = mock(Collection.class);
+    HashMap<Object, Object> updates = mock(HashMap.class);
+    ArrayList<Object> removes = mock(ArrayList.class);
     when(removes.contains(any())).thenReturn(true);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
@@ -65,8 +66,8 @@ public class BatchRecordsTest {
 
   @Test
   public void removingARecordShouldRemoveFromTheUpdateMapIfKeyIsPresent() {
-    Map updates = mock(Map.class);
-    Collection removes = mock(Collection.class);
+    HashMap<Object, Object> updates = mock(HashMap.class);
+    ArrayList<Object> removes = mock(ArrayList.class);
     when(updates.containsKey(any())).thenReturn(true);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
@@ -76,8 +77,8 @@ public class BatchRecordsTest {
 
   @Test
   public void removingARecordAddToTheRemoveCollection() {
-    Map updates = mock(Map.class);
-    Collection removes = mock(Collection.class);
+    HashMap<Object, Object> updates = mock(HashMap.class);
+    ArrayList<Object> removes = mock(ArrayList.class);
     BatchRecords records = new BatchRecords(updates, removes);
     SinkRecord sinkRecord = mock(SinkRecord.class);
     records.addRemoveOperation(sinkRecord);
@@ -86,7 +87,7 @@ public class BatchRecordsTest {
 
   @Test
   public void executeOperationsShouldInvokePutAllAndRemoveAll() {
-    Region region = mock(Region.class);
+    Region<Object, Object> region = mock(Region.class);
     BatchRecords records = new BatchRecords();
     records.executeOperations(region);
     verify(region, times(1)).putAll(any());

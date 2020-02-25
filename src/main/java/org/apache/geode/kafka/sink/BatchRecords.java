@@ -15,9 +15,7 @@
 package org.apache.geode.kafka.sink;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.slf4j.Logger;
@@ -31,15 +29,15 @@ import org.apache.geode.cache.Region;
 public class BatchRecords {
   private static final Logger logger = LoggerFactory.getLogger(BatchRecords.class);
 
-  private Map updateMap;
-  private Collection removeList;
+  private final HashMap<Object, Object> updateMap;
+  private final ArrayList<Object> removeList;
 
   public BatchRecords() {
-    this(new HashMap(), new ArrayList());
+    this(new HashMap<>(), new ArrayList<>());
   }
 
   /** Used for tests **/
-  public BatchRecords(Map updateMap, Collection removeList) {
+  public BatchRecords(HashMap<Object, Object> updateMap, ArrayList<Object> removeList) {
     this.updateMap = updateMap;
     this.removeList = removeList;
   }
@@ -67,7 +65,7 @@ public class BatchRecords {
   }
 
 
-  public void executeOperations(Region region) {
+  public void executeOperations(Region<Object, Object> region) {
     if (region != null) {
       region.putAll(updateMap);
       region.removeAll(removeList);

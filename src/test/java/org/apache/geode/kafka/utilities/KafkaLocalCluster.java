@@ -14,7 +14,6 @@
  */
 package org.apache.geode.kafka.utilities;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import kafka.server.KafkaConfig;
@@ -22,9 +21,9 @@ import kafka.server.KafkaServerStartable;
 
 public class KafkaLocalCluster {
 
-  KafkaServerStartable kafka;
+  final KafkaServerStartable kafka;
 
-  public KafkaLocalCluster(Properties kafkaProperties) throws IOException, InterruptedException {
+  public KafkaLocalCluster(Properties kafkaProperties) {
     KafkaConfig kafkaConfig = new KafkaConfig(kafkaProperties);
     kafka = new KafkaServerStartable(kafkaConfig);
   }

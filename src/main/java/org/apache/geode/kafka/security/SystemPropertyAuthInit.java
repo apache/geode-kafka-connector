@@ -24,7 +24,7 @@ import org.apache.geode.security.AuthenticationFailedException;
 public class SystemPropertyAuthInit implements AuthInitialize {
   @Override
   public Properties getCredentials(Properties securityProps, DistributedMember server,
-      boolean isPeer) throws AuthenticationFailedException {
+                                   boolean isPeer) throws AuthenticationFailedException {
     Properties extractedProperties = new Properties();
     extractedProperties.put("security-username", securityProps.get("security-username"));
     extractedProperties.put("security-password", securityProps.get("security-password"));

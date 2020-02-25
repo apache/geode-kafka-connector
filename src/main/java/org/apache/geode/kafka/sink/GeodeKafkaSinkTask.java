@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionExistsException;
+import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.kafka.GeodeContext;
 
@@ -41,7 +43,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   private GeodeContext geodeContext;
   private Map<String, List<String>> topicToRegions;
-  private Map<String, Region> regionNameToRegion;
+  private Map<String, Region<Object, Object>> regionNameToRegion;
   private boolean nullValuesMeansRemove = true;
 
   /**
@@ -59,10 +61,16 @@ public class GeodeKafkaSinkTask extends SinkTask {
       GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
       configure(geodeConnectorConfig);
       geodeContext = new GeodeContext();
-      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
-          geodeConnectorConfig.getSecurityClientAuthInit(),
-          geodeConnectorConfig.getSecurityUserName(), geodeConnectorConfig.getSecurityPassword(),
-          geodeConnectorConfig.usesSecurity());
+      final ClientCache clientCache =
+          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+              geodeConnectorConfig.getSecurityClientAuthInit(),
+              geodeConnectorConfig.getSecurityUserName(),
+              geodeConnectorConfig.getSecurityPassword(),
+              geodeConnectorConfig.usesSecurity());
+      if (clientCache == null) {
+        throw new ConnectException(
+            "Unable to create a client cache connected to the Apache Geode cluster");
+      }
       regionNameToRegion = createProxyRegions(topicToRegions.values());
     } catch (Exception e) {
       logger.error("Unable to start sink task", e);
@@ -72,19 +80,18 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   void configure(GeodeSinkConnectorConfig geodeConnectorConfig) {
     logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
-    int taskId = geodeConnectorConfig.getTaskId();
     topicToRegions = geodeConnectorConfig.getTopicToRegions();
     nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
   }
 
   // For tests only
-  void setRegionNameToRegion(Map<String, Region> regionNameToRegion) {
+  void setRegionNameToRegion(Map<String, Region<Object, Object>> regionNameToRegion) {
     this.regionNameToRegion = regionNameToRegion;
   }
 
   @Override
   public void put(Collection<SinkRecord> records) {
-    put(records, new HashMap());
+    put(records, new HashMap<>());
   }
 
   void put(Collection<SinkRecord> records, Map<String, BatchRecords> batchRecordsMap) {
@@ -92,15 +99,12 @@ public class GeodeKafkaSinkTask extends SinkTask {
     for (SinkRecord record : records) {
       updateBatchForRegionByTopic(record, batchRecordsMap);
     }
-    batchRecordsMap.entrySet().stream().forEach((entry) -> {
-      String region = entry.getKey();
-      BatchRecords batchRecords = entry.getValue();
-      batchRecords.executeOperations(regionNameToRegion.get(region));
-    });
+    batchRecordsMap.forEach(
+        (region, batchRecords) -> batchRecords.executeOperations(regionNameToRegion.get(region)));
   }
 
   private void updateBatchForRegionByTopic(SinkRecord sinkRecord,
-      Map<String, BatchRecords> batchRecordsMap) {
+                                           Map<String, BatchRecords> batchRecordsMap) {
     Collection<String> regionsToUpdate = topicToRegions.get(sinkRecord.topic());
     for (String region : regionsToUpdate) {
       updateBatchRecordsForRecord(sinkRecord, batchRecordsMap, region);
@@ -108,7 +112,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
   }
 
   private void updateBatchRecordsForRecord(SinkRecord record,
-      Map<String, BatchRecords> batchRecordsMap, String region) {
+                                           Map<String, BatchRecords> batchRecordsMap, String region) {
     BatchRecords batchRecords = batchRecordsMap.get(region);
     if (batchRecords == null) {
       batchRecords = new BatchRecords();
@@ -126,13 +130,14 @@ public class GeodeKafkaSinkTask extends SinkTask {
     }
   }
 
-  private Map<String, Region> createProxyRegions(Collection<List<String>> regionNames) {
+  private Map<String, Region<Object, Object>> createProxyRegions(
+      Collection<List<String>> regionNames) {
     List<String> flat = regionNames.stream().flatMap(List::stream).collect(Collectors.toList());
-    return flat.stream().map(regionName -> createProxyRegion(regionName))
-        .collect(Collectors.toMap(region -> region.getName(), region -> region));
+    return flat.stream().map(this::createProxyRegion)
+        .collect(Collectors.toMap(Region::getName, region -> region));
   }
 
-  private Region createProxyRegion(String regionName) {
+  private Region<Object, Object> createProxyRegion(String regionName) {
     try {
       return geodeContext.getClientCache().createClientRegionFactory(ClientRegionShortcut.PROXY)
           .create(regionName);

@@ -40,20 +40,21 @@ import org.junit.Test;
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqEvent;
+import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.Struct;
 import org.apache.geode.cache.query.internal.ResultsBag;
 import org.apache.geode.kafka.GeodeContext;
 
-
+@SuppressWarnings("unchecked")
 public class GeodeKafkaSourceTaskTest {
 
 
   @Test
   public void whenLoadingEntireRegionAbleToPutInitialResultsIntoEventBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
-    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    CqResults fakeInitialResults = new ResultsBag();
+    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue<>(100);
+    CqResults<Object> fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
       fakeInitialResults.add(mock(Struct.class));
     }
@@ -69,14 +70,14 @@ public class GeodeKafkaSourceTaskTest {
   @Test
   public void whenNotLoadingEntireRegionShouldNotPutInitialResultsIntoEventBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
-    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    CqResults fakeInitialResults = new ResultsBag();
+    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue<>(100);
+    CqResults<Object> fakeInitialResults = new ResultsBag();
     for (int i = 0; i < 10; i++) {
       fakeInitialResults.add(mock(CqEvent.class));
     }
 
-    when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean()))
-        .thenReturn(fakeInitialResults);
+    when(geodeContext.newCq(anyString(), anyString(), any(), anyBoolean()))
+        .thenReturn(mock(CqQuery.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
         "testRegion", DEFAULT_CQ_PREFIX, false, false);
@@ -86,10 +87,10 @@ public class GeodeKafkaSourceTaskTest {
   @Test
   public void cqListenerOnEventPopulatesEventsBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
-    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
+    BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue<>(100);
 
-    when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(), anyBoolean()))
-        .thenReturn(mock(CqResults.class));
+    when(geodeContext.newCq(anyString(), anyString(), any(), anyBoolean()))
+        .thenReturn(mock(CqQuery.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     GeodeKafkaSourceListener listener =
         task.installListenersToRegion(geodeContext, 1, createEventBufferSupplier(eventBuffer),
@@ -121,11 +122,12 @@ public class GeodeKafkaSourceTaskTest {
     when(geodeContext.getClientCache()).thenReturn(clientCache);
 
     Map<String, List<String>> regionToTopicsMap = new HashMap<>();
-    regionToTopicsMap.put("region1", new ArrayList());
+    regionToTopicsMap.put("region1", new ArrayList<>());
 
     GeodeSourceConnectorConfig config = mock(GeodeSourceConnectorConfig.class);
     when(config.getCqsToRegister()).thenReturn(regionToTopicsMap.keySet());
-
+    when(geodeContext.newCq(anyString(), anyString(), any(), anyBoolean()))
+        .thenReturn(mock(CqQuery.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     task.installOnGeode(config, geodeContext, null, "someCqPrefix", false);
     verify(geodeContext, times(1)).newCq(anyString(), anyString(), any(), anyBoolean());
@@ -140,7 +142,7 @@ public class GeodeKafkaSourceTaskTest {
     when(geodeContext.newCqWithInitialResults(anyString(), anyString(), any(CqAttributes.class),
         anyBoolean())).thenReturn(new ResultsBag());
     Map<String, List<String>> regionToTopicsMap = new HashMap<>();
-    regionToTopicsMap.put("region1", new ArrayList());
+    regionToTopicsMap.put("region1", new ArrayList<>());
 
     GeodeSourceConnectorConfig config = mock(GeodeSourceConnectorConfig.class);
     when(config.getCqsToRegister()).thenReturn(regionToTopicsMap.keySet());
@@ -167,31 +169,6 @@ public class GeodeKafkaSourceTaskTest {
   }
 
   @Test
-  public void pollReturnsEventsWhenEventBufferHasValues() throws Exception {
-    // BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue(100);
-    // CqEvent cqEvent = mock(CqEvent.class);
-    // when(cqEvent.getNewValue()).thenReturn("New Value");
-    // GeodeEvent event = mock(GeodeEvent.class);
-    // when(event.getEvent()).thenReturn(cqEvent);
-    // eventBuffer.add(event);
-    //
-    // List<String> topics = new ArrayList<>();
-    // topics.add("myTopic");
-    //
-    // GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-    // task.startForTesting(eventBuffer, topics, 1);
-    // List<SourceRecord> records = task.poll();
-    // assertEquals(1, records.size());
-  }
-
-  @Test
-  public void installOnGeodeShouldCallCq() {
-    GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-  }
-
-
-
-  @Test
   public void createSourcePartitionsShouldReturnAMapOfSourcePartitions() {
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
     List<String> regionNames = Arrays.asList("region1", "region2", "region3");
@@ -202,35 +179,7 @@ public class GeodeKafkaSourceTaskTest {
     assertThat(true, is(sourcePartitions.get("region3").get(REGION_PARTITION).equals("region3")));
   }
 
-  @Test
-  public void listOfLocatorsShouldBeConfiguredIntoClientCache() {
-
-  }
-
-  @Test
-  public void shouldNotBeDurableIfDurableClientIdIsNull() {
-
-  }
-
-  @Test
-  public void shouldNotCallReadyForEventsIfDurableClientPrefixIsEmpty() {
-
-  }
-
-
-  @Test
-  public void cqPrefixShouldBeProperlyCalculatedFromProps() {
-    // GeodeContext geodeContext = mock(GeodeContext.class);
-    // GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();
-  }
-
-
   private EventBufferSupplier createEventBufferSupplier(BlockingQueue<GeodeEvent> eventBuffer) {
-    return new EventBufferSupplier() {
-      @Override
-      public BlockingQueue<GeodeEvent> get() {
-        return eventBuffer;
-      }
-    };
+    return () -> eventBuffer;
   }
 }

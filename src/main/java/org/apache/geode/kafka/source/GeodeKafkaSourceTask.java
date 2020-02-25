@@ -21,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
+import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.Struct;
 import org.apache.geode.kafka.GeodeContext;
@@ -66,12 +69,18 @@ public class GeodeKafkaSourceTask extends SourceTask {
       GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
-      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
-          geodeConnectorConfig.getDurableClientId(), geodeConnectorConfig.getDurableClientTimeout(),
-          geodeConnectorConfig.getSecurityClientAuthInit(),
-          geodeConnectorConfig.getSecurityUserName(), geodeConnectorConfig.getSecurityPassword(),
-          geodeConnectorConfig.usesSecurity());
-
+      final ClientCache clientCache =
+          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+              geodeConnectorConfig.getDurableClientId(),
+              geodeConnectorConfig.getDurableClientTimeout(),
+              geodeConnectorConfig.getSecurityClientAuthInit(),
+              geodeConnectorConfig.getSecurityUserName(),
+              geodeConnectorConfig.getSecurityPassword(),
+              geodeConnectorConfig.usesSecurity());
+      if (clientCache == null) {
+        throw new ConnectException(
+            "Unable to create an client cache connected to Apache Geode cluster");
+      }
       batchSize = geodeConnectorConfig.getBatchSize();
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
 
@@ -90,7 +99,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
   }
 
   @Override
-  public List<SourceRecord> poll() throws InterruptedException {
+  public List<SourceRecord> poll() {
     ArrayList<SourceRecord> records = new ArrayList<>(batchSize);
     ArrayList<GeodeEvent> events = new ArrayList<>(batchSize);
     if (eventBufferSupplier.get().drainTo(events, batchSize) > 0) {
@@ -114,7 +123,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
   }
 
   void installOnGeode(GeodeSourceConnectorConfig geodeConnectorConfig, GeodeContext geodeContext,
-      EventBufferSupplier eventBuffer, String cqPrefix, boolean loadEntireRegion) {
+                      EventBufferSupplier eventBuffer, String cqPrefix, boolean loadEntireRegion) {
     boolean isDurable = geodeConnectorConfig.isDurable();
     int taskId = geodeConnectorConfig.getTaskId();
     for (String region : geodeConnectorConfig.getCqsToRegister()) {
@@ -127,26 +136,29 @@ public class GeodeKafkaSourceTask extends SourceTask {
   }
 
   GeodeKafkaSourceListener installListenersToRegion(GeodeContext geodeContext, int taskId,
-      EventBufferSupplier eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion,
-      boolean isDurable) {
+                                                    EventBufferSupplier eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion,
+                                                    boolean isDurable) {
     CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
     GeodeKafkaSourceListener listener = new GeodeKafkaSourceListener(eventBuffer, regionName);
     cqAttributesFactory.addCqListener(listener);
     CqAttributes cqAttributes = cqAttributesFactory.create();
     try {
       if (loadEntireRegion) {
-        CqResults events =
+        CqResults<?> events =
             geodeContext.newCqWithInitialResults(generateCqName(taskId, cqPrefix, regionName),
                 "select * from /" + regionName, cqAttributes,
                 isDurable);
         eventBuffer.get()
-            .addAll((Collection<GeodeEvent>) events.stream().map(
+            .addAll(events.stream().map(
                 e -> new GeodeEvent(regionName, ((Struct) e).get("key"), ((Struct) e).get("value")))
                 .collect(Collectors.toList()));
       } else {
-        geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName),
+        final CqQuery cqQuery = geodeContext.newCq(generateCqName(taskId, cqPrefix, regionName),
             "select * from /" + regionName, cqAttributes,
             isDurable);
+        if (cqQuery == null) {
+          throw new ConnectException("Unable to executed queries on the Apache Geode server");
+        }
       }
     } finally {
       listener.signalInitialResultsLoaded();

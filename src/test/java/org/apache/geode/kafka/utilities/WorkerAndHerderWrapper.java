@@ -16,7 +16,6 @@ package org.apache.geode.kafka.utilities;
 
 import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ import org.apache.geode.kafka.source.GeodeKafkaSource;
 
 public class WorkerAndHerderWrapper {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     if (args.length != 11) {
       throw new RuntimeException("Insufficient arguments to start workers and herders");
     }
@@ -67,7 +66,7 @@ public class WorkerAndHerderWrapper {
       valueConverterProps = parseArguments(valueConverterArgs, false);
     }
 
-    Map props = new HashMap();
+    HashMap<String, String> props = new HashMap<>();
     props.put(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put("offset.storage.file.filename", offsetPath);
     // fast flushing for testing.

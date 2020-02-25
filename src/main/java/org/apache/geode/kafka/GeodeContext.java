@@ -39,16 +39,16 @@ public class GeodeContext {
   public GeodeContext() {}
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-      String durableClientId, String durableClientTimeout, String securityAuthInit,
-      String securityUserName, String securityPassword, boolean usesSecurity) {
+                                   String durableClientId, String durableClientTimeout, String securityAuthInit,
+                                   String securityUserName, String securityPassword, boolean usesSecurity) {
     clientCache = createClientCache(locatorHostPortList, durableClientId, durableClientTimeout,
         securityAuthInit, securityUserName, securityPassword, usesSecurity);
     return clientCache;
   }
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-      String securityAuthInit, String securityUserName, String securityPassword,
-      boolean usesSecurity) {
+                                   String securityAuthInit, String securityUserName, String securityPassword,
+                                   boolean usesSecurity) {
     clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit, securityUserName,
         securityPassword, usesSecurity);
     return clientCache;
@@ -59,8 +59,8 @@ public class GeodeContext {
   }
 
   public ClientCache createClientCache(List<LocatorHostPort> locators, String durableClientName,
-      String durableClientTimeOut, String securityAuthInit, String securityUserName,
-      String securityPassword, boolean usesSecurity) {
+                                       String durableClientTimeOut, String securityAuthInit, String securityUserName,
+                                       String securityPassword, boolean usesSecurity) {
     ClientCacheFactory ccf = new ClientCacheFactory();
 
     ccf.setPdxReadSerialized(true);
@@ -96,8 +96,9 @@ public class GeodeContext {
     }
   }
 
-  public CqResults newCqWithInitialResults(String name, String query, CqAttributes cqAttributes,
-      boolean isDurable) throws ConnectException {
+  public <E> CqResults<E> newCqWithInitialResults(String name, String query,
+                                                  CqAttributes cqAttributes,
+                                                  boolean isDurable) throws ConnectException {
     try {
       CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
       return cq.executeWithInitialResults();

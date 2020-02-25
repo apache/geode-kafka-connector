@@ -37,7 +37,7 @@ public class GeodeKafkaSinkTest {
   @Test
   public void taskConfigsCreatesMaxNumberOfTasks() {
     GeodeKafkaSink sink = new GeodeKafkaSink();
-    Map<String, String> props = new HashMap();
+    Map<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
     sink.start(props);
     Collection<Map<String, String>> tasks = sink.taskConfigs(5);
@@ -47,7 +47,7 @@ public class GeodeKafkaSinkTest {
   @Test
   public void sinkTaskConfigsAllAssignedEntireTopicToRegionBinding() {
     GeodeKafkaSink sink = new GeodeKafkaSink();
-    Map<String, String> props = new HashMap();
+    Map<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
     sink.start(props);
     Collection<Map<String, String>> tasks = sink.taskConfigs(5);
@@ -59,11 +59,11 @@ public class GeodeKafkaSinkTest {
   @Test
   public void eachTaskHasUniqueTaskIds() {
     GeodeKafkaSink sink = new GeodeKafkaSink();
-    Map<String, String> props = new HashMap();
+    Map<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[someTopic:someRegion]");
     sink.start(props);
     Collection<Map<String, String>> tasks = sink.taskConfigs(5);
-    HashSet<String> seenIds = new HashSet();
+    HashSet<String> seenIds = new HashSet<>();
     for (Map<String, String> taskProp : tasks) {
       assertTrue(seenIds.add(taskProp.get(GeodeConnectorConfig.TASK_ID)));
     }
