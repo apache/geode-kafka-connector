@@ -26,7 +26,7 @@ plugin.path=(Path to your clone)/geode-kafka-connector/build/libs/
 name=geode-kafka-sink
 connector.class=GeodeKafkaSink
 tasks.max=1
-topic-to-regions=[someTopicToSinkFrom:someRegionToConsume]
+topic-to-regions=[someTopicToSinkFrom:someRegionToConsumeTo]
 topics=someTopicToSinkFrom
 locators=localHost[10334]
 ```
