@@ -25,6 +25,8 @@ import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.storage.StringConverter;
 
+import org.apache.geode.annotations.VisibleForTesting;
+
 public class GeodeConnectorConfig extends AbstractConfig {
 
   // GeodeKafka Specific Configuration
@@ -35,13 +37,24 @@ public class GeodeConnectorConfig extends AbstractConfig {
   /**
    * Specifies which Locators to connect to Apache Geode
    */
-  public static final String LOCATORS = "locators";
-  public static final String DEFAULT_LOCATOR = "localhost[10334]";
-  public static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
+  private static final String LOCATORS = "locators";
+  private static final String DEFAULT_LOCATOR = "localhost[10334]";
+  private static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
   private static final String DEFAULT_SECURITY_AUTH_INIT =
       "org.apache.geode.kafka.security.SystemPropertyAuthInit";
-  public static final String SECURITY_USER = "security-username";
-  public static final String SECURITY_PASSWORD = "security-password";
+  private static final String SECURITY_USER = "security-username";
+  private static final String SECURITY_PASSWORD = "security-password";
+  private static final String TASK_ID_DOCUMENTATION = "Internally used to identify each task";
+  private static final String
+      LOCATORS_DOCUMENTATION =
+      "A comma separated string of locators that configure which locators to connect to";
+  private static final String
+      SECURITY_USER_DOCUMENTATION =
+      "Supply a username to be used to authenticate with Geode.  Will automatically set the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user";
+  private static final String SECURITY_PASSWORD_DOCUMENTATION = "Supply a password to be used to authenticate with Geode";
+  private static final String
+      SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION =
+      "Point to the Java class that implements the [AuthInitialize Interface](https://geode.apache.org/docs/guide/19/managing/security/implementing_authentication.html)";
 
   public static final String DEFAULT_KEY_CONVERTER = StringConverter.class.getCanonicalName();
   public static final String DEFAULT_VALUE_CONVERTER = StringConverter.class.getCanonicalName();
@@ -52,7 +65,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
   private String securityUserName;
   private String securityPassword;
 
-  // Just for testing
+  @VisibleForTesting
   protected GeodeConnectorConfig() {
     super(new ConfigDef(), new HashMap<>());
     taskId = 0;
@@ -75,17 +88,38 @@ public class GeodeConnectorConfig extends AbstractConfig {
 
   protected static ConfigDef configurables() {
     ConfigDef configDef = new ConfigDef();
-    configDef.define(TASK_ID, ConfigDef.Type.INT, "0", ConfigDef.Importance.MEDIUM,
-        "Internally used to identify each task");
-    configDef.define(LOCATORS, ConfigDef.Type.STRING, DEFAULT_LOCATOR, ConfigDef.Importance.HIGH,
-        "A comma separated string of locators that configure which locators to connect to");
-    configDef.define(SECURITY_USER, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH,
-        "Supply a username to be used to authenticate with Geode.  Will automatically set the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user");
-    configDef.define(SECURITY_PASSWORD, ConfigDef.Type.STRING, null, ConfigDef.Importance.HIGH,
-        "Supply a password to be used to authenticate with Geode");
-    configDef.define(SECURITY_CLIENT_AUTH_INIT, ConfigDef.Type.STRING, null,
+    configDef.define(
+        TASK_ID,
+        ConfigDef.Type.INT,
+        "0",
+        ConfigDef.Importance.MEDIUM,
+        TASK_ID_DOCUMENTATION);
+    configDef.define(
+        LOCATORS,
+        ConfigDef.Type.STRING,
+        DEFAULT_LOCATOR,
         ConfigDef.Importance.HIGH,
-        "Point to class that implements the [AuthInitialize Interface](https://gemfire.docs.pivotal.io/99/geode/managing/security/implementing_authentication.html)");
+        LOCATORS_DOCUMENTATION);
+    configDef.define(
+        SECURITY_USER,
+        ConfigDef.Type.STRING,
+        null,
+        ConfigDef.Importance.HIGH,
+        SECURITY_USER_DOCUMENTATION);
+
+    configDef.define(
+        SECURITY_PASSWORD,
+        ConfigDef.Type.PASSWORD,
+        null,
+        ConfigDef.Importance.HIGH,
+        SECURITY_PASSWORD_DOCUMENTATION);
+
+    configDef.define(
+        SECURITY_CLIENT_AUTH_INIT,
+        ConfigDef.Type.PASSWORD,
+        null,
+        ConfigDef.Importance.HIGH,
+        SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION);
     return configDef;
   }
 

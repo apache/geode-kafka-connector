@@ -227,17 +227,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-plugin.version}</version>
+                <inherited>true</inherited>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-plugin.version}</version>
-                <inherited>true</inherited>
-                <configuration>
                     <compilerArgs>
                         <arg>-Xlint:-processing</arg>
                         <arg>-Xlint:all</arg>
