@@ -183,7 +183,7 @@
 
                                 The mapping between the region and topics must be provided by the user. They must also ensure that the Apache Geode cluster is up and running along with all the required regions along with the topics in Kafka. The Apache Geode cluster must consist of at least one locator and one server.
                             </description>
-                            <logo>logos/elasticsearch.jpg</logo>
+                            <logo>logos/PoweredBYlogo.png</logo>
 
                             <supportProviderName>Apache Software Foundation / VMware</supportProviderName>
                             <supportSummary>VMware, along with Apache Geode community members support the Apache Geode Connector </supportSummary>
