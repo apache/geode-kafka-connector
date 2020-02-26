@@ -14,8 +14,8 @@
  */
 package org.apache.geode.kafka.source;
 
-import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.DEFAULT_CQ_PREFIX;
-import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.REGION_PARTITION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_CQ_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_PARTITION;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;

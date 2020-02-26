@@ -14,7 +14,8 @@
  */
 package org.apache.geode.kafka.source;
 
-import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,8 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Test;
-
-import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSourceTest {
 
@@ -60,7 +59,7 @@ public class GeodeKafkaSourceTest {
     Collection<Map<String, String>> tasks = sink.taskConfigs(5);
     HashSet<String> seenIds = new HashSet<>();
     for (Map<String, String> taskProp : tasks) {
-      assertTrue(seenIds.add(taskProp.get(GeodeConnectorConfig.TASK_ID)));
+      assertTrue(seenIds.add(taskProp.get(TASK_ID)));
     }
   }
 

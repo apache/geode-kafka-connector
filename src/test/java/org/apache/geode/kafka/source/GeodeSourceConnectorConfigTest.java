@@ -14,7 +14,9 @@
  */
 package org.apache.geode.kafka.source;
 
-import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.DURABLE_CLIENT_ID_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
@@ -22,16 +24,14 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.apache.geode.kafka.GeodeConnectorConfig;
-
 public class GeodeSourceConnectorConfigTest {
 
   @Test
   public void durableClientIdShouldNotBeSetIfPrefixIsEmpty() {
     Map<String, String> props = new HashMap<>();
-    props.put(GeodeConnectorConfig.TASK_ID, "0");
+    props.put(TASK_ID, "0");
     props.put(DURABLE_CLIENT_ID_PREFIX, "");
-    props.put(GeodeConnectorConfig.LOCATORS, "localhost[10334]");
+    props.put(LOCATORS, "localhost[10334]");
     GeodeSourceConnectorConfig config = new GeodeSourceConnectorConfig(props);
     assertEquals("", config.getDurableClientId());
   }

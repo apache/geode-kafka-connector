@@ -14,6 +14,19 @@
  */
 package org.apache.geode.kafka;
 
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.DEFAULT_LOCATOR;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.DEFAULT_SECURITY_AUTH_INIT;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID_DOCUMENTATION;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.connect.storage.StringConverter;
 
 import org.apache.geode.annotations.VisibleForTesting;
@@ -30,40 +44,14 @@ import org.apache.geode.annotations.VisibleForTesting;
 public class GeodeConnectorConfig extends AbstractConfig {
 
   // GeodeKafka Specific Configuration
-  /**
-   * Identifier for each task
-   */
-  public static final String TASK_ID = "GEODE_TASK_ID"; // One config per task
-  /**
-   * Specifies which Locators to connect to Apache Geode
-   */
-  private static final String LOCATORS = "locators";
-  private static final String DEFAULT_LOCATOR = "localhost[10334]";
-  private static final String SECURITY_CLIENT_AUTH_INIT = "security-client-auth-init";
-  private static final String DEFAULT_SECURITY_AUTH_INIT =
-      "org.apache.geode.kafka.security.SystemPropertyAuthInit";
-  private static final String SECURITY_USER = "security-username";
-  private static final String SECURITY_PASSWORD = "security-password";
-  private static final String TASK_ID_DOCUMENTATION = "Internally used to identify each task";
-  private static final String
-      LOCATORS_DOCUMENTATION =
-      "A comma separated string of locators that configure which locators to connect to";
-  private static final String
-      SECURITY_USER_DOCUMENTATION =
-      "Supply a username to be used to authenticate with Geode.  Will automatically set the security-client-auth-init to use a SystemPropertyAuthInit if one isn't supplied by the user";
-  private static final String SECURITY_PASSWORD_DOCUMENTATION = "Supply a password to be used to authenticate with Geode";
-  private static final String
-      SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION =
-      "Point to the Java class that implements the [AuthInitialize Interface](https://geode.apache.org/docs/guide/19/managing/security/implementing_authentication.html)";
-
   public static final String DEFAULT_KEY_CONVERTER = StringConverter.class.getCanonicalName();
   public static final String DEFAULT_VALUE_CONVERTER = StringConverter.class.getCanonicalName();
 
   protected final int taskId;
   protected List<LocatorHostPort> locatorHostPorts;
-  private String securityClientAuthInit;
+  private Password securityClientAuthInit;
   private String securityUserName;
-  private String securityPassword;
+  private Password securityPassword;
 
   @VisibleForTesting
   protected GeodeConnectorConfig() {
@@ -74,10 +62,11 @@ public class GeodeConnectorConfig extends AbstractConfig {
   public GeodeConnectorConfig(ConfigDef configDef, Map<String, String> connectorProperties) {
     super(configDef, connectorProperties);
     taskId = getInt(TASK_ID);
-    locatorHostPorts = parseLocators(getString(GeodeConnectorConfig.LOCATORS));
+    locatorHostPorts = parseLocators(getString(LOCATORS));
     securityUserName = getString(SECURITY_USER);
-    securityPassword = getString(SECURITY_PASSWORD);
-    securityClientAuthInit = getString(SECURITY_CLIENT_AUTH_INIT);
+    securityPassword = getPassword(SECURITY_PASSWORD);
+    securityClientAuthInit = getPassword(SECURITY_CLIENT_AUTH_INIT);
+//    System.out.println(securityUserName + "NABA " + securityPassword.value() + "NABA" + securityClientAuthInit.value());
     // if we registered a username/password instead of auth init, we should use the default auth
     // init if one isn't specified
     if (usesSecurity()) {
@@ -196,7 +185,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
   }
 
   public String getSecurityClientAuthInit() {
-    return securityClientAuthInit;
+    return securityClientAuthInit == null ? null : securityClientAuthInit.value();
   }
 
   public String getSecurityUserName() {
@@ -204,7 +193,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
   }
 
   public String getSecurityPassword() {
-    return securityPassword;
+    return securityPassword == null ? null : securityPassword.value();
   }
 
   public boolean usesSecurity() {

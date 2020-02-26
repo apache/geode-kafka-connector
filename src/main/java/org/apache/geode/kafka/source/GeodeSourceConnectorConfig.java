@@ -14,6 +14,30 @@
  */
 package org.apache.geode.kafka.source;
 
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.BATCH_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.BATCH_SIZE_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQ_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQ_PREFIX_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_BATCH_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_CQ_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_DURABLE_CLIENT_ID;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_DURABLE_CLIENT_TIMEOUT;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_LOAD_ENTIRE_REGION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_QUEUE_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_REGION_TO_TOPIC_BINDING;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_TIME_OUT;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_TIME_OUT_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.LOAD_ENTIRE_REGION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.LOAD_ENTIRE_REGION_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.QUEUE_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.QUEUE_SIZE_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS_DOCUMENTATION;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -26,53 +50,6 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
 
   public static final ConfigDef SOURCE_CONFIG_DEF = configurables();
 
-  // Geode Configuration
-  public static final String DURABLE_CLIENT_ID_PREFIX = "durable-client-id-prefix";
-  public static final String DEFAULT_DURABLE_CLIENT_ID = "";
-  public static final String DURABLE_CLIENT_TIME_OUT = "durable-client-timeout";
-  public static final String DEFAULT_DURABLE_CLIENT_TIMEOUT = "60000";
-
-  public static final String CQ_PREFIX = "cq-prefix";
-  public static final String DEFAULT_CQ_PREFIX = "cqForGeodeKafka";
-
-  /**
-   * Used as a key for source partitions
-   */
-  public static final String REGION_PARTITION = "regionPartition";
-  public static final String REGION_TO_TOPIC_BINDINGS = "region-to-topics";
-  public static final String DEFAULT_REGION_TO_TOPIC_BINDING = "[gkcRegion:gkcTopic]";
-  public static final String CQS_TO_REGISTER = "cqsToRegister"; // used internally so that only 1
-                                                                // task will register a cq
-
-  public static final String BATCH_SIZE = "geode-connector-batch-size";
-  public static final String DEFAULT_BATCH_SIZE = "100";
-
-  public static final String QUEUE_SIZE = "geode-connector-queue-size";
-  public static final String DEFAULT_QUEUE_SIZE = "10000";
-
-  public static final String LOAD_ENTIRE_REGION = "load-entire-region";
-  public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
-
-  private static final String
-      CQS_TO_REGISTER_DOCUMENTATION =
-      "Internally created and used parameter, for signalling a task to register CQs on Apache Geode";
-  private static final String
-      REGION_TO_TOPIC_BINDINGS_DOCUMENTATION =
-      "A comma separated list of \"one region to many topics\" mappings.  Each mapping is surrounded by brackets.  For example \"[regionName:topicName], \"[anotherRegion: topicName, anotherTopic]\"";
-  private static final String
-      DURABLE_CLIENT_ID_PREFIX_DOCUMENTATION =
-      "Prefix string for tasks to append to when registering as a durable client.  If empty string, will not register as a durable client";
-  private static final String
-      LOAD_ENTIRE_REGION_DOCUMENTATION =
-      "Determines if we should queue up all entries that currently exist in a region.  This allows us to copy existing region data.  Will be replayed whenever a task needs to re-register a CQ";
-  private static final String
-      DURABLE_CLIENT_TIME_OUT_DOCUMENTATION =
-      "How long in milliseconds to persist values in Geode's durable queue before the queue is invalidated";
-  private static final String CQ_PREFIX_DOCUMENTATION = "Prefix string to identify Connector CQ's on a Geode server";
-  private static final String BATCH_SIZE_DOCUMENTATION = "Maximum number of records to return on each poll";
-  private static final String
-      QUEUE_SIZE_DOCUMENTATION =
-      "Maximum number of entries in the connector queue before backing up all Geode CQ listeners sharing the task queue ";
 
   private final String durableClientId;
   private final String durableClientTimeout;

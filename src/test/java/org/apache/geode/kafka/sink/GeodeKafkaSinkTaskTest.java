@@ -14,8 +14,10 @@
  */
 package org.apache.geode.kafka.sink;
 
-import static org.apache.geode.kafka.sink.GeodeSinkConnectorConfig.NULL_VALUES_MEAN_REMOVE;
-import static org.apache.geode.kafka.sink.GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -31,16 +33,15 @@ import org.apache.kafka.connect.sink.SinkRecord;
 import org.junit.Test;
 
 import org.apache.geode.cache.Region;
-import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSinkTaskTest {
 
   private HashMap<String, String> createTestSinkProps() {
     HashMap<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[topic:region]");
-    props.put(GeodeConnectorConfig.TASK_ID, "0");
+    props.put(TASK_ID, "0");
     props.put(NULL_VALUES_MEAN_REMOVE, "true");
-    props.put(GeodeConnectorConfig.LOCATORS, "localhost[10334]");
+    props.put(LOCATORS, "localhost[10334]");
     return props;
   }
 

@@ -14,8 +14,8 @@
  */
 package org.apache.geode.kafka.security;
 
-import static org.apache.geode.kafka.GeodeConnectorConfig.SECURITY_PASSWORD;
-import static org.apache.geode.kafka.GeodeConnectorConfig.SECURITY_USER;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Properties;

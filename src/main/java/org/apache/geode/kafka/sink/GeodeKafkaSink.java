@@ -14,6 +14,8 @@
  */
 package org.apache.geode.kafka.sink;
 
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +24,6 @@ import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
-
-import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeKafkaSink extends SinkConnector {
   private Map<String, String> sharedProps;
@@ -46,7 +46,7 @@ public class GeodeKafkaSink extends SinkConnector {
     // have no control over partitioning in kafka and which tasks will fire
     for (int i = 0; i < maxTasks; i++) {
       Map<String, String> taskProps = new HashMap<>(sharedProps);
-      taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
+      taskProps.put(TASK_ID, "" + i);
       taskConfigs.add(taskProps);
     }
 

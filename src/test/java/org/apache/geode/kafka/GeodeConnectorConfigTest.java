@@ -16,6 +16,8 @@ package org.apache.geode.kafka;
 
 
 import static org.apache.geode.kafka.GeodeConnectorConfig.parseStringByComma;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -134,7 +136,7 @@ public class GeodeConnectorConfigTest {
   @Test
   public void usesSecurityShouldBeTrueIfSecurityUserSet() {
     Map<String, String> props = new HashMap<>();
-    props.put(GeodeConnectorConfig.SECURITY_USER, "some user");
+    props.put(SECURITY_USER, "some user");
     GeodeConnectorConfig config =
         new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertTrue(config.usesSecurity());
@@ -143,7 +145,7 @@ public class GeodeConnectorConfigTest {
   @Test
   public void usesSecurityShouldBeTrueIfSecurityClientAuthInitSet() {
     Map<String, String> props = new HashMap<>();
-    props.put(GeodeConnectorConfig.SECURITY_CLIENT_AUTH_INIT, "some_class");
+    props.put(SECURITY_CLIENT_AUTH_INIT, "some_class");
     GeodeConnectorConfig config =
         new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertTrue(config.usesSecurity());
@@ -160,7 +162,7 @@ public class GeodeConnectorConfigTest {
   @Test
   public void securityClientAuthInitShouldBeSetIfUserIsSet() {
     Map<String, String> props = new HashMap<>();
-    props.put(GeodeConnectorConfig.SECURITY_USER, "some user");
+    props.put(SECURITY_USER, "some user");
     GeodeConnectorConfig config =
         new GeodeConnectorConfig(GeodeConnectorConfig.configurables(), props);
     assertNotNull(config.getSecurityClientAuthInit());

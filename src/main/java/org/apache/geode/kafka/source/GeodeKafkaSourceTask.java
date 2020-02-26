@@ -14,6 +14,8 @@
  */
 package org.apache.geode.kafka.source;
 
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_PARTITION;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,6 +68,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
   @Override
   public void start(Map<String, String> props) {
     try {
+      System.out.println("NABA ::" + props);
       GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
@@ -175,9 +178,9 @@ public class GeodeKafkaSourceTask extends SourceTask {
   Map<String, Map<String, String>> createSourcePartitionsMap(Collection<String> regionNames) {
     return regionNames.stream().map(regionName -> {
       Map<String, String> sourcePartition = new HashMap<>();
-      sourcePartition.put(GeodeSourceConnectorConfig.REGION_PARTITION, regionName);
+      sourcePartition.put(REGION_PARTITION, regionName);
       return sourcePartition;
-    }).collect(Collectors.toMap(s -> s.get(GeodeSourceConnectorConfig.REGION_PARTITION), s -> s));
+    }).collect(Collectors.toMap(s -> s.get(REGION_PARTITION), s -> s));
   }
 
   String generateCqName(int taskId, String cqPrefix, String regionName) {

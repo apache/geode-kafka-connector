@@ -15,6 +15,9 @@
 package org.apache.geode.kafka.source;
 
 import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.SOURCE_CONFIG_DEF;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,13 +48,13 @@ public class GeodeKafkaSource extends SourceConnector {
     List<String> bindings =
         GeodeConnectorConfig
             .parseStringByComma(
-                sharedProps.get(GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS));
+                sharedProps.get(REGION_TO_TOPIC_BINDINGS));
     List<List<String>> bindingsPerTask = ConnectorUtils.groupPartitions(bindings, maxTasks);
 
     for (int i = 0; i < maxTasks; i++) {
       Map<String, String> taskProps = new HashMap<>(sharedProps);
-      taskProps.put(GeodeConnectorConfig.TASK_ID, "" + i);
-      taskProps.put(GeodeSourceConnectorConfig.CQS_TO_REGISTER,
+      taskProps.put(TASK_ID, "" + i);
+      taskProps.put(CQS_TO_REGISTER,
           GeodeConnectorConfig.reconstructString(bindingsPerTask.get(i)));
       taskConfigs.add(taskProps);
     }

@@ -14,6 +14,13 @@
  */
 package org.apache.geode.kafka.sink;
 
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_TOPIC_TO_REGION_BINDING;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS_DOCUMENTATION;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,19 +30,6 @@ import org.apache.geode.kafka.GeodeConnectorConfig;
 
 public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   public static final ConfigDef SINK_CONFIG_DEF = configurables();
-
-  // Used by sink
-  private static final String TOPIC_TO_REGION_BINDINGS = "topic-to-regions";
-  private static final String DEFAULT_TOPIC_TO_REGION_BINDING = "[gkcTopic:gkcRegion]";
-  private static final String NULL_VALUES_MEAN_REMOVE = "null-values-mean-remove";
-  private static final String DEFAULT_NULL_VALUES_MEAN_REMOVE = "true";
-  private static final String
-      NULL_VALUES_MEAN_REMOVE_DOCUMENTATION =
-      "If set to true, when topics send a SinkRecord with a null value, we will convert to an operation similar to region.remove instead of putting a null value into the region";
-  private static final String
-      TOPIC_TO_REGION_BINDINGS_DOCUMENTATION =
-      "A comma separated list of \"one topic to many regions\" bindings.  Each binding is surrounded by brackets. For example \"[topicName:regionName], [anotherTopic: regionName, anotherRegion]";
-
   private final Map<String, List<String>> topicToRegions;
   private final boolean nullValuesMeanRemove;
 

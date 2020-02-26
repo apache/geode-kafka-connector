@@ -14,7 +14,8 @@
  */
 package org.apache.geode.kafka.utilities;
 
-import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.REGION_TO_TOPIC_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,10 +34,10 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.MemoryOffsetBackingStore;
 import org.apache.kafka.connect.util.ConnectUtils;
 
-import org.apache.geode.kafka.GeodeConnectorConfig;
 import org.apache.geode.kafka.sink.GeodeKafkaSink;
-import org.apache.geode.kafka.sink.GeodeSinkConnectorConfig;
 import org.apache.geode.kafka.source.GeodeKafkaSource;
+import org.apache.geode.kafka.utils.GeodeConfigurationConstants;
+import org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants;
 
 public class WorkerAndHerderWrapper {
 
@@ -80,7 +81,7 @@ public class WorkerAndHerderWrapper {
     props.putAll(valueConverterProps);
     props.put("key.converter.schemas.enable", "false");
     props.put("value.converter.schemas.enable", "false");
-    props.put(GeodeConnectorConfig.LOCATORS, locatorString);
+    props.put(LOCATORS, locatorString);
     WorkerConfig workerCfg = new StandaloneConfig(props);
 
     MemoryOffsetBackingStore offBackingStore = new MemoryOffsetBackingStore();
@@ -98,7 +99,7 @@ public class WorkerAndHerderWrapper {
     sourceProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSource.class.getName());
     sourceProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-source-connector");
     sourceProps.put(ConnectorConfig.TASKS_MAX_CONFIG, maxTasks);
-    sourceProps.put(GeodeConnectorConfig.LOCATORS, locatorString);
+    sourceProps.put(GeodeConfigurationConstants.LOCATORS, locatorString);
     sourceProps.put(REGION_TO_TOPIC_BINDINGS, regionToTopicBinding);
 
     herder.putConnectorConfig(
@@ -110,8 +111,8 @@ public class WorkerAndHerderWrapper {
     sinkProps.put(ConnectorConfig.CONNECTOR_CLASS_CONFIG, GeodeKafkaSink.class.getName());
     sinkProps.put(ConnectorConfig.NAME_CONFIG, "geode-kafka-sink-connector");
     sinkProps.put(ConnectorConfig.TASKS_MAX_CONFIG, maxTasks);
-    sinkProps.put(GeodeSinkConnectorConfig.TOPIC_TO_REGION_BINDINGS, topicToRegionBinding);
-    sinkProps.put(GeodeConnectorConfig.LOCATORS, locatorString);
+    sinkProps.put(GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS, topicToRegionBinding);
+    sinkProps.put(GeodeConfigurationConstants.LOCATORS, locatorString);
     sinkProps.put("topics", sinkTopic);
 
     herder.putConnectorConfig(
