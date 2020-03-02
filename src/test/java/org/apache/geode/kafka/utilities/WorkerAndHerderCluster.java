@@ -25,8 +25,8 @@ public class WorkerAndHerderCluster {
   }
 
   public void start(String maxTasks, String sourceRegion, String sinkRegion, String sourceTopic,
-                    String sinkTopic, String offsetPath, String locatorString, String keyConverter,
-                    String keyConverterArgs, String valueConverter, String valueConverterArgs)
+      String sinkTopic, String offsetPath, String locatorString, String keyConverter,
+      String keyConverterArgs, String valueConverter, String valueConverterArgs)
       throws IOException {
     String[] args = new String[] {maxTasks, sourceRegion, sinkRegion, sourceTopic, sinkTopic,
         offsetPath, locatorString, keyConverter, keyConverterArgs, valueConverter,

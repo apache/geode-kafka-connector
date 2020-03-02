@@ -49,6 +49,7 @@
         <awaitility.version>3.1.6</awaitility.version>
         <maven-plugin.version>3.8.1</maven-plugin.version>
         <zookeeper.version>3.5.7</zookeeper.version>
+        <spotless.version>1.27.0</spotless.version>
         <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
     </properties>
 
@@ -164,6 +165,34 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <licenseHeader>
+                            <file>etc/license-header</file>
+                        </licenseHeader>
+                        <eclipse>
+                            <file>etc/eclipse-java-google-style.xml</file>
+                            <version>4.7.1</version>
+                        </eclipse>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <file>etc/eclipseOrganizeImports.importorder</file>
+                        </importOrder>
+                    </java>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>io.confluent</groupId>
                 <version>0.10.0</version>

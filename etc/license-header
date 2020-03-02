@@ -12,22 +12,3 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.geode.kafka.security;
-
-import java.util.Properties;
-
-import org.apache.geode.distributed.DistributedMember;
-import org.apache.geode.security.AuthInitialize;
-import org.apache.geode.security.AuthenticationFailedException;
-
-
-public class SystemPropertyAuthInit implements AuthInitialize {
-  @Override
-  public Properties getCredentials(Properties securityProps, DistributedMember server,
-      boolean isPeer) throws AuthenticationFailedException {
-    Properties extractedProperties = new Properties();
-    extractedProperties.put("security-username", securityProps.get("security-username"));
-    extractedProperties.put("security-password", securityProps.get("security-password"));
-    return extractedProperties;
-  }
-}

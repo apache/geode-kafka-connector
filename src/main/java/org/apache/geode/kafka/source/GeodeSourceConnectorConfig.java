@@ -141,8 +141,7 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
         SOURCE_GROUP,
         5,
         ConfigDef.Width.MEDIUM,
-        CQ_PREFIX_DISPLAY_NAME
-        );
+        CQ_PREFIX_DISPLAY_NAME);
 
     configDef.define(
         BATCH_SIZE,
@@ -153,8 +152,7 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
         SOURCE_GROUP,
         6,
         ConfigDef.Width.MEDIUM,
-        BATCH_SIZE_DISPLAY_NAME
-        );
+        BATCH_SIZE_DISPLAY_NAME);
 
     configDef.define(
         QUEUE_SIZE,

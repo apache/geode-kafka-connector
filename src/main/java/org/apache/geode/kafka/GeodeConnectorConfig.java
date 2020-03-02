@@ -101,8 +101,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
         GEODE_GROUP,
         2,
         ConfigDef.Width.LONG,
-        LOCATORS_DISPLAY_NAME
-    );
+        LOCATORS_DISPLAY_NAME);
     configDef.define(
         SECURITY_USER,
         ConfigDef.Type.STRING,
@@ -112,8 +111,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
         GEODE_GROUP,
         3,
         ConfigDef.Width.MEDIUM,
-        SECURITY_USER_DISPLAY_NAME
-    );
+        SECURITY_USER_DISPLAY_NAME);
     configDef.define(
         SECURITY_PASSWORD,
         ConfigDef.Type.PASSWORD,
@@ -133,8 +131,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
         GEODE_GROUP,
         5,
         ConfigDef.Width.LONG,
-        SECURITY_CLIENT_AUTH_INIT_DISPLAY_NAME
-        );
+        SECURITY_CLIENT_AUTH_INIT_DISPLAY_NAME);
     return configDef;
   }
 

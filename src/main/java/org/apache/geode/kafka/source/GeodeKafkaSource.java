@@ -15,9 +15,9 @@
 package org.apache.geode.kafka.source;
 
 import static org.apache.geode.kafka.source.GeodeSourceConnectorConfig.SOURCE_CONFIG_DEF;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
-import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;

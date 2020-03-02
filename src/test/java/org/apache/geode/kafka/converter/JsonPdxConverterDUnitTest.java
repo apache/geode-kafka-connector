@@ -48,7 +48,6 @@ import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.kafka.utilities.KafkaLocalCluster;
 import org.apache.geode.kafka.utilities.TestObject;
 import org.apache.geode.kafka.utilities.WorkerAndHerderCluster;
-import org.apache.geode.pdx.FieldType;
 import org.apache.geode.pdx.PdxInstance;
 import org.apache.geode.pdx.PdxInstanceFactory;
 import org.apache.geode.pdx.ReflectionBasedAutoSerializer;

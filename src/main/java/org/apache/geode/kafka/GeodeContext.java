@@ -39,16 +39,16 @@ public class GeodeContext {
   public GeodeContext() {}
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-                                   String durableClientId, String durableClientTimeout, String securityAuthInit,
-                                   String securityUserName, String securityPassword, boolean usesSecurity) {
+      String durableClientId, String durableClientTimeout, String securityAuthInit,
+      String securityUserName, String securityPassword, boolean usesSecurity) {
     clientCache = createClientCache(locatorHostPortList, durableClientId, durableClientTimeout,
         securityAuthInit, securityUserName, securityPassword, usesSecurity);
     return clientCache;
   }
 
   public ClientCache connectClient(List<LocatorHostPort> locatorHostPortList,
-                                   String securityAuthInit, String securityUserName, String securityPassword,
-                                   boolean usesSecurity) {
+      String securityAuthInit, String securityUserName, String securityPassword,
+      boolean usesSecurity) {
     clientCache = createClientCache(locatorHostPortList, "", "", securityAuthInit, securityUserName,
         securityPassword, usesSecurity);
     return clientCache;
@@ -59,8 +59,8 @@ public class GeodeContext {
   }
 
   public ClientCache createClientCache(List<LocatorHostPort> locators, String durableClientName,
-                                       String durableClientTimeOut, String securityAuthInit, String securityUserName,
-                                       String securityPassword, boolean usesSecurity) {
+      String durableClientTimeOut, String securityAuthInit, String securityUserName,
+      String securityPassword, boolean usesSecurity) {
     try {
       ClientCacheFactory ccf = new ClientCacheFactory();
 
@@ -74,7 +74,7 @@ public class GeodeContext {
       }
       if (!durableClientName.equals("")) {
         ccf.set("durable-client-id", durableClientName)
-                .set("durable-client-timeout", durableClientTimeOut);
+            .set("durable-client-timeout", durableClientTimeOut);
       }
       // currently we only allow using the default pool.
       // If we ever want to allow adding multiple pools we'll have to configure pool factories
@@ -85,8 +85,8 @@ public class GeodeContext {
       }
       return ccf.create();
     } catch (Exception e) {
-        throw new ConnectException(
-                "Unable to create an client cache connected to Apache Geode cluster");
+      throw new ConnectException(
+          "Unable to create an client cache connected to Apache Geode cluster");
     }
   }
 
@@ -102,8 +102,8 @@ public class GeodeContext {
   }
 
   public <E> CqResults<E> newCqWithInitialResults(String name, String query,
-                                                  CqAttributes cqAttributes,
-                                                  boolean isDurable) throws ConnectException {
+      CqAttributes cqAttributes,
+      boolean isDurable) throws ConnectException {
     try {
       CqQuery cq = clientCache.getQueryService().newCq(name, query, cqAttributes, isDurable);
       return cq.executeWithInitialResults();

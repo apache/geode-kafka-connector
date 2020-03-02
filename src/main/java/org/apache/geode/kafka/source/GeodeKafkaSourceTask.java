@@ -71,12 +71,12 @@ public class GeodeKafkaSourceTask extends SourceTask {
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
       geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
-              geodeConnectorConfig.getDurableClientId(),
-              geodeConnectorConfig.getDurableClientTimeout(),
-              geodeConnectorConfig.getSecurityClientAuthInit(),
-              geodeConnectorConfig.getSecurityUserName(),
-              geodeConnectorConfig.getSecurityPassword(),
-              geodeConnectorConfig.usesSecurity());
+          geodeConnectorConfig.getDurableClientId(),
+          geodeConnectorConfig.getDurableClientTimeout(),
+          geodeConnectorConfig.getSecurityClientAuthInit(),
+          geodeConnectorConfig.getSecurityUserName(),
+          geodeConnectorConfig.getSecurityPassword(),
+          geodeConnectorConfig.usesSecurity());
 
       batchSize = geodeConnectorConfig.getBatchSize();
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
@@ -120,7 +120,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
   }
 
   void installOnGeode(GeodeSourceConnectorConfig geodeConnectorConfig, GeodeContext geodeContext,
-                      EventBufferSupplier eventBuffer, String cqPrefix, boolean loadEntireRegion) {
+      EventBufferSupplier eventBuffer, String cqPrefix, boolean loadEntireRegion) {
     boolean isDurable = geodeConnectorConfig.isDurable();
     int taskId = geodeConnectorConfig.getTaskId();
     for (String region : geodeConnectorConfig.getCqsToRegister()) {
@@ -133,8 +133,8 @@ public class GeodeKafkaSourceTask extends SourceTask {
   }
 
   GeodeKafkaSourceListener installListenersToRegion(GeodeContext geodeContext, int taskId,
-                                                    EventBufferSupplier eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion,
-                                                    boolean isDurable) {
+      EventBufferSupplier eventBuffer, String regionName, String cqPrefix, boolean loadEntireRegion,
+      boolean isDurable) {
     CqAttributesFactory cqAttributesFactory = new CqAttributesFactory();
     GeodeKafkaSourceListener listener = new GeodeKafkaSourceListener(eventBuffer, regionName);
     cqAttributesFactory.addCqListener(listener);
