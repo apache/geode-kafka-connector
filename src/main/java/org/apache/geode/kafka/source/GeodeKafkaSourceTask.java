@@ -29,7 +29,6 @@ import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
 import org.apache.geode.cache.query.CqQuery;
@@ -68,22 +67,17 @@ public class GeodeKafkaSourceTask extends SourceTask {
   @Override
   public void start(Map<String, String> props) {
     try {
-      System.out.println("NABA ::" + props);
       GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
-      final ClientCache clientCache =
-          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
               geodeConnectorConfig.getDurableClientId(),
               geodeConnectorConfig.getDurableClientTimeout(),
               geodeConnectorConfig.getSecurityClientAuthInit(),
               geodeConnectorConfig.getSecurityUserName(),
               geodeConnectorConfig.getSecurityPassword(),
               geodeConnectorConfig.usesSecurity());
-      if (clientCache == null) {
-        throw new ConnectException(
-            "Unable to create an client cache connected to Apache Geode cluster");
-      }
+
       batchSize = geodeConnectorConfig.getBatchSize();
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
 
@@ -122,7 +116,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public void stop() {
-    geodeContext.getClientCache().close(true);
+    geodeContext.close(true);
   }
 
   void installOnGeode(GeodeSourceConnectorConfig geodeConnectorConfig, GeodeContext geodeContext,

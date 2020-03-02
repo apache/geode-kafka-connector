@@ -61,16 +61,11 @@ public class GeodeKafkaSinkTask extends SinkTask {
       GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
       configure(geodeConnectorConfig);
       geodeContext = new GeodeContext();
-      final ClientCache clientCache =
-          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
               geodeConnectorConfig.getSecurityClientAuthInit(),
               geodeConnectorConfig.getSecurityUserName(),
               geodeConnectorConfig.getSecurityPassword(),
               geodeConnectorConfig.usesSecurity());
-      if (clientCache == null) {
-        throw new ConnectException(
-            "Unable to create a client cache connected to the Apache Geode cluster");
-      }
       regionNameToRegion = createProxyRegions(topicToRegions.values());
     } catch (Exception e) {
       logger.error("Unable to start sink task", e);
@@ -149,7 +144,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   @Override
   public void stop() {
-    geodeContext.getClientCache().close(false);
+    geodeContext.close(false);
   }
 
 }

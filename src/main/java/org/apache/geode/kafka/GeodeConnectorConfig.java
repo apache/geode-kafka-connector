@@ -66,7 +66,6 @@ public class GeodeConnectorConfig extends AbstractConfig {
     securityUserName = getString(SECURITY_USER);
     securityPassword = getPassword(SECURITY_PASSWORD);
     securityClientAuthInit = getPassword(SECURITY_CLIENT_AUTH_INIT);
-//    System.out.println(securityUserName + "NABA " + securityPassword.value() + "NABA" + securityClientAuthInit.value());
     // if we registered a username/password instead of auth init, we should use the default auth
     // init if one isn't specified
     if (usesSecurity()) {

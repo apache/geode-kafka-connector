@@ -51,7 +51,7 @@ class GeodeKafkaSourceListener implements CqStatusListener {
               TimeUnit.SECONDS))
             break;
         } catch (InterruptedException ex) {
-          ex.printStackTrace();
+          logger.info("Thread interrupted while updating buffer", ex);
         }
         logger.info("GeodeKafkaSource Queue is full");
       }
@@ -66,6 +66,7 @@ class GeodeKafkaSourceListener implements CqStatusListener {
   @Override
   public void onCqDisconnected() {
     // we should probably redistribute or reconnect
+    logger.info("cq has been disconnected");
   }
 
   @Override
