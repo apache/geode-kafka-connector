@@ -14,4 +14,8 @@ public class GeodeSinkConfigurationConstants {
   public static final String
       TOPIC_TO_REGION_BINDINGS_DOCUMENTATION =
       "A comma separated list of \"one topic to many regions\" bindings.  Each binding is surrounded by brackets. For example \"[topicName:regionName], [anotherTopic: regionName, anotherRegion]";
+  public static final String SINK_GROUP = "Sink-Configurations";
+  public final static String TOPIC_TO_REGION_BINDINGS_DISPLAY_NAME = "Topic to region mapping";
+  public final static String NULL_VALUES_MEAN_REMOVE_DISPLAY_NAME = "Null values behavior";
+
 }

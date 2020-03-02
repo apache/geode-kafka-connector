@@ -15,10 +15,13 @@
 package org.apache.geode.kafka.source;
 
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.BATCH_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.BATCH_SIZE_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.BATCH_SIZE_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQS_TO_REGISTER_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQ_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQ_PREFIX_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.CQ_PREFIX_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_BATCH_SIZE;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_CQ_PREFIX;
@@ -28,15 +31,21 @@ import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEF
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_QUEUE_SIZE;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DEFAULT_REGION_TO_TOPIC_BINDING;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_ID_PREFIX_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_TIME_OUT;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_TIME_OUT_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.DURABLE_CLIENT_TIME_OUT_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.LOAD_ENTIRE_REGION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.LOAD_ENTIRE_REGION_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.LOAD_ENTIRE_REGION_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.QUEUE_SIZE;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.QUEUE_SIZE_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.QUEUE_SIZE_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.REGION_TO_TOPIC_BINDINGS_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSourceConfigurationConstants.SOURCE_GROUP;
 
 import java.util.Collection;
 import java.util.List;
@@ -86,53 +95,87 @@ public class GeodeSourceConnectorConfig extends GeodeConnectorConfig {
         ConfigDef.Type.STRING,
         "",
         ConfigDef.Importance.HIGH,
-        CQS_TO_REGISTER_DOCUMENTATION);
+        CQS_TO_REGISTER_DOCUMENTATION,
+        SOURCE_GROUP,
+        1,
+        ConfigDef.Width.LONG,
+        CQS_TO_REGISTER_DISPLAY_NAME);
 
     configDef.define(
         REGION_TO_TOPIC_BINDINGS,
         ConfigDef.Type.STRING,
         DEFAULT_REGION_TO_TOPIC_BINDING,
         ConfigDef.Importance.HIGH,
-        REGION_TO_TOPIC_BINDINGS_DOCUMENTATION);
+        REGION_TO_TOPIC_BINDINGS_DOCUMENTATION,
+        SOURCE_GROUP,
+        2,
+        ConfigDef.Width.LONG,
+        REGION_TO_TOPIC_BINDINGS_DISPLAY_NAME);
 
     configDef.define(
         DURABLE_CLIENT_ID_PREFIX,
         ConfigDef.Type.STRING,
         DEFAULT_DURABLE_CLIENT_ID,
         ConfigDef.Importance.LOW,
-        DURABLE_CLIENT_ID_PREFIX_DOCUMENTATION);
+        DURABLE_CLIENT_ID_PREFIX_DOCUMENTATION,
+        SOURCE_GROUP,
+        3,
+        ConfigDef.Width.MEDIUM,
+        DURABLE_CLIENT_ID_PREFIX_DISPLAY_NAME);
 
     configDef.define(DURABLE_CLIENT_TIME_OUT,
         ConfigDef.Type.STRING,
         DEFAULT_DURABLE_CLIENT_TIMEOUT,
         ConfigDef.Importance.LOW,
-        DURABLE_CLIENT_TIME_OUT_DOCUMENTATION);
+        DURABLE_CLIENT_TIME_OUT_DOCUMENTATION,
+        SOURCE_GROUP,
+        4,
+        ConfigDef.Width.MEDIUM,
+        DURABLE_CLIENT_TIME_OUT_DISPLAY_NAME);
 
     configDef.define(CQ_PREFIX,
         ConfigDef.Type.STRING,
         DEFAULT_CQ_PREFIX,
         ConfigDef.Importance.LOW,
-        CQ_PREFIX_DOCUMENTATION);
+        CQ_PREFIX_DOCUMENTATION,
+        SOURCE_GROUP,
+        5,
+        ConfigDef.Width.MEDIUM,
+        CQ_PREFIX_DISPLAY_NAME
+        );
 
     configDef.define(
         BATCH_SIZE,
         ConfigDef.Type.INT,
         DEFAULT_BATCH_SIZE,
         ConfigDef.Importance.MEDIUM,
-        BATCH_SIZE_DOCUMENTATION);
+        BATCH_SIZE_DOCUMENTATION,
+        SOURCE_GROUP,
+        6,
+        ConfigDef.Width.MEDIUM,
+        BATCH_SIZE_DISPLAY_NAME
+        );
 
     configDef.define(
         QUEUE_SIZE,
         ConfigDef.Type.INT,
         DEFAULT_QUEUE_SIZE,
         ConfigDef.Importance.MEDIUM,
-        QUEUE_SIZE_DOCUMENTATION);
+        QUEUE_SIZE_DOCUMENTATION,
+        SOURCE_GROUP,
+        7,
+        ConfigDef.Width.MEDIUM,
+        QUEUE_SIZE_DISPLAY_NAME);
 
     configDef.define(LOAD_ENTIRE_REGION,
         ConfigDef.Type.BOOLEAN,
         DEFAULT_LOAD_ENTIRE_REGION,
         ConfigDef.Importance.MEDIUM,
-        LOAD_ENTIRE_REGION_DOCUMENTATION);
+        LOAD_ENTIRE_REGION_DOCUMENTATION,
+        SOURCE_GROUP,
+        8,
+        ConfigDef.Width.MEDIUM,
+        LOAD_ENTIRE_REGION_DISPLAY_NAME);
 
     return configDef;
   }

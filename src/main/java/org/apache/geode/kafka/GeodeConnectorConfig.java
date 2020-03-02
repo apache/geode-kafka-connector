@@ -16,15 +16,21 @@ package org.apache.geode.kafka;
 
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.DEFAULT_LOCATOR;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.DEFAULT_SECURITY_AUTH_INIT;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.GEODE_GROUP;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_PASSWORD_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_USER_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
+import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID_DOCUMENTATION;
 
 import java.util.Arrays;
@@ -81,33 +87,54 @@ public class GeodeConnectorConfig extends AbstractConfig {
         ConfigDef.Type.INT,
         "0",
         ConfigDef.Importance.MEDIUM,
-        TASK_ID_DOCUMENTATION);
+        TASK_ID_DOCUMENTATION,
+        GEODE_GROUP,
+        1,
+        ConfigDef.Width.MEDIUM,
+        TASK_ID_DISPLAY_NAME);
     configDef.define(
         LOCATORS,
         ConfigDef.Type.STRING,
         DEFAULT_LOCATOR,
         ConfigDef.Importance.HIGH,
-        LOCATORS_DOCUMENTATION);
+        LOCATORS_DOCUMENTATION,
+        GEODE_GROUP,
+        2,
+        ConfigDef.Width.LONG,
+        LOCATORS_DISPLAY_NAME
+    );
     configDef.define(
         SECURITY_USER,
         ConfigDef.Type.STRING,
         null,
         ConfigDef.Importance.HIGH,
-        SECURITY_USER_DOCUMENTATION);
-
+        SECURITY_USER_DOCUMENTATION,
+        GEODE_GROUP,
+        3,
+        ConfigDef.Width.MEDIUM,
+        SECURITY_USER_DISPLAY_NAME
+    );
     configDef.define(
         SECURITY_PASSWORD,
         ConfigDef.Type.PASSWORD,
         null,
         ConfigDef.Importance.HIGH,
-        SECURITY_PASSWORD_DOCUMENTATION);
-
+        SECURITY_PASSWORD_DOCUMENTATION,
+        GEODE_GROUP,
+        4,
+        ConfigDef.Width.MEDIUM,
+        SECURITY_PASSWORD_DISPLAY_NAME);
     configDef.define(
         SECURITY_CLIENT_AUTH_INIT,
         ConfigDef.Type.PASSWORD,
         null,
         ConfigDef.Importance.HIGH,
-        SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION);
+        SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION,
+        GEODE_GROUP,
+        5,
+        ConfigDef.Width.LONG,
+        SECURITY_CLIENT_AUTH_INIT_DISPLAY_NAME
+        );
     return configDef;
   }
 

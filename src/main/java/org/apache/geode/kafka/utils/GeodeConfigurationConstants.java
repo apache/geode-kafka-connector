@@ -27,4 +27,11 @@ public class GeodeConfigurationConstants {
   public static final String
       SECURITY_CLIENT_AUTH_INIT_DOCUMENTATION =
       "Point to the Java class that implements the [AuthInitialize Interface](https://geode.apache.org/docs/guide/19/managing/security/implementing_authentication.html)";
+  public static final String GEODE_GROUP = "Geode-Configurations";
+  public static final String SECURITY_PASSWORD_DISPLAY_NAME = "Apache Geode Password";
+  public static final String SECURITY_CLIENT_AUTH_INIT_DISPLAY_NAME = "Authentication Class";
+  public static final String SECURITY_USER_DISPLAY_NAME = "Apache Geode username";
+  public static final String LOCATORS_DISPLAY_NAME = "Locators";
+  public static final String TASK_ID_DISPLAY_NAME = "Task ID";
+
 }

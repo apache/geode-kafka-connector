@@ -17,8 +17,11 @@ package org.apache.geode.kafka.sink;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_NULL_VALUES_MEAN_REMOVE;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_TOPIC_TO_REGION_BINDING;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.SINK_GROUP;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS_DISPLAY_NAME;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS_DOCUMENTATION;
 
 import java.util.List;
@@ -46,14 +49,22 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
         ConfigDef.Type.STRING,
         DEFAULT_TOPIC_TO_REGION_BINDING,
         ConfigDef.Importance.HIGH,
-        TOPIC_TO_REGION_BINDINGS_DOCUMENTATION);
+        TOPIC_TO_REGION_BINDINGS_DOCUMENTATION,
+        SINK_GROUP,
+        1,
+        ConfigDef.Width.MEDIUM,
+        TOPIC_TO_REGION_BINDINGS_DISPLAY_NAME);
 
     configDef.define(
         NULL_VALUES_MEAN_REMOVE,
         ConfigDef.Type.BOOLEAN,
         DEFAULT_NULL_VALUES_MEAN_REMOVE,
         ConfigDef.Importance.MEDIUM,
-        NULL_VALUES_MEAN_REMOVE_DOCUMENTATION);
+        NULL_VALUES_MEAN_REMOVE_DOCUMENTATION,
+        SINK_GROUP,
+        2,
+        ConfigDef.Width.MEDIUM,
+        NULL_VALUES_MEAN_REMOVE_DISPLAY_NAME);
     return configDef;
   }
 

@@ -43,4 +43,13 @@ public class GeodeSourceConfigurationConstants {
   public static final String
       QUEUE_SIZE_DOCUMENTATION =
       "Maximum number of entries in the connector queue before backing up all Geode CQ listeners sharing the task queue ";
+  public static final String SOURCE_GROUP = "Source-Configuration";
+  public static final String CQS_TO_REGISTER_DISPLAY_NAME = "Continuous Queries (CQ) to register";
+  public static final String REGION_TO_TOPIC_BINDINGS_DISPLAY_NAME = "Region to topic mapping";
+  public static final String DURABLE_CLIENT_ID_PREFIX_DISPLAY_NAME = "Durable client ID";
+  public static final String DURABLE_CLIENT_TIME_OUT_DISPLAY_NAME = "Durable Client timeout";
+  public static final String CQ_PREFIX_DISPLAY_NAME = "CQ prefix";
+  public static final String BATCH_SIZE_DISPLAY_NAME = "Batch size for CQs";
+  public static final String QUEUE_SIZE_DISPLAY_NAME = "Queue size for CQs";
+  public static final String LOAD_ENTIRE_REGION_DISPLAY_NAME = "Load entire region";
 }
