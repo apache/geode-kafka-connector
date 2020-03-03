@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.common.utils.AppInfoParser;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.util.ConnectorUtils;
 
 import org.apache.geode.kafka.GeodeConnectorConfig;
+import org.apache.geode.kafka.Version;
 
 
 public class GeodeKafkaSource extends SourceConnector {
@@ -79,7 +79,6 @@ public class GeodeKafkaSource extends SourceConnector {
 
   @Override
   public String version() {
-    // TODO
-    return AppInfoParser.getVersion();
+    return Version.getVersion();
   }
 }

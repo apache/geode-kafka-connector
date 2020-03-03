@@ -30,6 +30,7 @@ import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionExistsException;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.kafka.GeodeContext;
+import org.apache.geode.kafka.Version;
 
 
 /**
@@ -50,8 +51,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
    */
   @Override
   public String version() {
-    // TODO
-    return "unknown";
+    return Version.getVersion();
   }
 
   @Override

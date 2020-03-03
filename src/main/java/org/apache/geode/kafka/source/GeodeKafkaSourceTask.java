@@ -35,6 +35,7 @@ import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.Struct;
 import org.apache.geode.kafka.GeodeContext;
+import org.apache.geode.kafka.Version;
 
 public class GeodeKafkaSourceTask extends SourceTask {
 
@@ -61,7 +62,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public String version() {
-    return null;
+    return Version.getVersion();
   }
 
   @Override

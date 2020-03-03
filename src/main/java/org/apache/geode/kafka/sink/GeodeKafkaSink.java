@@ -25,6 +25,8 @@ import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.sink.SinkConnector;
 
+import org.apache.geode.kafka.Version;
+
 public class GeodeKafkaSink extends SinkConnector {
   private Map<String, String> sharedProps;
 
@@ -65,8 +67,7 @@ public class GeodeKafkaSink extends SinkConnector {
 
   @Override
   public String version() {
-    // TODO
-    return "unknown";
+    return Version.getVersion();
   }
 
 }
