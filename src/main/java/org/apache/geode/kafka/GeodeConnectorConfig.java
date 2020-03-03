@@ -86,6 +86,7 @@ public class GeodeConnectorConfig extends AbstractConfig {
         TASK_ID,
         ConfigDef.Type.INT,
         "0",
+        ConfigDef.Range.atLeast(0),
         ConfigDef.Importance.MEDIUM,
         TASK_ID_DOCUMENTATION,
         GEODE_GROUP,

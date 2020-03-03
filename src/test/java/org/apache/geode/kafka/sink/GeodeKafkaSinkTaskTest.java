@@ -16,7 +16,7 @@ package org.apache.geode.kafka.sink;
 
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.LOCATORS;
 import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.TASK_ID;
-import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_BEHAVIOR;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +40,7 @@ public class GeodeKafkaSinkTaskTest {
     HashMap<String, String> props = new HashMap<>();
     props.put(TOPIC_TO_REGION_BINDINGS, "[topic:region]");
     props.put(TASK_ID, "0");
-    props.put(NULL_VALUES_MEAN_REMOVE, "true");
+    props.put(NULL_VALUES_BEHAVIOR, "REMOVE");
     props.put(LOCATORS, "localhost[10334]");
     return props;
   }

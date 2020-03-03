@@ -14,11 +14,11 @@
  */
 package org.apache.geode.kafka.sink;
 
-import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_NULL_VALUES_MEAN_REMOVE;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_NULL_VALUES_BEHAVIOR;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.DEFAULT_TOPIC_TO_REGION_BINDING;
-import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE;
-import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE_DISPLAY_NAME;
-import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_MEAN_REMOVE_DOCUMENTATION;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_BEHAVIOR;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_BEHAVIOR_DISPLAY_NAME;
+import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.NULL_VALUES_BEHAVIOR_DOCUMENTATION;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.SINK_GROUP;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS;
 import static org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants.TOPIC_TO_REGION_BINDINGS_DISPLAY_NAME;
@@ -30,16 +30,19 @@ import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 
 import org.apache.geode.kafka.GeodeConnectorConfig;
+import org.apache.geode.kafka.utils.EnumValidator;
+import org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants;
 
 public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   public static final ConfigDef SINK_CONFIG_DEF = configurables();
   private final Map<String, List<String>> topicToRegions;
-  private final boolean nullValuesMeanRemove;
+  private final GeodeSinkConfigurationConstants.NullValueBehavior nullValueBehavior;
 
   public GeodeSinkConnectorConfig(Map<String, String> connectorProperties) {
     super(SINK_CONFIG_DEF, connectorProperties);
     topicToRegions = parseTopicToRegions(getString(TOPIC_TO_REGION_BINDINGS));
-    nullValuesMeanRemove = getBoolean(NULL_VALUES_MEAN_REMOVE);
+    nullValueBehavior = GeodeSinkConfigurationConstants.NullValueBehavior
+        .valueOf(getString(NULL_VALUES_BEHAVIOR).toUpperCase());
   }
 
   protected static ConfigDef configurables() {
@@ -56,15 +59,16 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
         TOPIC_TO_REGION_BINDINGS_DISPLAY_NAME);
 
     configDef.define(
-        NULL_VALUES_MEAN_REMOVE,
-        ConfigDef.Type.BOOLEAN,
-        DEFAULT_NULL_VALUES_MEAN_REMOVE,
+        NULL_VALUES_BEHAVIOR,
+        ConfigDef.Type.STRING,
+        DEFAULT_NULL_VALUES_BEHAVIOR,
+        EnumValidator.in(GeodeSinkConfigurationConstants.NullValueBehavior.values()),
         ConfigDef.Importance.MEDIUM,
-        NULL_VALUES_MEAN_REMOVE_DOCUMENTATION,
+        NULL_VALUES_BEHAVIOR_DOCUMENTATION,
         SINK_GROUP,
         2,
         ConfigDef.Width.MEDIUM,
-        NULL_VALUES_MEAN_REMOVE_DISPLAY_NAME);
+        NULL_VALUES_BEHAVIOR_DISPLAY_NAME);
     return configDef;
   }
 
@@ -72,8 +76,12 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
     return topicToRegions;
   }
 
-  public boolean getNullValuesMeanRemove() {
-    return nullValuesMeanRemove;
+  public boolean getNullValueBehavior() {
+    if (nullValueBehavior.equals(GeodeSinkConfigurationConstants.NullValueBehavior.REMOVE)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }

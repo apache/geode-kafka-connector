@@ -74,7 +74,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
   void configure(GeodeSinkConnectorConfig geodeConnectorConfig) {
     logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
     topicToRegions = geodeConnectorConfig.getTopicToRegions();
-    nullValuesMeansRemove = geodeConnectorConfig.getNullValuesMeanRemove();
+    nullValuesMeansRemove = geodeConnectorConfig.getNullValueBehavior();
   }
 
   // For tests only
