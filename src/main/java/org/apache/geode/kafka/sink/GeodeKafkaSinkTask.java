@@ -56,6 +56,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   @Override
   public void start(Map<String, String> props) {
+    logger.info("Starting Apache Geode sink task");
     try {
       GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
       configure(geodeConnectorConfig);
@@ -142,6 +143,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   @Override
   public void stop() {
+    logger.info("Stopping task");
     geodeContext.close(false);
   }
 

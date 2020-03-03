@@ -67,6 +67,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public void start(Map<String, String> props) {
+    logger.info("Starting Apache Geode source task");
     try {
       GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
@@ -89,6 +90,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
       boolean loadEntireRegion = geodeConnectorConfig.getLoadEntireRegion();
       installOnGeode(geodeConnectorConfig, geodeContext, eventBufferSupplier, cqPrefix,
           loadEntireRegion);
+      logger.info("Started Apache Geode source task");
     } catch (Exception e) {
       e.printStackTrace();
       logger.error("Unable to start source task", e);
@@ -98,6 +100,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public List<SourceRecord> poll() {
+    logger.trace("Polling for new data");
     ArrayList<SourceRecord> records = new ArrayList<>(batchSize);
     ArrayList<GeodeEvent> events = new ArrayList<>(batchSize);
     if (eventBufferSupplier.get().drainTo(events, batchSize) > 0) {
@@ -117,6 +120,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
 
   @Override
   public void stop() {
+    logger.info("Stopping Apache Geode source task");
     geodeContext.close(true);
   }
 
