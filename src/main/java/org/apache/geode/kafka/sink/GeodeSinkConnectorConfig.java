@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 
 import org.apache.geode.kafka.GeodeConnectorConfig;
+import org.apache.geode.kafka.utils.EnumRecommender;
 import org.apache.geode.kafka.utils.EnumValidator;
 import org.apache.geode.kafka.utils.GeodeSinkConfigurationConstants;
 
@@ -68,7 +69,8 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
         SINK_GROUP,
         2,
         ConfigDef.Width.MEDIUM,
-        NULL_VALUES_BEHAVIOR_DISPLAY_NAME);
+        NULL_VALUES_BEHAVIOR_DISPLAY_NAME,
+        EnumRecommender.in(GeodeSinkConfigurationConstants.NullValueBehavior.values()));
     return configDef;
   }
 
