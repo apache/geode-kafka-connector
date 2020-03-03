@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTask;
 import org.slf4j.Logger;
@@ -66,8 +67,7 @@ public class GeodeKafkaSinkTask extends SinkTask {
           geodeConnectorConfig.usesSecurity());
       regionNameToRegion = createProxyRegions(topicToRegions.values());
     } catch (Exception e) {
-      logger.error("Unable to start sink task", e);
-      throw e;
+      throw new ConnectException("Unable to start sink task", e);
     }
   }
 
