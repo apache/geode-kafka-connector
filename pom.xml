@@ -50,6 +50,7 @@
         <maven-plugin.version>3.8.1</maven-plugin.version>
         <zookeeper.version>3.5.7</zookeeper.version>
         <spotless.version>1.27.0</spotless.version>
+        <rat.version>0.13</rat.version>
         <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
     </properties>
 
@@ -191,6 +192,22 @@
                             <file>etc/eclipseOrganizeImports.importorder</file>
                         </importOrder>
                     </java>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>${rat.version}</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludesFile>etc/rat-excludes</excludesFile>
                 </configuration>
             </plugin>
             <plugin>
