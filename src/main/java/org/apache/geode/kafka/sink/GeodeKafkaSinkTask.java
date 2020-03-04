@@ -85,12 +85,17 @@ public class GeodeKafkaSinkTask extends SinkTask {
 
   @Override
   public void put(Collection<SinkRecord> records) {
+    logger.debug("Received " + records.size() + " records.");
     put(records, new HashMap<>());
   }
 
   void put(Collection<SinkRecord> records, Map<String, BatchRecords> batchRecordsMap) {
     // spin off a new thread to handle this operation? Downside is ordering and retries...
     for (SinkRecord record : records) {
+      logger.debug("kafka coordinates:(Topic:"
+          + record.topic() +
+          " Partition:" + record.kafkaPartition() + " Offset:" + record.kafkaOffset()
+          + ")");
       updateBatchForRegionByTopic(record, batchRecordsMap);
     }
     batchRecordsMap.forEach(

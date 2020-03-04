@@ -104,6 +104,7 @@ public class GeodeKafkaSourceTask extends SourceTask {
     ArrayList<SourceRecord> records = new ArrayList<>(batchSize);
     ArrayList<GeodeEvent> events = new ArrayList<>(batchSize);
     if (eventBufferSupplier.get().drainTo(events, batchSize) > 0) {
+      logger.debug("Geode events polled :" + events.size());
       for (GeodeEvent event : events) {
         String regionName = event.getRegionName();
         List<String> topics = regionToTopics.get(regionName);
