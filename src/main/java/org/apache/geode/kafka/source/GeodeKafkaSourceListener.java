@@ -44,6 +44,7 @@ class GeodeKafkaSourceListener implements CqStatusListener {
     try {
       eventBufferSupplier.get().offer(new GeodeEvent(regionName, aCqEvent), 2, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
+      logger.info("GeodeKafkaSource Queue is full, waiting to offer");
 
       while (true) {
         try {
