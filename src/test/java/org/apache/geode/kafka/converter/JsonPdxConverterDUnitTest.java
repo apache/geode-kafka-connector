@@ -57,16 +57,16 @@ import org.apache.geode.test.dunit.rules.MemberVM;
 
 public class JsonPdxConverterDUnitTest {
   @Rule
-  public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
+  final public ClusterStartupRule clusterStartupRule = new ClusterStartupRule(3);
 
   @Rule
   public TestName testName = new TestName();
 
   @ClassRule
-  public static TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
+  final public static TemporaryFolder temporaryFolderForZooKeeper = new TemporaryFolder();
 
   @Rule
-  public TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
+  final public TemporaryFolder temporaryFolderForOffset = new TemporaryFolder();
 
   @BeforeClass
   public static void setup()

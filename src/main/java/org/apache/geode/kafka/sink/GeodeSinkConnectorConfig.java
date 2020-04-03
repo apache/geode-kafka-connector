@@ -79,11 +79,7 @@ public class GeodeSinkConnectorConfig extends GeodeConnectorConfig {
   }
 
   public boolean getNullValueBehavior() {
-    if (nullValueBehavior.equals(GeodeSinkConfigurationConstants.NullValueBehavior.REMOVE)) {
-      return true;
-    } else {
-      return false;
-    }
+    return nullValueBehavior.equals(GeodeSinkConfigurationConstants.NullValueBehavior.REMOVE);
   }
 
 }

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.RegionExistsException;
+import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.kafka.GeodeContext;
 import org.apache.geode.kafka.Version;
@@ -61,13 +62,20 @@ public class GeodeKafkaSinkTask extends SinkTask {
       GeodeSinkConnectorConfig geodeConnectorConfig = new GeodeSinkConnectorConfig(props);
       configure(geodeConnectorConfig);
       geodeContext = new GeodeContext();
-      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
-          geodeConnectorConfig.getSecurityClientAuthInit(),
-          geodeConnectorConfig.getSecurityUserName(),
-          geodeConnectorConfig.getSecurityPassword(),
-          geodeConnectorConfig.usesSecurity());
+      ClientCache clientCache =
+          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+              geodeConnectorConfig.getSecurityClientAuthInit(),
+              geodeConnectorConfig.getSecurityUserName(),
+              geodeConnectorConfig.getSecurityPassword(),
+              geodeConnectorConfig.usesSecurity());
+      if (clientCache == null) {
+        throw new ConnectException("Unable start client cache in the sink task");
+      }
       regionNameToRegion = createProxyRegions(topicToRegions.values());
     } catch (Exception e) {
+      if (e instanceof ConnectException) {
+        throw e;
+      }
       throw new ConnectException("Unable to start sink task", e);
     }
   }

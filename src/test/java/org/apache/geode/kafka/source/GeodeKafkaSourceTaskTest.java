@@ -71,11 +71,6 @@ public class GeodeKafkaSourceTaskTest {
   public void whenNotLoadingEntireRegionShouldNotPutInitialResultsIntoEventBuffer() {
     GeodeContext geodeContext = mock(GeodeContext.class);
     BlockingQueue<GeodeEvent> eventBuffer = new LinkedBlockingQueue<>(100);
-    CqResults<Object> fakeInitialResults = new ResultsBag();
-    for (int i = 0; i < 10; i++) {
-      fakeInitialResults.add(mock(CqEvent.class));
-    }
-
     when(geodeContext.newCq(anyString(), anyString(), any(), anyBoolean()))
         .thenReturn(mock(CqQuery.class));
     GeodeKafkaSourceTask task = new GeodeKafkaSourceTask();

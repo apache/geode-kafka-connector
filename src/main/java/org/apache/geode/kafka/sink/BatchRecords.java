@@ -44,8 +44,8 @@ public class BatchRecords {
 
   public void addRemoveOperation(SinkRecord record) {
     // if a previous operation added to the update map
-    // let's just remove it so we don't do a put and then a remove
-    // depending on the order of operations (putAll then removeAll or removeAll or putAll)...
+    // let's just remove it so, we don't do a put and then a remove
+    // depending on the order of operations (putAll then removeAll or putAll)...
     // ...we could remove one of the if statements.
     if (updateMap.containsKey(record.key())) {
       updateMap.remove(record.key());
@@ -56,7 +56,7 @@ public class BatchRecords {
 
   public void addUpdateOperation(SinkRecord record, boolean nullValuesMeansRemove) {
     // it's assumed the records in are order
-    // if so if a previous value was in the remove list
+    // if so then a previous value was in the remove list
     // let's not remove it at the end of this operation
     if (nullValuesMeansRemove) {
       removeList.remove(record.key());
@@ -70,7 +70,7 @@ public class BatchRecords {
       region.putAll(updateMap);
       region.removeAll(removeList);
     } else {
-      logger.info("Unable to locate proxy region is null");
+      logger.info("Unable to locate a proxy region. Value is null");
     }
   }
 }

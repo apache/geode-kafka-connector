@@ -28,7 +28,7 @@ public class JsonPdxConverter implements Converter {
   public static final String JSON_TYPE_ANNOTATION = "\"@type\"";
   // Default value = false
   public static final String ADD_TYPE_ANNOTATION_TO_JSON = "add-type-annotation-to-json";
-  private Map<String, String> internalConfig = new HashMap<>();
+  final private Map<String, String> internalConfig = new HashMap<>();
 
   @Override
   public void configure(Map<String, ?> configs, boolean isKey) {

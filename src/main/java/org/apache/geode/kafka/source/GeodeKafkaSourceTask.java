@@ -29,6 +29,7 @@ import org.apache.kafka.connect.source.SourceTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.query.CqAttributes;
 import org.apache.geode.cache.query.CqAttributesFactory;
 import org.apache.geode.cache.query.CqQuery;
@@ -72,14 +73,17 @@ public class GeodeKafkaSourceTask extends SourceTask {
       GeodeSourceConnectorConfig geodeConnectorConfig = new GeodeSourceConnectorConfig(props);
       logger.debug("GeodeKafkaSourceTask id:" + geodeConnectorConfig.getTaskId() + " starting");
       geodeContext = new GeodeContext();
-      geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
-          geodeConnectorConfig.getDurableClientId(),
-          geodeConnectorConfig.getDurableClientTimeout(),
-          geodeConnectorConfig.getSecurityClientAuthInit(),
-          geodeConnectorConfig.getSecurityUserName(),
-          geodeConnectorConfig.getSecurityPassword(),
-          geodeConnectorConfig.usesSecurity());
-
+      ClientCache clientCache =
+          geodeContext.connectClient(geodeConnectorConfig.getLocatorHostPorts(),
+              geodeConnectorConfig.getDurableClientId(),
+              geodeConnectorConfig.getDurableClientTimeout(),
+              geodeConnectorConfig.getSecurityClientAuthInit(),
+              geodeConnectorConfig.getSecurityUserName(),
+              geodeConnectorConfig.getSecurityPassword(),
+              geodeConnectorConfig.usesSecurity());
+      if (clientCache == null) {
+        throw new ConnectException("Unable to create client cache in the source task");
+      }
       batchSize = geodeConnectorConfig.getBatchSize();
       eventBufferSupplier = new SharedEventBufferSupplier(geodeConnectorConfig.getQueueSize());
 
@@ -92,9 +96,12 @@ public class GeodeKafkaSourceTask extends SourceTask {
           loadEntireRegion);
       logger.info("Started Apache Geode source task");
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("Unable to start source task", e);
-      throw e;
+      if (e instanceof ConnectException) {
+        throw e;
+      } else {
+        throw new ConnectException(e);
+      }
     }
   }
 

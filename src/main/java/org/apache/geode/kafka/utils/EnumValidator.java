@@ -28,7 +28,7 @@ public class EnumValidator implements ConfigDef.Validator {
   }
 
   public static <T> EnumValidator in(T[] enumerators) {
-    Set<String> validValues = new HashSet<String>(enumerators.length);
+    Set<String> validValues = new HashSet<>(enumerators.length);
     for (T e : enumerators) {
       validValues.add(e.toString().toLowerCase());
     }
