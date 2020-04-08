@@ -32,9 +32,9 @@ public class GeodeSourceConfigurationConstants {
   public static final String CQS_TO_REGISTER = "cqsToRegister"; // used internally so that only 1
   // task will register a cq
   public static final String BATCH_SIZE = "geode-connector-batch-size";
-  public static final String DEFAULT_BATCH_SIZE = "100";
+  public static final String DEFAULT_BATCH_SIZE = "50000";
   public static final String QUEUE_SIZE = "geode-connector-queue-size";
-  public static final String DEFAULT_QUEUE_SIZE = "10000";
+  public static final String DEFAULT_QUEUE_SIZE = "500000";
   public static final String LOAD_ENTIRE_REGION = "load-entire-region";
   public static final String DEFAULT_LOAD_ENTIRE_REGION = "false";
   public static final String CQS_TO_REGISTER_DOCUMENTATION =

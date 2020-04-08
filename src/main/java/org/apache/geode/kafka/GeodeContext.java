@@ -30,10 +30,13 @@ import org.apache.geode.cache.query.CqExistsException;
 import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.RegionNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GeodeContext {
 
   private ClientCache clientCache;
+  private static final Logger logger = LoggerFactory.getLogger(GeodeContext.class);
 
 
   public GeodeContext() {}

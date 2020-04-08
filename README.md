@@ -11,7 +11,7 @@ mvn package
 ---
 #### Prerequisite
 * Kafka is installed and is up and running.  See the Kafka quickstart for more info: [Kafka Quickstart](https://kafka.apache.org/quickstart)
-* A Geode Cluster with at least one locator and one server and regions to source from and sink to.
+* A Geode Cluster with at least one locator and one server and regions to source from and sink to. Use the --max-message-count parameter in GFSH to set a large queue size so Geode will not throttle put operations.
 * Topics created in Kafka to source from and sink to.
 ---
 Installation of the connector is similar in process to other Kafka Connectors.  For now, we will follow the guide for [Manual Installation](https://docs.confluent.io/current/connect/managing/install.html#install-connector-manually).
