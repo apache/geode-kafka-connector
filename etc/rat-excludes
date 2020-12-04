@@ -29,6 +29,7 @@ etc/eclipseOrganizeImports.importorder
 .idea/**
 **/tags
 **/out/**
+.mvn/wrapper/maven-wrapper.properties
 
 # text files
 **/*.fig
