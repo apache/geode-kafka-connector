@@ -21,6 +21,8 @@ import static org.apache.geode.kafka.utils.GeodeConfigurationConstants.SECURITY_
 import java.util.List;
 
 import org.apache.kafka.connect.errors.ConnectException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.geode.cache.client.ClientCache;
 import org.apache.geode.cache.client.ClientCacheFactory;
@@ -30,8 +32,6 @@ import org.apache.geode.cache.query.CqExistsException;
 import org.apache.geode.cache.query.CqQuery;
 import org.apache.geode.cache.query.CqResults;
 import org.apache.geode.cache.query.RegionNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GeodeContext {
 
