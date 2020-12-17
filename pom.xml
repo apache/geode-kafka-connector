@@ -223,12 +223,11 @@
                             <title>Kafka Connect Apache Geode</title>
                             <documentationUrl>https://geode.apache.org/docs/</documentationUrl>
                             <description>
-                            The Apache Geode connector can be used to move data from Kafka to Geode and vice versa. The Sink take data from a Kafka topic and puts in a region in Geode, while the Source will move any data inserted into Geode region, to Kafka topics .
+                                The Apache Geode connector can be used to move data from Kafka to Geode and vice versa. The Sink takes data from a Kafka topic and puts it in a region in Geode, while the Source will move any data inserted into Geode region, to Kafka topics.
 
-                                Apache Geode is an in-memory data grid which stores data in a key-value format. When the Geode acts as a Sink, the key value pair is extracted from the Sink Record from the Kafka topic and that key-value pair is stored in Geode regions. When Geode acts as a Source, whenever a key-value pair is inserted into the region, an event is sent to connector containing the data. This data is then placed into the Kafka topic.
+                                Apache Geode is an in-memory data grid that stores data in a key-value format. When the Geode acts as a Sink, the key-value pair is extracted from the Sink Record from the Kafka topic and that key-value pair is stored in Geode regions. When Geode acts as a Source, whenever a key-value pair is inserted into the region, an event is sent to the connector containing the data. This data is then placed into the Kafka topic.
 
-                                The mapping between the region and topics must be provided by the user. They must also ensure that the Apache Geode cluster is up and running along with all the required regions along with the topics in Kafka. The Apache Geode cluster must consist of at least one locator and one server.
-                            </description>
+                                The mapping between the region and topics must be provided by the user. They must also ensure that the Apache Geode cluster is up and running along with all the required regions along with the topics in Kafka. The Apache Geode cluster must consist of at least one locator and one server.                            </description>
                             <logo>logos/PoweredBYlogo.png</logo>
 
                             <supportProviderName>Apache Software Foundation / VMware</supportProviderName>
