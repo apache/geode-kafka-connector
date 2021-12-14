@@ -31,7 +31,7 @@
         <tag>HEAD</tag>
     </scm>
 
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <properties>
         <geode.core.version>1.12.6</geode.core.version>
