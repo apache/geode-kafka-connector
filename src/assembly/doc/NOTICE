@@ -1,0 +1,164 @@
+Apache Geode
+Copyright 2016-2022 The Apache Software Foundation.
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+
+The following NOTICEs pertain to software distributed with this project.
+
+stream-lib
+Copyright 2016 AddThis
+
+   This product includes software developed by AddThis.
+
+   This product also includes code adapted from:
+
+   Apache Solr (http://lucene.apache.org/solr/)
+   Copyright 2014 The Apache Software Foundation
+
+commons-codec
+
+  src/test/org/apache/commons/codec/language/DoubleMetaphoneTest.java
+  contains test data from http://aspell.net/test/orig/batch0.tab.
+  Copyright (C) 2002 Kevin Atkinson (kevina@gnu.org)
+
+This product includes software developed by the MX4J
+project (http://mx4j.sourceforge.net).
+
+Java ClassMate library was originally written by Tatu Saloranta (tatu.saloranta@iki.fi)
+
+  Other developers who have contributed code are:
+  
+  * Brian Langel
+
+Jackson Core
+
+  # Jackson JSON processor
+
+  Jackson is a high-performance, Free/Open Source JSON processing library.
+  It was originally written by Tatu Saloranta (tatu.saloranta@iki.fi), and has
+  been in development since 2007.
+  It is currently developed by a community of developers, as well as supported
+  commercially by FasterXML.com.
+  
+  ## Licensing
+  
+  Jackson core and extension components may licensed under different licenses.
+  To find the details that apply to this artifact see the accompanying LICENSE file.
+  For more information, including possible other licensing options, contact
+  FasterXML.com (http://fasterxml.com).
+  
+  ## Credits
+  
+  A list of contributors may be found from CREDITS file, which is included
+  in some artifacts (usually source distributions); but is always available
+  from the source code management (SCM) system project uses.
+
+Apache Log4j Core
+
+  ResolverUtil.java
+  Copyright 2005-2006 Tim Fennell
+  
+Apache Lucene
+
+  Includes software from other Apache Software Foundation projects,
+  including, but not limited to:
+   - Apache Ant
+   - Apache Jakarta Regexp
+   - Apache Commons
+   - Apache Xerces
+ 
+  Brics Automaton (under core/src/java/org/apache/lucene/util/automaton) is 
+  BSD-licensed, created by Anders Møller. See http://www.brics.dk/automaton/
+  
+  The levenshtein automata tables (under core/src/java/org/apache/lucene/util/automaton) were
+  automatically generated with the moman/finenight FSA library, created by
+  Jean-Philippe Barrette-LaPierre. This library is available under an MIT license,
+  see http://sites.google.com/site/rrettesite/moman and 
+  http://bitbucket.org/jpbarrette/moman/overview/
+  
+  The class org.apache.lucene.util.WeakIdentityMap was derived from
+  the Apache CXF project and is Apache License 2.0.
+  
+  The Google Code Prettify is Apache License 2.0.
+  See http://code.google.com/p/google-code-prettify/
+  
+  The snowball stemmers in
+    analysis/common/src/java/net/sf/snowball
+  were developed by Martin Porter and Richard Boulton.
+  The snowball stopword lists in
+    analysis/common/src/resources/org/apache/lucene/analysis/snowball
+  were developed by Martin Porter and Richard Boulton.
+  The full snowball package is available from
+    http://snowball.tartarus.org/
+  
+  The KStem stemmer in
+    analysis/common/src/org/apache/lucene/analysis/en
+  was developed by Bob Krovetz and Sergio Guzman-Lara (CIIR-UMass Amherst)
+  under the BSD-license.
+  
+  The Arabic,Persian,Romanian,Bulgarian, and Hindi analyzers (common) come with a default
+  stopword list that is BSD-licensed created by Jacques Savoy.  These files reside in:
+  analysis/common/src/resources/org/apache/lucene/analysis/ar/stopwords.txt,
+  analysis/common/src/resources/org/apache/lucene/analysis/fa/stopwords.txt,
+  analysis/common/src/resources/org/apache/lucene/analysis/ro/stopwords.txt,
+  analysis/common/src/resources/org/apache/lucene/analysis/bg/stopwords.txt,
+  analysis/common/src/resources/org/apache/lucene/analysis/hi/stopwords.txt
+  See http://members.unine.ch/jacques.savoy/clef/index.html.
+  
+  The German,Spanish,Finnish,French,Hungarian,Italian,Portuguese,Russian and Swedish light stemmers
+  (common) are based on BSD-licensed reference implementations created by Jacques Savoy and
+  Ljiljana Dolamic. These files reside in:
+  analysis/common/src/java/org/apache/lucene/analysis/de/GermanLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/de/GermanMinimalStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/es/SpanishLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/fi/FinnishLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/fr/FrenchLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/fr/FrenchMinimalStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/hu/HungarianLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/it/ItalianLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/pt/PortugueseLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/ru/RussianLightStemmer.java
+  analysis/common/src/java/org/apache/lucene/analysis/sv/SwedishLightStemmer.java
+  
+Servlet-api.jar and javax.servlet-*.jar are under the CDDL license, the original
+source code for this can be found at http://www.eclipse.org/jetty/downloads.php
+
+Spring Framework
+Copyright (c) 2002-2018 Pivotal, Inc.
+
+  This product is licensed to you under the Apache License, Version 2.0
+  (the "License"). You may not use this product except in compliance with
+  the License.
+  
+  This product may include a number of subcomponents with separate
+  copyright notices and license terms. Your use of the source code for
+  these subcomponents is subject to the terms and conditions of the
+  subcomponent's license, as noted in the license.txt file.
+
+Spring Hateoas 
+Copyright (c) [2012-2017] Pivotal Software, Inc.
+
+  This product is licensed to you under the Apache License, Version 2.0 (the "License").  
+  You may not use this product except in compliance with the License.  
+  
+  This product may include a number of subcomponents with
+  separate copyright notices and license terms. Your use of the source
+  code for the these subcomponents is subject to the terms and
+  conditions of the subcomponent's license, as noted in the LICENSE file.
+
+Spring LDAP Core 
+
+   This product includes software developed by the Spring LDAP
+   Project (http://www.springframework.org/ldap).
+
+Spring Shell
+
+   This product includes software developed by the Spring Framework
+   Project (http://www.springframework.org).
+
+   The names "Spring", "Spring Framework", and "Spring Shell" must
+   not be used to endorse or promote products derived from this
+   software without prior written permission. For written permission,
+   please contact enquiries@springsource.com.
