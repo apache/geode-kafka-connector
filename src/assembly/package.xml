@@ -31,8 +31,13 @@
             <includes>
                 <include>version.txt</include>
                 <include>README*</include>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/assembly/doc</directory>
+            <outputDirectory>share/doc/kafka-connect-geode/</outputDirectory>
+            <includes>
+                <include>*</include>
             </includes>
         </fileSet>
     </fileSets>
