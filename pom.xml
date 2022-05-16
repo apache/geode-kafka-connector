@@ -38,7 +38,7 @@
         <geode.cq.version>1.12.6</geode.cq.version>
         <geode.dunit.version>1.12.6</geode.dunit.version>
         <kafka.connect-api.version>2.3.1</kafka.connect-api.version>
-        <log4j.version>2.16.0</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <kafka_2.12.version>2.3.1</kafka_2.12.version>
         <curator-framework.version>4.2.0</curator-framework.version>
         <kafka-streams-test-utils.version>1.1.0</kafka-streams-test-utils.version>
