@@ -43,7 +43,7 @@
         <curator-framework.version>4.2.0</curator-framework.version>
         <kafka-streams-test-utils.version>1.1.0</kafka-streams-test-utils.version>
         <kafka.connect-runtime.version>2.3.1</kafka.connect-runtime.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockito.version>3.2.4</mockito.version>
         <JUnitParams.version>1.1.1</JUnitParams.version>
         <awaitility.version>3.1.6</awaitility.version>
