@@ -52,7 +52,7 @@
         <spotless.version>1.27.0</spotless.version>
         <rat.version>0.13</rat.version>
         <surefire.version>2.19.1</surefire.version>
-        <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
+        <confluent.maven.repo>https://packages.confluent.io/maven/</confluent.maven.repo>
     </properties>
 
     <repositories>
