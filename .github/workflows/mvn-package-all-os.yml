@@ -32,3 +32,9 @@ jobs:
         java-version: ${{  matrix.java }}
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: test-reports-${{ matrix.os }}-${{ matrix.java }}
+        path: build/reports
+        retention-days: 5
