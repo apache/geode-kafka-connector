@@ -34,7 +34,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <geode.core.version>1.12.6</geode.core.version>
+        <geode.core.version>1.15.1</geode.core.version>
         <geode.cq.version>1.12.6</geode.cq.version>
         <geode.dunit.version>1.12.6</geode.dunit.version>
         <kafka.connect-api.version>2.3.1</kafka.connect-api.version>
