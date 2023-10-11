@@ -48,7 +48,7 @@
         <JUnitParams.version>1.1.1</JUnitParams.version>
         <awaitility.version>3.1.6</awaitility.version>
         <maven-plugin.version>3.8.1</maven-plugin.version>
-        <zookeeper.version>3.5.7</zookeeper.version>
+        <zookeeper.version>3.7.2</zookeeper.version>
         <spotless.version>1.27.0</spotless.version>
         <rat.version>0.13</rat.version>
         <surefire.version>2.19.1</surefire.version>
